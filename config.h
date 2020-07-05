@@ -6,8 +6,8 @@ static const unsigned int snap      = 32;       /* snap pixel */
 static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Source Code Pro:size=14" };
-static const char dmenufont[]       = { "Source Code Pro:size=14" };
+static const char *fonts[]          = { "JetBrainsMono Nerd Font:pixelsize=16:antialias=true:autohint=true" };
+static const char dmenufont[]       = { "JetBrainsMono Nerd Font:pixelsize=16:antialias=true:autohint=true" };
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -16,7 +16,7 @@ static const char col_cyan[]        = "#005577";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+	[SchemeSel]  = { col_gray4, col_gray1,  col_gray2  },
 };
 
 /* tagging */
@@ -34,7 +34,7 @@ static const Rule rules[] = {
 	{ "Chromium", NULL,     NULL,           1 << 1,    0,          0,          -1,        -1 },
 	{ "St",      NULL,     NULL,           0,         0,          1,           0,        -1 },
 	{ NULL,      NULL,     "Event Tester", 0,         1,          0,           1,        -1 }, /* xev */
-	{ "Thunar",  NULL,     NULL,           1 << 3 ,   0,          0,          -1,        -1 },
+	{ "Thunar",  NULL,     NULL,           1 << 5 ,   0,          0,          -1,        -1 },
 	{ "code-oss",NULL,     NULL,           1 << 2,    0,          0,          -1,        -1 },
 	{ "jetbrains-studio",  NULL,     NULL,           1 << 5,         0,          0,           -1,        -1 },
 };
@@ -92,6 +92,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)

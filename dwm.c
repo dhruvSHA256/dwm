@@ -251,6 +251,8 @@ static void setdesktopnames(void);
 static void setnumdesktops(void);
 static void setviewport(void);
 static void updatecurrentdesktop(void);
+static void togglefullscr(const Arg *arg);
+
 
 /* variables */
 static const char broken[] = "broken";
@@ -1834,6 +1836,14 @@ togglefloating(const Arg *arg)
 			selmon->sel->w, selmon->sel->h, 0);
 	arrange(selmon);
 }
+
+void
+togglefullscr(const Arg *arg)
+{
+  if(selmon->sel)
+    setfullscreen(selmon->sel, !selmon->sel->isfullscreen);
+}
+
 
 void
 toggletag(const Arg *arg)
