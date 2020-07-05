@@ -1,13 +1,13 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx  = 1;        /* border pixel of windows */
+static const unsigned int borderpx  = 2;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "monospace:size=10" };
-static const char dmenufont[]       = "monospace:size=10";
+static const char *fonts[]          = { "Source Code Pro:size=14" };
+static const char dmenufont[]       = { "Source Code Pro:size=14" };
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -20,7 +20,8 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+//static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const char *tags[] = { "1:", "2:", "3:" , "4:", "5:" , "6:" , "7:" , "8:ﯙ" , "9:漣" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -29,9 +30,13 @@ static const Rule rules[] = {
 	 */
 	/* class     instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
 	{ "Gimp",    NULL,     NULL,           0,         1,          0,           0,        -1 },
-	{ "Firefox", NULL,     NULL,           1 << 8,    0,          0,          -1,        -1 },
+	{ "firefox", NULL,     NULL,           1 << 1,    0,          0,          -1,        -1 },
+	{ "Chromium", NULL,     NULL,           1 << 1,    0,          0,          -1,        -1 },
 	{ "St",      NULL,     NULL,           0,         0,          1,           0,        -1 },
 	{ NULL,      NULL,     "Event Tester", 0,         1,          0,           1,        -1 }, /* xev */
+	{ "Thunar",  NULL,     NULL,           1 << 3 ,   0,          0,          -1,        -1 },
+	{ "code-oss",NULL,     NULL,           1 << 2,    0,          0,          -1,        -1 },
+	{ "jetbrains-studio",  NULL,     NULL,           1 << 5,         0,          0,           -1,        -1 },
 };
 
 /* layout(s) */
