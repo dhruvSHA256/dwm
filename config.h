@@ -57,6 +57,7 @@ static const Layout layouts[] = {
 	{ "[M]",      monocle },
 	{ "[\\]",     dwindle }, // fibonacci dwindle
 	{ "(@)",      spiral }, // fibonacci spiral
+	{ NULL,       NULL },
 };
 
 /* key definitions */
@@ -119,6 +120,8 @@ static Key keys[] = {
 	{ MODKEY|Mod1Mask,              XK_o,      incrohgaps,     {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_y,      incrovgaps,     {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_o,      incrovgaps,     {.i = -1 } },
+	{ MODKEY|ControlMask,		    XK_comma,  cyclelayout,    {.i = -1 } },
+	{ MODKEY|ControlMask,           XK_period, cyclelayout,    {.i = +1 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
