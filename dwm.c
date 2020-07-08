@@ -268,7 +268,7 @@ static void setnumdesktops(void);
 static void setviewport(void);
 static void updatecurrentdesktop(void);
 static void togglefullscr(const Arg *arg);
-
+static int drawstatusbar(Monitor *m, int bh, char* text);
 
 /* variables */
 static const char broken[] = "broken";
