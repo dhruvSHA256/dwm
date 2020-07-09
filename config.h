@@ -1,13 +1,14 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx  = 2;        /* border pixel of windows */
+static const unsigned int borderpx  = 5;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int swallowfloating    = 1;        /* 1 means swallow floating windows by default */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int user_bh            = 30;        /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
-static const char *fonts[]          = { "JetBrainsMono Nerd Font:pixelsize=12:antialias=true:autohint=true","JoyPixels:pixelsize=12:antialias=true:autohint=true" };
+static const int statuspad	    = 15;
+static const char *fonts[]          = { "JetBrainsMono Nerd Font:pixelsize=14:antialias=true:autohint=true","JoyPixels:pixelsize=14:antialias=true:autohint=true" };
 static const char dmenufont[]       = { "JetBrainsMono Nerd Font:pixelsize=16:antialias=true:autohint=true" };
 static const unsigned int gappih    = 10;       /* horiz inner gap between windows */
 static const unsigned int gappiv    = 10;       /* vert inner gap between windows */
@@ -32,7 +33,7 @@ static const char *colors[][3]      = {
     [SchemeInfoNorm]  = { col_gray4, col_gray1,  "#000000"  }, // infobar middle  unselected {text,background,not used but cannot be empty}
 };
 static const char *const autostart[] = {
-//	"st", NULL,
+	//"dwmblocks", NULL,
 	NULL /* terminate */
 };
 
@@ -53,7 +54,7 @@ static const Rule rules[] = {
 	{ NULL,      NULL,     "Event Tester", 0,         1,          0,           1,        -1 }, /* xev */
 	{ "Thunar",  NULL,     NULL,           1 << 5 ,   0,          0,          -1,        -1 },
 	{ "code-oss",NULL,     NULL,           1 << 2,    0,          0,          -1,        -1 },
-	{ "jetbrains-studio",  NULL,     NULL,           1 << 5,         0,          0,           -1,        -1 },
+	{ "jetbrains-studio",  NULL,     NULL,           1 << 4,         0,          0,           -1,        -1 },
 };
 
 #include "fibonacci.c"
@@ -64,11 +65,11 @@ static const int resizehints = 1;    /* 1 means respect size hints in tiled resi
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
-	{ "[M]",      monocle },
-	{ "[\\]",     dwindle }, // fibonacci dwindle
-	{ "(@)",      spiral }, // fibonacci spiral
+	{ " [] ",      tile },    /* first entry is default */
+	{ " <> ",      NULL },    /* no layout function means floating behavior */
+	{ " [M] ",      monocle },
+	{ " [\] ",     dwindle }, // fibonacci dwindle
+	{ " (@) ",      spiral }, // fibonacci spiral
 	{ NULL,       NULL },
 };
 
