@@ -8,7 +8,7 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int user_bh            = 30;        /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
 static const int statuspad	    = 15;
-static const char *fonts[]          = { "JetBrainsMono Nerd Font:pixelsize=14:antialias=true:autohint=true","JoyPixels:pixelsize=14:antialias=true:autohint=true" };
+static const char *fonts[]          = { "JetBrainsMono Nerd Font:pixelsize=14:antialias=true:autohint=true","Twitter Color Emoji:style=Regular"};
 static const char dmenufont[]       = { "JetBrainsMono Nerd Font:pixelsize=16:antialias=true:autohint=true" };
 static const unsigned int gappih    = 10;       /* horiz inner gap between windows */
 static const unsigned int gappiv    = 10;       /* vert inner gap between windows */
@@ -57,7 +57,16 @@ static const Rule rules[] = {
 	{ "jetbrains-studio",  NULL,     NULL,           1 << 4,         0,          0,           -1,        -1 },
 };
 
-#include "fibonacci.c"
+#include "layouts/fibonacci.c"
+#include "layouts/bstack.c"
+#include "layouts/deck.c"
+#include "layouts/columns.c"
+#include "layouts/gapplessgrid.c"
+#include "layouts/centeredfloatingmaster.c"
+#include "layouts/centeredmaster.c"
+#include "layouts/grid.c"
+#include "layouts/horizgrid.c"
+
 /* layout(s) */
 static const float mfact     = 0.50; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
@@ -70,6 +79,14 @@ static const Layout layouts[] = {
 	{ " [M] ",      monocle },
 	{ " [\] ",     dwindle }, // fibonacci dwindle
 	{ " (@) ",      spiral }, // fibonacci spiral
+	{ "TTT",      bstack},
+	{"|M|",      centeredmaster}, 
+	{ "[D]",      deck},
+	{ ":::",      gaplessgrid},
+	{ ">M>",      centeredfloatingmaster },
+	{ "HHH",      grid },
+	{ "---",      horizgrid },
+	{ "|||",      col },
 	{ NULL,       NULL },
 };
 
