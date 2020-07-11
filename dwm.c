@@ -140,6 +140,7 @@ struct Monitor {
 };
 
 typedef struct {
+	//const int  status_title;
 	const char *class;
 	const char *instance;
 	const char *title;
@@ -268,7 +269,7 @@ static void setnumdesktops(void);
 static void setviewport(void);
 static void updatecurrentdesktop(void);
 static void togglefullscr(const Arg *arg);
-
+static void cycleview(const Arg *arg);
 /* variables */
 static const char broken[] = "broken";
 static char stext[1024];
@@ -1224,7 +1225,8 @@ manage(Window w, XWindowAttributes *wa)
 	/* only fix client y-offset, if the client center might cover the bar */
 	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
 		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
-	c->bw = borderpx;
+	
+	c->bw = (c->isterminal)?borderpx:0;
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -2091,6 +2093,26 @@ toggleview(const Arg *arg)
 	updatecurrentdesktop();
 }
 
+void 
+cycleview(const Arg *arg)
+{
+
+		unsigned int currtag = selmon->tagset[selmon->seltags];
+		if(arg->i == 1)
+		{
+			selmon->tagset[selmon->seltags]*=2;
+			if(currtag > 1<<7) selmon->tagset[selmon->seltags]=1<<0;
+		}
+		if(arg->i == 0)
+		{
+			selmon->tagset[selmon->seltags]/=2;
+			if(currtag <=1) selmon->tagset[selmon->seltags]=1<<8;
+		}
+		focus(NULL);
+		arrange(selmon);
+		updatecurrentdesktop();
+}
+
 void
 unfocus(Client *c, int setfocus)
 {
@@ -2405,6 +2427,8 @@ view(const Arg *arg)
 	arrange(selmon);
 	updatecurrentdesktop();
 }
+
+
 
 pid_t
 winpid(Window w)
