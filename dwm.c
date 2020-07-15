@@ -137,6 +137,7 @@ struct Monitor {
 	Monitor *next;
 	Window barwin;
 	const Layout *lt[2];
+	unsigned int alttag;
 };
 
 typedef struct {
@@ -271,6 +272,7 @@ static void setviewport(void);
 static void updatecurrentdesktop(void);
 static void togglefullscr(const Arg *arg);
 static void cycleview(const Arg *arg);
+static void togglealttag();
 /* variables */
 static const char broken[] = "broken";
 static char stext[1024];
@@ -868,7 +870,7 @@ dirtomon(int dir)
 void
 drawbar(Monitor *m)
 {
-	int x, w, tw = 0;
+	int x, w, wdelta, tw = 0;
 	int ft=1;
 	int boxs = drw->fonts->h / 9;
 	int boxw = drw->fonts->h / 6 + 2;
@@ -896,9 +898,9 @@ drawbar(Monitor *m)
 		continue;
 		
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeTagsSel : SchemeTagsNorm]);
-
+			wdelta = selmon->alttag ? abs(TEXTW(tags[i]) - TEXTW(tagsalt[i])) / 2 : 0;
 			w=TEXTW(tags[i]);
-			drw_text(drw, x, 0, w, bh, lrpad/2, tags[i], urg & 1 << i);
+			drw_text(drw, x, 0, w, bh, wdelta + lrpad / 2, (selmon->alttag ? tagsalt[i] : tags[i]), urg & 1 << i);
 
 		x += w;
 	}
@@ -2626,6 +2628,14 @@ zoom(const Arg *arg)
 			return;
 	pop(c);
 }
+
+void
+togglealttag()
+{
+	selmon->alttag = !selmon->alttag;
+	drawbar(selmon);
+}
+
 
 void
 setcurrentdesktop(void){
