@@ -2100,14 +2100,17 @@ cycleview(const Arg *arg)
 		unsigned int currtag = selmon->tagset[selmon->seltags];
 		if(arg->i == 1)
 		{
-			selmon->tagset[selmon->seltags]*=2;
-			if(currtag > 1<<7) selmon->tagset[selmon->seltags]=1<<0;
+        selmon->tagset[selmon->seltags]*=2;
+			  if(currtag > 1<<7) selmon->tagset[selmon->seltags]=1<<0;
+        
 		}
+
 		if(arg->i == 0)
 		{
 			selmon->tagset[selmon->seltags]/=2;
 			if(currtag <=1) selmon->tagset[selmon->seltags]=1<<8;
-		}
+		
+    }
 		focus(NULL);
 		arrange(selmon);
 		updatecurrentdesktop();

@@ -33,12 +33,17 @@ static const char *colors[][3]      = {
     [SchemeInfoNorm]  = { col_gray4, col_gray1,  "#000000"  }, // infobar middle  unselected {text,background,not used but cannot be empty}
 };
 static const char *const autostart[] = {
-	NULL /* terminate */
+  //"picom --experimental-backends --config /home/pixie/.config/picom/picom.conf", NULL,
+"xsetroot -name ''",NULL  ,
+"dwmblocks &",NULL  ,
+"xsetroot -name ''",NULL , 
+"dwmblocks &",NULL  ,
+  NULL /* terminate */
 };
 
 /* tagging */
 //static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-static char *tags[] = { "1:", "2:", "3:" , "4:", "5:" , "6:" , "7:  " , "8:ﯙ" , "9:漣" };
+static char *tags[] = { "1:", "2:", "3:" , "4:", "5:" , "6:" , "7:" , "8:" , "9:漣" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -57,7 +62,10 @@ static const Rule rules[] = {
 	{ "VSCodium",							NULL,     NULL,         	1 << 2,    0,          0,          -1,        -1 },
 	{ "jetbrains-studio",					NULL,     NULL,				1 << 4,	   0,		   0,		   -1,        -1 },
 	{ "Microsoft Teams - Preview",			NULL,     NULL,				0,         1,          0,          -1,        -1 },
-	{ "Genymotion Player",					NULL,     NULL,				0,         1,          0,          -1,        -1 },
+	{ "Genymotion Player",					NULL,     NULL,				1 << 4,         1,          0,          -1,        -1 },
+	{ "Genymotion",					NULL,     NULL,				1 << 4,         1,          0,          -1,        -1 },
+	{ "Microsoft Teams - Preview",					NULL,     NULL,				1 << 6,         1,          0,          -1,        -1 },
+	{ "Thunderbird" ,NULL,     NULL,				1 << 6,         0,          0,          -1,        -1 },
 };
 
 #include "layouts/fibonacci.c"
@@ -97,9 +105,9 @@ static const Layout layouts[] = {
 #define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
-	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
+	{ Mod1Mask,                     KEY,      toggleview,     {.ui = 1 << TAG} }, \
 	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
-	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
+	{ Mod1Mask|ShiftMask,           KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
