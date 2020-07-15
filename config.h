@@ -50,22 +50,22 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class	     						instance  title        		tags mask  isfloating  isterminal  noswallow  monitor */
-	{ "Gimp",								NULL,     NULL,				0,         1,          0,           0,        -1 },
-	{ "firefox",							NULL,     "Firefox",			1 << 1,    0,          0,          -1,        -1 },
-	{ "Chromium",							NULL,     NULL,				1 << 1,    0,          0,          -1,        -1 },
-	{ "TelegramDesktop",					NULL,     NULL,				1 << 6,    0,          0,          -1,        -1 },
-	{ "St",									NULL,     NULL,				0,         0,          1,           0,        -1 },
-	{ NULL,									NULL,     "Event Tester", 	0,         1,          0,           1,        -1 }, /* xev */
-	{ "Thunar",								NULL,     NULL,           	1 << 5 ,   0,          0,          -1,        -1 },
-	{ "code-oss",							NULL,     NULL,          	1 << 2,    0,          0,          -1,        -1 },
-	{ "VSCodium",							NULL,     NULL,         	1 << 2,    0,          0,          -1,        -1 },
-	{ "jetbrains-studio",					NULL,     NULL,				1 << 4,	   0,		   0,		   -1,        -1 },
-	{ "Microsoft Teams - Preview",			NULL,     NULL,				0,         1,          0,          -1,        -1 },
-	{ "Genymotion Player",					NULL,     NULL,				1 << 4,         1,          0,          -1,        -1 },
-	{ "Genymotion",					NULL,     NULL,				1 << 4,         1,          0,          -1,        -1 },
-	{ "Microsoft Teams - Preview",					NULL,     NULL,				1 << 6,         1,          0,          -1,        -1 },
-	{ "Thunderbird" ,NULL,     NULL,				1 << 6,         0,          0,          -1,        -1 },
+	/* class	     						instance  title        		tags mask  isfloating  isterminal  noswallow 	isfakefullscreen	 monitor */
+	{ "Gimp",								NULL,     NULL,				0,         1,          0,           0,       		0,	 				-1 },
+	{ "firefox",							NULL,     "Firefox",		1 << 1,    0,          0,          -1,       		0,	 				-1 },
+	{ "Chromium",							NULL,     NULL,				1 << 1,    0,          0,          -1,       		0,	 				-1 },
+	{ "TelegramDesktop",					NULL,     NULL,				1 << 6,    0,          0,          -1,       		0,	 				-1 },
+	{ "St",									NULL,     NULL,				0,         0,          1,           0,       		0,	 				-1 },
+	{ NULL,									NULL,     "Event Tester", 	0,         1,          0,           1,       		0,	 				-1 }, /* xev */
+	{ "Thunar",								NULL,     NULL,           	1 << 5 ,   0,          0,          -1,       		0,	 				-1 },
+	{ "code-oss",							NULL,     NULL,          	1 << 2,    0,          0,          -1,       		0,	 				-1 },
+	{ "VSCodium",							NULL,     NULL,         	1 << 2,    0,          0,          -1,       		0,	 				-1 },
+	{ "jetbrains-studio",					NULL,     NULL,				1 << 4,	   0,		   0,		   -1,       		0,	 				-1 },
+	{ "Microsoft Teams - Preview",			NULL,     NULL,				0,         1,          0,          -1,       		0,	 				-1 },
+	{ "Genymotion Player",					NULL,     NULL,				1 << 4,    1,          0,          -1,       		0,	 				-1 },
+	{ "Genymotion",							NULL,     NULL,				1 << 4,    1,          0,          -1,       		0,	 				-1 },
+	{ "Microsoft Teams - Preview",			NULL,     NULL,				1 << 6,    1,          0,          -1,       		0,	 				-1 },
+	{ "Thunderbird",						NULL,     NULL,				1 << 6,    0,          0,          -1,       		0,	 				-1 },
 };
 
 #include "layouts/fibonacci.c"
