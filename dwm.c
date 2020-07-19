@@ -321,8 +321,6 @@ static size_t autostart_len;
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
-#include "layouts/layout_facts.h"
-
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
@@ -2110,20 +2108,53 @@ void
 cycleview(const Arg *arg)
 {
 
-		unsigned int currtag = selmon->tagset[selmon->seltags];
-		if(arg->i == 1)
+		unsigned int j , currtag = selmon->tagset[selmon->seltags],occ=0;
+		Client *c;
+
+        FILE *filepp ; filepp = fopen("/home/pixie/.config/dwm/dwm.log", "w");
+
+		for (c = selmon->clients; c; c = c->next)
+			occ |= c->tags == 255 ? 0 : c->tags;
+        
+        fprintf(filepp,"%i",occ); 
+        if(arg->i == 1)
 		{
         selmon->tagset[selmon->seltags]*=2;
 			  if(currtag > 1<<7) selmon->tagset[selmon->seltags]=1<<0;
-        
 		}
 
 		if(arg->i == 0)
 		{
 			selmon->tagset[selmon->seltags]/=2;
 			if(currtag <=1) selmon->tagset[selmon->seltags]=1<<8;
-		
+        }
+
+    if(arg->i == 3)
+    {
+    	for (j = selmon->tagset[selmon->seltags]*2 ; j <= 1<<8; j*=2) {
+		    if (occ & j){ 
+                selmon->tagset[selmon->seltags] = j;
+                break;
+            }
+            else{
+	           continue;
+            }
+	    }
     }
+
+   if(arg->i == 4)
+    {
+    	for (j = selmon->tagset[selmon->seltags]/2 ; j >  0; j/=2) {
+		    if (occ & j){ 
+                selmon->tagset[selmon->seltags] = j;
+                break;
+            }
+            else{
+	           continue;
+            }
+	}
+ }
+        fclose(filepp);
 		focus(NULL);
 		arrange(selmon);
 		updatecurrentdesktop();

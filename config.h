@@ -15,8 +15,8 @@ static const unsigned int gappiv    = 15;       /* vert inner gap between window
 static const unsigned int gappoh    = 15;       /* horiz outer gap between windows and screen edge */
 static const unsigned int gappov    = 15;       /* vert outer gap between windows and screen edge */
 static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
-static const int vertpad            = 5;       /* vertical padding of bar */
-static const int sidepad            = 5;       /* horizontal padding of bar */
+static const int vertpad            = 0;       /* vertical padding of bar */
+static const int sidepad            = 0;       /* horizontal padding of bar */
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -34,16 +34,17 @@ static const char *colors[][3]      = {
 };
 static const char *const autostart[] = {
   //"picom --experimental-backends --config /home/pixie/.config/picom/picom.conf", NULL,
-"xsetroot -name ''",NULL  ,
-"dwmblocks &",NULL  ,
-"xsetroot -name ''",NULL , 
-"dwmblocks &",NULL  ,
+//"xsetroot -name ''",NULL  ,
+//"dwmblocks &",NULL  ,
+//"xsetroot -name ''",NULL , 
+//"dwmblocks &",NULL  ,
   NULL /* terminate */
 };
 
 /* tagging */
 //static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-static char *tags[] = { "1:", "2:", "3:" , "4:", "5:" , "6:" , "7:" , "8:" , "9:漣" };
+//static char *tags[] = { "1:", "2:", "3:" , "4:", "5:" , "6:" , "7:" , "8:" , "9:漣" };
+static char *tags[] = { "", "", "" , "", "" , "" , "" , "" , "漣" };
 static const char *tagsalt[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
  
 
@@ -125,9 +126,7 @@ static Key keys[] = {
 	//{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_Down,     focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_Up,   focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
@@ -182,9 +181,11 @@ static Key keys[] = {
 //	{ MODKEY|Mod1Mask,              XK_o,      incrohgaps,     {.i = -1 } },
 //	{ MODKEY|ShiftMask,             XK_y,      incrovgaps,     {.i = +1 } },
 //	{ MODKEY|ShiftMask,             XK_o,      incrovgaps,     {.i = -1 } },
-	{ MODKEY,             		XK_Tab,      cycleview,     {.i=1} },
-	{ MODKEY|ShiftMask,           XK_Tab,      cycleview,     {.i=0} },
-	{ MODKEY|ControlMask,		XK_comma,  cyclelayout,    {.i = -1 } },
+	{ MODKEY,                 		XK_Tab,      cycleview,     {.i=3} },
+	{ MODKEY|ShiftMask,             XK_Tab,      cycleview,     {.i=4} },
+//	{ ControlMask,           XK_Tab,      cycleview,     {.i=3} },
+//	{ ControlMask|ShiftMask,           XK_Tab,      cycleview,     {.i=4} },
+	{ MODKEY|ControlMask,	    	XK_comma,  cyclelayout,    {.i = -1 } },
 	{ MODKEY|ControlMask,           XK_period, cyclelayout,    {.i = +1 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
