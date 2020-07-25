@@ -8,29 +8,30 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int user_bh            = 30;        /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
 static const int statuspad	    = 15;
-static const char *fonts[]          = { "JetBrainsMono Nerd Font Mono:style=Regular:pixelsize=12:antialias=true:autohint=true","JoyPixels:pixelsize=10:style=Regular:antialias=true:autohint=true"};
-static const char dmenufont[]       = { "JetBrainsMono Nerd Font:pixelsize=16:antialias=true:autohint=true" };
+//static const char *fonts[]          = {"Source Code Pro:style=Regular:pixelsize=12:antialias=true:autohint=true","Symbols Nerd Font:style=2048-em"};
+static const char *fonts[]          = {"JetBrains Mono NL:style=Regular:size=9:antialias=true:autohint=true","Symbols Nerd Font:style=2048-em"};
+static const char dmenufont[]       = { "JetBrains Mono NL:style=Regular:size=9:antialias=true:autohint=true" };
 static const unsigned int gappih    = 15;       /* horiz inner gap between windows */
 static const unsigned int gappiv    = 15;       /* vert inner gap between windows */
 static const unsigned int gappoh    = 15;       /* horiz outer gap between windows and screen edge */
 static const unsigned int gappov    = 15;       /* vert outer gap between windows and screen edge */
 static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
-static const int vertpad            = 3;       /* vertical padding of bar */
-static const int sidepad            = 3;       /* horizontal padding of bar */
+static const int vertpad            = 0;       /* vertical padding of bar */
+static const int sidepad            = 0;       /* horizontal padding of bar */
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
 static const char col_gray4[]       = "#eeeeee";
 static const char col_cyan[]        = "#005577";
 static const char *colors[][3]      = {
-	/*               fg         bg         border   */
-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_gray1,  col_gray3  },
-	[SchemeStatus]  = { col_gray4, col_gray1,  "#000000"  }, // Statusbar right {text,background,not used but cannot be empty}
-	[SchemeTagsSel]  = { col_gray4, col_gray1,  "#000000"  }, // Tagbar left selected {text,background,not used but cannot be empty}
-    [SchemeTagsNorm]  = { col_gray3, col_gray1,  "#000000"  }, // Tagbar left unselected {text,background,not used but cannot be empty}
-    [SchemeInfoSel]  = { col_gray4, col_gray1,  "#000000"  }, // infobar middle  selected {text,background,not used but cannot be empty}
-    [SchemeInfoNorm]  = { col_gray4, col_gray1,  "#000000"  }, // infobar middle  unselected {text,background,not used but cannot be empty}
+	/*                          fg           bg        border   */
+  	[SchemeNorm]        = { col_gray3, col_gray1,  col_gray2 },
+  	[SchemeSel]         = { col_gray4, col_gray1,  col_gray3  },
+  	[SchemeStatus]      = { "#ffffff", col_gray1,  "#000000"  }, // Statusbar right {text,background,not used but cannot be empty}
+  	[SchemeTagsSel]     = { "#ffffff", col_gray1,  "#000000"  }, // Tagbar left selected {text,background,not used but cannot be empty}
+    [SchemeTagsNorm]    = { "#888888", col_gray1,  "#000000"  }, // Tagbar left unselected {text,background,not used but cannot be empty}
+    [SchemeInfoSel]     = { col_gray4, col_gray1,  "#000000"  }, // infobar middle  selected {text,background,not used but cannot be empty}
+    [SchemeInfoNorm]    = { col_gray4, col_gray1,  "#000000"  }, // infobar middle  unselected {text,background,not used but cannot be empty}
 };
 static const char *const autostart[] = {
   //"picom --experimental-backends --config /home/pixie/.config/picom/picom.conf", NULL,
@@ -44,7 +45,7 @@ static const char *const autostart[] = {
 /* tagging */
 //static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 //static char *tags[] = { "1:", "2:", "3:" , "4:", "5:" , "6:" , "7:" , "8:" , "9:漣" };
-static char *tags[] = { "", "", "" , "", "" , "" , "" , "" , "漣" };
+static char *tags[] =          { "", "", "", "", "", "", "", "", "" };
 static const char *tagsalt[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
  
 
@@ -53,22 +54,21 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class	     						instance  title        		tags mask  isfloating  isterminal  noswallow 	isfakefullscreen	 monitor */
-	{ "Gimp",								NULL,     NULL,				0,         1,          0,           0,       		0,	 				-1 },
-	{ "firefox",							NULL,     "Firefox",		1 << 1,    0,          0,          -1,       		0,	 				-1 },
-	{ "Chromium",							NULL,     NULL,				1 << 1,    0,          0,          -1,       		0,	 				-1 },
-	{ "TelegramDesktop",					NULL,     NULL,				1 << 6,    0,          0,          -1,       		0,	 				-1 },
-	{ "St",									NULL,     NULL,				0,         0,          1,           0,       		0,	 				-1 },
-	{ NULL,									NULL,     "Event Tester", 	0,         1,          0,           1,       		0,	 				-1 }, /* xev */
-	{ "Thunar",								NULL,     NULL,           	1 << 5 ,   0,          0,          -1,       		0,	 				-1 },
-	{ "code-oss",							NULL,     NULL,          	1 << 2,    0,          0,          -1,       		0,	 				-1 },
-	{ "VSCodium",							NULL,     NULL,         	1 << 2,    0,          0,          -1,       		0,	 				-1 },
-	{ "jetbrains-studio",					NULL,     NULL,				1 << 4,	   0,		   0,		   -1,       		0,	 				-1 },
-	{ "Microsoft Teams - Preview",			NULL,     NULL,				0,         1,          0,          -1,       		0,	 				-1 },
-	{ "Genymotion Player",					NULL,     NULL,				1 << 4,    1,          0,          -1,       		0,	 				-1 },
-	{ "Genymotion",							NULL,     NULL,				1 << 4,    1,          0,          -1,       		0,	 				-1 },
-	{ "Microsoft Teams - Preview",			NULL,     NULL,				1 << 6,    1,          0,          -1,       		0,	 				-1 },
-	{ "Thunderbird",						NULL,     NULL,				1 << 6,    0,          0,          -1,       		0,	 				-1 },
+	/* class	     						          instance  title        	tags mask  isfloating  isterminal  noswallow 	isfakefullscreen	 monitor */
+	{ "Gimp",							  	          NULL,     NULL,				        0,         1,          0,           0,       		0,	 				-1 },
+	{ "firefox",							          NULL,     "Firefox",		      1 << 1,    0,          0,          -1,       		0,	 				-1 },
+	{ "Chromium",							          NULL,     NULL,				        1 << 1,    0,          0,          -1,       		0,	 				-1 },
+	{ "TelegramDesktop",					      NULL,     NULL,				        1 << 7,    0,          0,          -1,       		0,	 				-1 },
+	{ "St",									            NULL,     NULL,				        0,         0,          1,           0,       		0,	 				-1 },
+	{ NULL,									            NULL,     "Event Tester", 	  0,         1,          0,           1,       		0,	 				-1 }, /* xev */
+	{ "Thunar",								          NULL,     NULL,           	  1 << 5 ,   0,          0,          -1,       		0,	 				-1 },
+	{ "code-oss",							          NULL,     NULL,          	    1 << 2,    0,          0,          -1,       		0,	 				-1 },
+	{ "VSCodium",							          NULL,     NULL,         	    1 << 2,    0,          0,          -1,       		0,	 				-1 },
+	{ "jetbrains-studio",					      NULL,     NULL,				        1 << 4,	   0,		   0,		   -1,       		0,	 				-1 },
+	{ "Genymotion Player",					    NULL,     NULL,				        1 << 4,    1,          0,          -1,       		0,	 				-1 },
+	{ "Genymotion",					        		NULL,     NULL,				        1 << 4,    1,          0,          -1,       		0,	 				-1 },
+	{ "Microsoft Teams - Preview",			NULL,     NULL,				        1 << 6,    1,          0,          -1,       		0,	 				-1 },
+	{ "Thunderbird",						        NULL,     NULL,				        1 << 6,    0,          0,          -1,       		0,	 				-1 },
 };
 
 #include "layouts/fibonacci.c"
@@ -88,20 +88,34 @@ static const int resizehints = 1;    /* 1 means respect size hints in tiled resi
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ " (@) ",      spiral }, // fibonacci spiral
-	{ " [] ",      tile },    /* first entry is default */
-	{ " <> ",      NULL },    /* no layout function means floating behavior */
-	{ " [M] ",      monocle },
-	{ " [/\] ",     dwindle }, // fibonacci dwindle
-	{ "TTT",      bstack},
-	{"|M|",      centeredmaster}, 
-	{ "[D]",      deck},
-	{ ":::",      gaplessgrid},
-	{ ">M>",      centeredfloatingmaster },
-	{ "HHH",      grid },
-	{ "---",      horizgrid },
-	{ "|||",      col },
+	{ "",      spiral }, // fibonacci spiral
+	{ "",      tile },    /* first entry is default */
+	{ "",      NULL },    /* no layout function means floating behavior */
+	{ "",      monocle },
+	{ "",     dwindle }, // fibonacci dwindle
+	{ "",      bstack},
+	{"",      centeredmaster}, 
+	{ "",      deck},
+	{ "",      gaplessgrid},
+	{ "",      centeredfloatingmaster },
+	{ "",      grid },
+	{ "",      horizgrid },
+	{ "",      col },
 	{ NULL,       NULL },
+	//{ " (@) ",      spiral }, // fibonacci spiral
+	//{ " [] ",      tile },    /* first entry is default */
+	//{ " <> ",      NULL },    /* no layout function means floating behavior */
+	//{ " [M] ",      monocle },
+	//{ " [/\] ",     dwindle }, // fibonacci dwindle
+	//{ "TTT",      bstack},
+	//{"|M|",      centeredmaster}, 
+	//{ "[D]",      deck},
+	//{ ":::",      gaplessgrid},
+	//{ ">M>",      centeredfloatingmaster },
+	//{ "HHH",      grid },
+	//{ "---",      horizgrid },
+	//{ "|||",      col },
+	//{ NULL,       NULL },
 };
 
 /* key definitions */
@@ -179,8 +193,10 @@ static Key keys[] = {
 //	{ MODKEY|Mod1Mask,              XK_o,      incrohgaps,     {.i = -1 } },
 //	{ MODKEY|ShiftMask,             XK_y,      incrovgaps,     {.i = +1 } },
 //	{ MODKEY|ShiftMask,             XK_o,      incrovgaps,     {.i = -1 } },
-	{ MODKEY,                 		XK_Tab,      cycleview,     {.i=3} },
-	{ MODKEY|ShiftMask,             XK_Tab,      cycleview,     {.i=4} },
+	{ MODKEY,                 		XK_Tab,      cycleview,     {.i=1} },
+	{ MODKEY|ShiftMask,             XK_Tab,      cycleview,     {.i=0} },
+	{ MODKEY|ShiftMask,             XK_h,      cycleview,     {.i=4} },
+	{ MODKEY|ShiftMask,             XK_l,      cycleview,     {.i=3} },
 //	{ ControlMask,           XK_Tab,      cycleview,     {.i=3} },
 //	{ ControlMask|ShiftMask,           XK_Tab,      cycleview,     {.i=4} },
 	{ MODKEY|ControlMask,	    	XK_comma,  cyclelayout,    {.i = -1 } },
