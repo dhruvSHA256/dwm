@@ -1231,9 +1231,10 @@ manage(Window w, XWindowAttributes *wa)
 	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
 		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
 	
-	c->bw = (c->isterminal)?borderpx:0;
-
-	wc.border_width = c->bw;
+//	c->bw = (c->isterminal)?borderpx:0; // only set border for terminals
+	c->bw = borderpx; // only set border for terminals
+	
+  wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
 	XSetWindowBorder(dpy, w, scheme[SchemeNorm][ColBorder].pixel);
 	configure(c); /* propagates border_width, if size doesn't change */
