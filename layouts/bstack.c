@@ -1,18 +1,13 @@
-
 static void bstack(Monitor *m) {
   unsigned int i, n;
   int mx = 0, my = 0, mh = 0, mw = 0;
   int sx = 0, sy = 0, sh = 0, sw = 0;
   float mfacts, sfacts;
-  int mtotal = 0, stotal = 0;
   int mrest, srest;
   Client *c;
 
   int oh, ov, ih, iv;
-  oh = m->gappoh;
-  ov = m->gappov;
-  ih = m->gappih;
-  iv = m->gappiv;
+  getgaps(m, &oh, &ov, &ih, &iv, &n);
 
   if (n == 0) return;
 
@@ -41,9 +36,7 @@ static void bstack(Monitor *m) {
       resize(c, mx, my, (mw / mfacts) + (i < mrest ? 1 : 0) - (2 * c->bw),
              mh - (2 * c->bw), 0);
 #endif  // CFACTS_PATCH
-
       mx += WIDTH(c) + iv;
-
     } else {
 #if CFACTS_PATCH
       resize(c, sx, sy,
@@ -55,7 +48,6 @@ static void bstack(Monitor *m) {
              (sw / sfacts) + ((i - m->nmaster) < srest ? 1 : 0) - (2 * c->bw),
              sh - (2 * c->bw), 0);
 #endif  // CFACTS_PATCH
-
       sx += WIDTH(c) + iv;
     }
   }
