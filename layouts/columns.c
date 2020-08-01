@@ -29,26 +29,15 @@ static void col(Monitor *m) {
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
     if (i < m->nmaster) {
-#if CFACTS_PATCH
       resize(c, mx, my,
              (mw / mfacts) * c->cfact + (i < mrest ? 1 : 0) - (2 * c->bw),
              mh - (2 * c->bw), 0);
-#else
-      resize(c, mx, my, (mw / mfacts) + (i < mrest ? 1 : 0) - (2 * c->bw),
-             mh - (2 * c->bw), 0);
-#endif // CFACTS_PATCH
       mx += WIDTH(c) + iv;
     } else {
-#if CFACTS_PATCH
       resize(c, sx, sy, sw - (2 * c->bw),
              (sh / sfacts) * c->cfact + ((i - m->nmaster) < srest ? 1 : 0) -
                  (2 * c->bw),
              0);
-#else
-      resize(c, sx, sy, sw - (2 * c->bw),
-             (sh / sfacts) + ((i - m->nmaster) < srest ? 1 : 0) - (2 * c->bw),
-             0);
-#endif // CFACTS_PATCH
       sy += HEIGHT(c) + ih;
     }
 }

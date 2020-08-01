@@ -42,8 +42,7 @@ void centeredmaster(Monitor *m) {
     ry = m->wy + oh;
   }
 
-/* calculate facts */
-#if CFACTS_PATCH
+  /* calculate facts */
   for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) {
     if (!m->nmaster || n < m->nmaster)
       mfacts += c->cfact; // total factor of master area
@@ -60,67 +59,29 @@ void centeredmaster(Monitor *m) {
       ltotal += lh * (c->cfact / lfacts);
     else
       rtotal += rh * (c->cfact / rfacts);
-#else
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) {
-    if (!m->nmaster || n < m->nmaster)
-      mfacts += 1;
-    else if ((n - m->nmaster) % 2)
-      lfacts += 1; // total factor of left hand stack area
-    else
-      rfacts += 1; // total factor of right hand stack area
-  }
-
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
-    if (!m->nmaster || n < m->nmaster)
-      mtotal += mh / mfacts;
-    else if ((n - m->nmaster) % 2)
-      ltotal += lh / lfacts;
-    else
-      rtotal += rh / rfacts;
-#endif // CFACTS_PATCH
-
   mrest = mh - mtotal;
   lrest = lh - ltotal;
   rrest = rh - rtotal;
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (!m->nmaster || i < m->nmaster) {
-/* nmaster clients are stacked vertically, in the center of the screen */
-#if CFACTS_PATCH
+      /* nmaster clients are stacked vertically, in the center of the screen */
       resize(c, mx, my, mw - (2 * c->bw),
              (mh / mfacts) * c->cfact + (i < mrest ? 1 : 0) - (2 * c->bw), 0);
-#else
-      resize(c, mx, my, mw - (2 * c->bw),
-             (mh / mfacts) + (i < mrest ? 1 : 0) - (2 * c->bw), 0);
-#endif // CFACTS_PATCH
       my += HEIGHT(c) + ih;
     } else {
       /* stack clients are stacked vertically */
       if ((i - m->nmaster) % 2) {
-#if CFACTS_PATCH
         resize(c, lx, ly, lw - (2 * c->bw),
                (lh / lfacts) * c->cfact +
                    ((i - 2 * m->nmaster) < 2 * lrest ? 1 : 0) - (2 * c->bw),
                0);
-#else
-        resize(c, lx, ly, lw - (2 * c->bw),
-               (lh / lfacts) + ((i - 2 * m->nmaster) < 2 * lrest ? 1 : 0) -
-                   (2 * c->bw),
-               0);
-#endif // CFACTS_PATCH
         ly += HEIGHT(c) + ih;
       } else {
-#if CFACTS_PATCH
         resize(c, rx, ry, rw - (2 * c->bw),
                (rh / rfacts) * c->cfact +
                    ((i - 2 * m->nmaster) < 2 * rrest ? 1 : 0) - (2 * c->bw),
                0);
-#else
-        resize(c, rx, ry, rw - (2 * c->bw),
-               (rh / rfacts) + ((i - 2 * m->nmaster) < 2 * rrest ? 1 : 0) -
-                   (2 * c->bw),
-               0);
-#endif // CFACTS_PATCH
         ry += HEIGHT(c) + ih;
       }
     }

@@ -6,11 +6,12 @@ void centeredfloatingmaster(Monitor *m) {
   int sx = 0, sy = 0, sh = 0, sw = 0;
   Client *c;
 
-  float mivf = 1.0;  // master inner vertical gap factor
+  float mivf = 1.0; // master inner vertical gap factor
   int oh, ov, ih, iv;
   getgaps(m, &oh, &ov, &ih, &iv, &n);
 
-  if (n == 0) return;
+  if (n == 0)
+    return;
 
   sx = mx = m->wx + ov;
   sy = my = m->wy + oh;

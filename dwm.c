@@ -126,6 +126,7 @@ typedef struct Monitor Monitor;
 typedef struct Client Client;
 struct Client {
   char name[256];
+  float cfact;
   float mina, maxa;
   int x, y, w, h;
   int oldx, oldy, oldw, oldh;
@@ -261,6 +262,7 @@ static void getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv,
 static void incrgaps(const Arg *arg);
 static void getfacts(Monitor *m, int msize, int ssize, float *mf, float *sf,
                      int *mr, int *sr);
+static void setcfact(const Arg *arg);
 static void incrigaps(const Arg *arg);
 static void incrogaps(const Arg *arg);
 static void incrohgaps(const Arg *arg);
@@ -1143,7 +1145,7 @@ void manage(Window w, XWindowAttributes *wa) {
   c->w = c->oldw = wa->width;
   c->h = c->oldh = wa->height;
   c->oldbw = wa->border_width;
-
+  c->cfact = 1.0;
   updatetitle(c);
   if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
     c->mon = t->mon;
@@ -1643,6 +1645,28 @@ void getfacts(Monitor *m, int msize, int ssize, float *mf, float *sf, int *mr,
   *sr = ssize -
         stotal;  // the remainder (rest) of pixels after an even stack split
 }
+
+void setcfact(const Arg *arg) {
+  float f;
+  Client *c;
+
+  c = selmon->sel;
+
+  if (!arg || !c || !selmon->lt[selmon->sellt]->arrange) return;
+  if (!arg->f)
+    f = 1.0;
+  else if (arg->f > 4.0)  // set fact absolutely
+    f = arg->f - 4.0;
+  else
+    f = arg->f + c->cfact;
+  if (f < 0.25)
+    f = 0.25;
+  else if (f > 4.0)
+    f = 4.0;
+  c->cfact = f;
+  arrange(selmon);
+}
+
 void togglegaps(const Arg *arg) {
   enablegaps = !enablegaps;
   arrange(selmon);
@@ -1868,8 +1892,14 @@ void tile(Monitor *m) {
   unsigned int i, n, h, r, oe = enablegaps, ie = enablegaps, mw, my, ty;
   Client *c;
 
-  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
-    ;
+  float mfacts = 0, sfacts = 0;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) {
+    if (n < m->nmaster)
+      mfacts += c->cfact;
+    else
+      sfacts += c->cfact;
+  }
   if (n == 0) return;
   if (smartgaps == n) {
     oe = 0;  // outer gaps disabled
@@ -2604,7 +2634,7 @@ void goyo(const Arg *arg) {
   Client *c;
   for (c = selmon->clients; c; c = c->next) c->bw = c->bw ? 0 : borderpx;
   isgoyo = !isgoyo;
-  setlayout(arg);
+  //  setlayout(arg);
   togglebar(arg);
   togglegaps(arg);
   arrange(selmon);

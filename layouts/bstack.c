@@ -9,8 +9,7 @@ static void bstack(Monitor *m) {
   int oh, ov, ih, iv;
   getgaps(m, &oh, &ov, &ih, &iv, &n);
 
-  if (n == 0)
-    return;
+  if (n == 0) return;
 
   sx = mx = m->wx + ov;
   sy = my = m->wy + oh;
@@ -29,26 +28,16 @@ static void bstack(Monitor *m) {
 
   for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
     if (i < m->nmaster) {
-#if CFACTS_PATCH
       resize(c, mx, my,
              (mw / mfacts) * c->cfact + (i < mrest ? 1 : 0) - (2 * c->bw),
              mh - (2 * c->bw), 0);
-#else
-      resize(c, mx, my, (mw / mfacts) + (i < mrest ? 1 : 0) - (2 * c->bw),
-             mh - (2 * c->bw), 0);
-#endif // CFACTS_PATCH
       mx += WIDTH(c) + iv;
     } else {
-#if CFACTS_PATCH
       resize(c, sx, sy,
              (sw / sfacts) * c->cfact + ((i - m->nmaster) < srest ? 1 : 0) -
                  (2 * c->bw),
              sh - (2 * c->bw), 0);
-#else
-      resize(c, sx, sy,
-             (sw / sfacts) + ((i - m->nmaster) < srest ? 1 : 0) - (2 * c->bw),
-             sh - (2 * c->bw), 0);
-#endif // CFACTS_PATCH
+
       sx += WIDTH(c) + iv;
     }
   }
