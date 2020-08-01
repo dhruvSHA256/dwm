@@ -132,17 +132,11 @@ static const Layout layouts[] = {
     {" (@) ", spiral},  // fibonacci spiral
     {" [] ", tile},     /* first entry is default */
     {" <> ", NULL},     /* no layout function means floating behavior */
-    {" [M] ", monocle},
-    {" [/\] ", dwindle},  // fibonacci dwindle
-    {"TTT", bstack},
-    {"|M|", centeredmaster},
-    {"[D]", deck},
-    {":::", gaplessgrid},
-    {">M>", centeredfloatingmaster},
-    {"HHH", grid},
-    {"---", horizgrid},
-    {"|||", col},
-    {NULL, NULL},
+    {" [M] ", monocle},   {" [/\] ", dwindle},  // fibonacci dwindle
+    {"TTT", bstack},      {"|M|", centeredmaster},
+    {":::", gaplessgrid}, {">M>", centeredfloatingmaster},
+    {"HHH", grid},        {"---", horizgrid},
+    {"|||", col},         {NULL, NULL},
 };
 
 /* key definitions */
