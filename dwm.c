@@ -256,7 +256,11 @@ static void setclientstate(Client *c, long state);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setgaps(int oh, int ov, int ih, int iv);
+static void getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv,
+                    unsigned int *nc);
 static void incrgaps(const Arg *arg);
+static void getfacts(Monitor *m, int msize, int ssize, float *mf, float *sf,
+                     int *mr, int *sr);
 static void incrigaps(const Arg *arg);
 static void incrogaps(const Arg *arg);
 static void incrohgaps(const Arg *arg);
@@ -1596,6 +1600,49 @@ void setgaps(int oh, int ov, int ih, int iv) {
   arrange(selmon);
 }
 
+void getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv, unsigned int *nc) {
+  unsigned int n, oe, ie;
+  oe = ie = enablegaps;
+  Client *c;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
+    ;
+  if (smartgaps && n == 1) {
+    oe = 0;  // outer gaps disabled when only one client
+  }
+
+  *oh = m->gappoh * oe;  // outer horizontal gap
+  *ov = m->gappov * oe;  // outer vertical gap
+  *ih = m->gappih * ie;  // inner horizontal gap
+  *iv = m->gappiv * ie;  // inner vertical gap
+  *nc = n;               // number of clients
+}
+
+void getfacts(Monitor *m, int msize, int ssize, float *mf, float *sf, int *mr,
+              int *sr) {
+  unsigned int n;
+  float mfacts, sfacts;
+  int mtotal = 0, stotal = 0;
+  Client *c;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
+    ;
+  mfacts = MIN(n, m->nmaster);
+  sfacts = n - m->nmaster;
+
+  for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++)
+    if (n < m->nmaster)
+      mtotal += msize / mfacts;
+    else
+      stotal += ssize / sfacts;
+
+  *mf = mfacts;  // total factor of master area
+  *sf = sfacts;  // total factor of stack area
+  *mr = msize -
+        mtotal;  // the remainder (rest) of pixels after an even master split
+  *sr = ssize -
+        stotal;  // the remainder (rest) of pixels after an even stack split
+}
 void togglegaps(const Arg *arg) {
   enablegaps = !enablegaps;
   arrange(selmon);
