@@ -101,7 +101,6 @@ static const Rule rules[] = {
 #include "layouts/centeredfloatingmaster.c"
 #include "layouts/centeredmaster.c"
 #include "layouts/columns.c"
-#include "layouts/deck.c"
 #include "layouts/fibonacci.c"
 #include "layouts/gapplessgrid.c"
 #include "layouts/grid.c"
@@ -122,7 +121,6 @@ static const Layout layouts[] = {
     //    {"", dwindle},  // fibonacci dwindle
     //    {"", bstack},
     //    {"", centeredmaster},
-    //    {"", deck},
     //    {"", gaplessgrid},
     //    {"", centeredfloatingmaster},
     //    {"", grid},
