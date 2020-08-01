@@ -9,7 +9,6 @@ static const int showbar = 1;  /* 0 means no bar */
 static const int topbar = 1;   /* 0 means bottom bar */
 static const int user_bh = 30; /* 0 means that dwm will calculate bar height, >=
                                   1 means dwm will user_bh as bar height */
-static const int statuspad = 15;
 // static const char *fonts[]          = {"Source Code
 // Pro:style=Regular:pixelsize=12:antialias=true:autohint=true","Symbols Nerd
 // Font:style=2048-em"};
