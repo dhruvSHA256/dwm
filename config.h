@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx = 3; /* border pixel of windows */
+static const unsigned int borderpx = 0; /* border pixel of windows */
 static const unsigned int snap = 3;     /* snap pixel */
 static const int swallowfloating =
     0;                         /* 1 means swallow floating windows by default */
@@ -25,8 +25,8 @@ static const unsigned int gappov =
     15; /* vert outer gap between windows and screen edge */
 static const int smartgaps =
     0; /* 1 means no outer gap when there is only one window */
-static const int vertpad = 0; /* vertical padding of bar */
-static const int sidepad = 0; /* horizontal padding of bar */
+static const int vertpad = 10; /* vertical padding of bar */
+static const int sidepad = 10; /* horizontal padding of bar */
 static const char col_gray1[] = "#222222";
 static const char col_gray2[] = "#444444";
 static const char col_gray3[] = "#bbbbbb";
@@ -37,23 +37,23 @@ static const char *colors[][3] = {
     [SchemeNorm] = {col_gray3, "#1f2430", col_gray2},
     [SchemeSel] = {col_gray4, "#1f2430", col_gray3},
     [SchemeStatus] = {"#ffffff", "#1f2430",
-                      "#000000"},  // Statusbar right {text,background,not used
-                                   // but cannot be empty}
+                      "#000000"}, // Statusbar right {text,background,not used
+                                  // but cannot be empty}
     [SchemeTagsSel] = {"#ffffff", "#1f2430",
-                       "#000000"},  // Tagbar left selected {text,background,not
-                                    // used but cannot be empty}
+                       "#000000"}, // Tagbar left selected {text,background,not
+                                   // used but cannot be empty}
     [SchemeTagsNorm] =
         {"#888888", "#1f2430",
-         "#000000"},  // Tagbar left unselected {text,background,not used but
-                      // cannot be empty}
+         "#000000"}, // Tagbar left unselected {text,background,not used but
+                     // cannot be empty}
     [SchemeInfoSel] =
         {col_gray4, "#1f2430",
-         "#000000"},  // infobar middle  selected {text,background,not used but
-                      // cannot be empty}
+         "#000000"}, // infobar middle  selected {text,background,not used but
+                     // cannot be empty}
     [SchemeInfoNorm] =
         {col_gray4, "#1f2430",
-         "#000000"},  // infobar middle  unselected {text,background,not used
-                      // but cannot be empty}
+         "#000000"}, // infobar middle  unselected {text,background,not used
+                     // but cannot be empty}
 };
 static const char *const autostart[] = {
     //"picom --experimental-backends --config
@@ -126,10 +126,10 @@ static const Layout layouts[] = {
     //    {"", horizgrid},
     //    {"", col},
     //    {NULL, NULL},
-    {" (@) ", spiral},  // fibonacci spiral
-    {" [] ", tile},     /* first entry is default */
-    {" <> ", NULL},     /* no layout function means floating behavior */
-    {" [M] ", monocle},   {" [/\] ", dwindle},  // fibonacci dwindle
+    {" (@) ", spiral}, // fibonacci spiral
+    {" [] ", tile},    /* first entry is default */
+    {" <> ", NULL},    /* no layout function means floating behavior */
+    {" [M] ", monocle},   {" [/\] ", dwindle}, // fibonacci dwindle
     {"TTT", bstack},      {"|M|", centeredmaster},
     {":::", gaplessgrid}, {">M>", centeredfloatingmaster},
     {"HHH", grid},        {"---", horizgrid},
@@ -138,16 +138,16 @@ static const Layout layouts[] = {
 
 /* key definitions */
 #define MODKEY Mod4Mask
-#define TAGKEYS(KEY, TAG)                               \
-  {MODKEY, KEY, view, {.ui = 1 << TAG}},                \
-      {Mod1Mask, KEY, toggleview, {.ui = 1 << TAG}},    \
-      {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}}, \
+#define TAGKEYS(KEY, TAG)                                                      \
+  {MODKEY, KEY, view, {.ui = 1 << TAG}},                                       \
+      {Mod1Mask, KEY, toggleview, {.ui = 1 << TAG}},                           \
+      {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},                        \
       {Mod1Mask | ShiftMask, KEY, toggletag, {.ui = 1 << TAG}},
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd)                                       \
-  {                                                      \
-    .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL } \
+#define SHCMD(cmd)                                                             \
+  {                                                                            \
+    .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL }                       \
   }
 
 /* commands */
