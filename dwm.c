@@ -225,6 +225,7 @@ static void focus(Client *c);
 static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
+static int getdwmblockspid();
 static Atom getatomprop(Client *c, Atom prop);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
@@ -282,6 +283,7 @@ static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void tile(Monitor *);
 static void togglebar(const Arg *arg);
+static void sigdwmblocks(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
@@ -324,7 +326,13 @@ static void moveresize(const Arg *arg);
 static void moveresizeedge(const Arg *arg);
 static void goyo();
 /* variables */
-static const char broken[] = "broken";
+static char rawstext[256];
+static int statuscmdn;
+static int dwmblockssig;
+pid_t dwmblockspid = 0;
+static char lastbutton[] = "-";
+
+static const char broken[] = "fuckedup";
 static char stext[1024];
 static int enablegaps = 1; /* enables gaps, used by togglegaps */
 static int scanner;
@@ -592,6 +600,7 @@ void buttonpress(XEvent *e) {
   Client *c;
   Monitor *m;
   XButtonPressedEvent *ev = &e->xbutton;
+  *lastbutton = '0' + ev->button;
 
   click = ClkRootWin;
   /* focus monitor if necessary */
@@ -615,9 +624,28 @@ void buttonpress(XEvent *e) {
       arg.ui = 1 << i;
     } else if (ev->x < x + blw)
       click = ClkLtSymbol;
-    else if (ev->x > selmon->ww - TEXTW(stext))
+    else if (ev->x > (x = selmon->ww - TEXTW(stext) + lrpad)) {
       click = ClkStatusText;
-    else
+
+      char *text = rawstext;
+      int i = -1;
+      char ch;
+      dwmblockssig = 0;
+      while (text[++i]) {
+        if ((unsigned char)text[i] < ' ') {
+          ch = text[i];
+          text[i] = '\0';
+          x += TEXTW(text) - lrpad;
+          text[i] = ch;
+          text += i + 1;
+          i = -1;
+          if (x >= ev->x)
+            break;
+          dwmblockssig = ch;
+        }
+      }
+    } else
+
       click = ClkWinTitle;
   } else if ((c = wintoclient(ev->window))) {
     focus(c);
@@ -641,6 +669,17 @@ void checkotherwm(void) {
   XSync(dpy, False);
   XSetErrorHandler(xerror);
   XSync(dpy, False);
+}
+
+void copyvalidchars(char *text, char *rawtext) {
+  int i = -1, j = 0;
+
+  while (rawtext[++i]) {
+    if ((unsigned char)rawtext[i] >= ' ') {
+      text[j++] = rawtext[i];
+    }
+  }
+  text[j] = '\0';
 }
 
 void cleanup(void) {
@@ -743,6 +782,31 @@ void configurenotify(XEvent *e) {
       arrange(NULL);
     }
   }
+}
+
+void sigdwmblocks(const Arg *arg) {
+  union sigval sv;
+  sv.sival_int = (dwmblockssig << 8) | arg->i;
+  if (!dwmblockspid)
+    if (getdwmblockspid() == -1)
+      return;
+
+  if (sigqueue(dwmblockspid, SIGUSR1, sv) == -1) {
+    if (errno == ESRCH) {
+      if (!getdwmblockspid())
+        sigqueue(dwmblockspid, SIGUSR1, sv);
+    }
+  }
+}
+
+int getdwmblockspid() {
+  char buf[16];
+  FILE *fp = popen("pidof -s dwmblocks", "r");
+  fgets(buf, sizeof(buf), fp);
+  pid_t pid = strtoul(buf, NULL, 10);
+  pclose(fp);
+  dwmblockspid = pid;
+  return pid != 0 ? 0 : -1;
 }
 
 void configurerequest(XEvent *e) {
@@ -1956,6 +2020,11 @@ void sigchld(int unused) {
 void spawn(const Arg *arg) {
   if (arg->v == dmenucmd)
     dmenumon[0] = '0' + selmon->num;
+  else if (arg->v == statuscmd) {
+    statuscmd[2] = statuscmds[statuscmdn];
+    setenv("BUTTON", lastbutton, 1);
+  }
+
   if (fork() == 0) {
     if (dpy)
       close(ConnectionNumber(dpy));
@@ -2354,8 +2423,13 @@ void updatesizehints(Client *c) {
 }
 
 void updatestatus(void) {
-  if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
+
+  if (!gettextprop(root, XA_WM_NAME, rawstext, sizeof(rawstext)))
+
     strcpy(stext, "dwm-" VERSION);
+  else
+    copyvalidchars(stext, rawstext);
+
   drawbar(selmon);
 }
 

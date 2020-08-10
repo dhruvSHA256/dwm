@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx = 0; /* border pixel of windows */
+static const unsigned int borderpx = 3; /* border pixel of windows */
 static const unsigned int snap = 3;     /* snap pixel */
 static const int swallowfloating =
     0;                         /* 1 means swallow floating windows by default */
@@ -25,8 +25,8 @@ static const unsigned int gappov =
     15; /* vert outer gap between windows and screen edge */
 static const int smartgaps =
     0; /* 1 means no outer gap when there is only one window */
-static const int vertpad = 10; /* vertical padding of bar */
-static const int sidepad = 10; /* horizontal padding of bar */
+static const int vertpad = 0; /* vertical padding of bar */
+static const int sidepad = 0; /* horizontal padding of bar */
 static const char col_gray1[] = "#222222";
 static const char col_gray2[] = "#444444";
 static const char col_gray3[] = "#bbbbbb";
@@ -34,8 +34,8 @@ static const char col_gray4[] = "#eeeeee";
 static const char col_cyan[] = "#005577";
 static const char *colors[][3] = {
     /*                          fg           bg        border   */
-    [SchemeNorm] = {col_gray3, "#1f2430", col_gray2},
-    [SchemeSel] = {col_gray4, "#1f2430", col_gray3},
+    [SchemeNorm] = {col_gray3, "#1f2430", "#696b70"},
+    [SchemeSel] = {col_gray4, "#1f2430", "#95e6cb"},
     [SchemeStatus] = {"#ffffff", "#1f2430",
                       "#000000"}, // Statusbar right {text,background,not used
                                   // but cannot be empty}
@@ -126,10 +126,10 @@ static const Layout layouts[] = {
     //    {"", horizgrid},
     //    {"", col},
     //    {NULL, NULL},
-    {" (@) ", spiral}, // fibonacci spiral
-    {" [] ", tile},    /* first entry is default */
-    {" <> ", NULL},    /* no layout function means floating behavior */
-    {" [M] ", monocle},   {" [/\] ", dwindle}, // fibonacci dwindle
+    {"  ", spiral}, // fibonacci spiral
+    {"  ", tile},   /* first entry is default */
+    {" <> ", NULL},  /* no layout function means floating behavior */
+    {" 类", monocle},     {" /\ ", dwindle}, // fibonacci dwindle
     {"TTT", bstack},      {"|M|", centeredmaster},
     {":::", gaplessgrid}, {">M>", centeredfloatingmaster},
     {"HHH", grid},        {"---", horizgrid},
@@ -155,6 +155,11 @@ static char dmenumon[2] =
     "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = {
     "j4-dmenu-desktop --dmenu 'dmenu_run -l 10 -x 680 -y 390 -w 500'"};
+/* commands spawned when clicking statusbar, the mouse button pressed is
+ * exported as BUTTON */
+static char *statuscmds[] = {"notify-send Mouse$BUTTON"};
+static char *statuscmd[] = {"/bin/sh", "-c", NULL, NULL};
+
 //, "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb",
 // col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[] = {"st", NULL};
@@ -251,7 +256,6 @@ static Button buttons[] = {
     {ClkLtSymbol, 0, Button1, setlayout, {0}},
     {ClkLtSymbol, 0, Button3, setlayout, {.v = &layouts[2]}},
     {ClkWinTitle, 0, Button2, zoom, {0}},
-    {ClkStatusText, 0, Button2, spawn, {.v = termcmd}},
     {ClkClientWin, MODKEY, Button1, movemouse, {0}},
     {ClkClientWin, MODKEY, Button2, togglefloating, {0}},
     {ClkClientWin, MODKEY, Button3, resizemouse, {0}},
@@ -259,4 +263,8 @@ static Button buttons[] = {
     {ClkTagBar, 0, Button3, toggleview, {0}},
     {ClkTagBar, MODKEY, Button1, tag, {0}},
     {ClkTagBar, MODKEY, Button3, toggletag, {0}},
+    {ClkStatusText, 0, Button1, sigdwmblocks, {.i = 1}},
+    {ClkStatusText, 0, Button2, sigdwmblocks, {.i = 2}},
+    {ClkStatusText, 0, Button3, sigdwmblocks, {.i = 3}},
+
 };
