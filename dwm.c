@@ -1,3 +1,5 @@
+
+
 /* See LICENSE file for copyright and license details.
  *
  * dynamic window manager is designed like any other X client as well. It is
@@ -986,11 +988,11 @@ void drawbar(Monitor *m) {
   w = blw = TEXTW(m->ltsymbol);
   drw_setscheme(drw, scheme[SchemeTagsNorm]);
   x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
-
+  
   if ((w = m->ww - tw - x) > bh) {
     if (m->sel) {
       drw_setscheme(drw, scheme[m == selmon ? SchemeInfoSel : SchemeInfoNorm]);
-      drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
+      drw_text(drw, x, 0, w, bh, 820-TEXTW(m->sel->name)/2, m->sel->name, 0);
       if (m->sel->isfloating)
         drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
     } else {
