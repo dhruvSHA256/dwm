@@ -1,6 +1,8 @@
 /* See LICENSE file for copyright and license details. */
 
+
 /* appearance */
+static const unsigned int notitle=1; /* display window name*/
 static const unsigned int borderpx = 3; /* border pixel of windows */
 static const unsigned int snap = 3;     /* snap pixel */
 static const int swallowfloating =
