@@ -197,9 +197,29 @@ typedef struct {
 } Rule;
 
 /* function declarations */
+static Atom getatomprop(Client *c, Atom prop);
+static Client *nexttiled(Client *c);
+static Client *swallowingclient(Window w);
+static Client *termforwin(const Client *c);
+static Client *wintoclient(Window w);
+static Monitor *createmon(void);
+static Monitor *dirtomon(int dir);
+static Monitor *recttomon(int x, int y, int w, int h);
+static Monitor *wintomon(Window w);
+static int applysizehints(Client *c, int *x, int *y, int *w, int *h,int interact);
+static int getdwmblockspid();
+static int getrootptr(int *x, int *y);
+static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
+static int isdescprocess(pid_t p, pid_t c);
+static int sendevent(Client *c, Atom proto);
+static int updategeom(void);
+static int xerror(Display *dpy, XErrorEvent *ee);
+static int xerrordummy(Display *dpy, XErrorEvent *ee);
+static int xerrorstart(Display *dpy, XErrorEvent *ee);
+static long getstate(Window w);
+static pid_t getparentprocess(pid_t p);
+static pid_t winpid(Window w);
 static void applyrules(Client *c);
-static int applysizehints(Client *c, int *x, int *y, int *w, int *h,
-                          int interact);
 static void arrange(Monitor *m);
 static void arrangemon(Monitor *m);
 static void attach(Client *c);
@@ -213,12 +233,12 @@ static void clientmessage(XEvent *e);
 static void configure(Client *c);
 static void configurenotify(XEvent *e);
 static void configurerequest(XEvent *e);
-static Monitor *createmon(void);
 static void cyclelayout(const Arg *arg);
+static void cycleview(const Arg *arg);
+static void defaultgaps(const Arg *arg);
 static void destroynotify(XEvent *e);
 static void detach(Client *c);
 static void detachstack(Client *c);
-static Monitor *dirtomon(int dir);
 static void drawbar(Monitor *m);
 static void drawbars(void);
 static void enternotify(XEvent *e);
@@ -227,14 +247,19 @@ static void focus(Client *c);
 static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
-static int getdwmblockspid();
-static Atom getatomprop(Client *c, Atom prop);
-static int getrootptr(int *x, int *y);
-static long getstate(Window w);
-static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
+static void getfacts(Monitor *m, int msize, int ssize, float *mf, float *sf, int *mr, int *sr);
+static void getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv, unsigned int *nc);
+static void goyo();
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
+static void incrgaps(const Arg *arg);
+static void incrigaps(const Arg *arg);
+static void incrihgaps(const Arg *arg);
+static void incrivgaps(const Arg *arg);
+static void incrogaps(const Arg *arg);
+static void incrohgaps(const Arg *arg);
+static void incrovgaps(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
@@ -243,59 +268,54 @@ static void maprequest(XEvent *e);
 static void monocle(Monitor *m);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
-static Client *nexttiled(Client *c);
+static void moveresize(const Arg *arg);
+static void moveresizeedge(const Arg *arg);
 static void pop(Client *);
 static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
-static Monitor *recttomon(int x, int y, int w, int h);
 static void resize(Client *c, int x, int y, int w, int h, int interact);
 static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
 static void run(void);
 static void scan(void);
-static int sendevent(Client *c, Atom proto);
 static void sendmon(Client *c, Monitor *m);
+static void setcfact(const Arg *arg);
 static void setclientstate(Client *c, long state);
+static void setcurrentdesktop(void);
+static void setdesktopnames(void);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setgaps(int oh, int ov, int ih, int iv);
-static void getgaps(Monitor *m, int *oh, int *ov, int *ih, int *iv,
-                    unsigned int *nc);
-static void incrgaps(const Arg *arg);
-static void getfacts(Monitor *m, int msize, int ssize, float *mf, float *sf,
-                     int *mr, int *sr);
-static void setcfact(const Arg *arg);
-static void incrigaps(const Arg *arg);
-static void incrogaps(const Arg *arg);
-static void incrohgaps(const Arg *arg);
-static void incrovgaps(const Arg *arg);
-static void incrihgaps(const Arg *arg);
-static void incrivgaps(const Arg *arg);
-static void togglegaps(const Arg *arg);
-static void defaultgaps(const Arg *arg);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
+static void setnumdesktops(void);
 static void setup(void);
 static void seturgent(Client *c, int urg);
+static void setviewport(void);
 static void showhide(Client *c);
 static void sigchld(int unused);
+static void sigdwmblocks(const Arg *arg);
 static void spawn(const Arg *arg);
+static void swallow(Client *p, Client *c);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void tile(Monitor *);
+static void togglealttag();
 static void togglebar(const Arg *arg);
-static void sigdwmblocks(const Arg *arg);
 static void togglefloating(const Arg *arg);
+static void togglefullscr(const Arg *arg);
+static void togglegaps(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void unmapnotify(XEvent *e);
+static void unswallow(Client *c);
 static void updatebarpos(Monitor *m);
 static void updatebars(void);
 static void updateclientlist(void);
-static int updategeom(void);
+static void updatecurrentdesktop(void);
 static void updatenumlockmask(void);
 static void updatesizehints(Client *c);
 static void updatestatus(void);
@@ -303,30 +323,8 @@ static void updatetitle(Client *c);
 static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
 static void view(const Arg *arg);
-static Client *wintoclient(Window w);
-static Monitor *wintomon(Window w);
-static int xerror(Display *dpy, XErrorEvent *ee);
-static int xerrordummy(Display *dpy, XErrorEvent *ee);
-static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
-static pid_t getparentprocess(pid_t p);
-static int isdescprocess(pid_t p, pid_t c);
-static Client *swallowingclient(Window w);
-static Client *termforwin(const Client *c);
-static pid_t winpid(Window w);
-static void unswallow(Client *c);
-static void swallow(Client *p, Client *c);
-static void setcurrentdesktop(void);
-static void setdesktopnames(void);
-static void setnumdesktops(void);
-static void setviewport(void);
-static void updatecurrentdesktop(void);
-static void togglefullscr(const Arg *arg);
-static void cycleview(const Arg *arg);
-static void togglealttag();
-static void moveresize(const Arg *arg);
-static void moveresizeedge(const Arg *arg);
-static void goyo();
+
 /* variables */
 static char rawstext[256];
 static int statuscmdn;
@@ -334,7 +332,7 @@ static int dwmblockssig;
 pid_t dwmblockspid = 0;
 static char lastbutton[] = "-";
 
-static const char broken[] = "fuckedup";
+static const char broken[] = "broken";
 static char stext[1024];
 static int enablegaps = 1; /* enables gaps, used by togglegaps */
 static int scanner;
@@ -958,10 +956,6 @@ void drawbar(Monitor *m) {
   if (m == selmon) { /* status is only drawn on selected monitor */
     drw_setscheme(drw, scheme[SchemeStatus]);
     tw = TEXTW(stext); /* 2px right padding */
-                       //    drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
-    // drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned
-    // int lpad, const char *text, int invert)
-    //    drw_text(drw, m->ww - tw + sp, 0, tw + sp, bh, 0, stext, 0);
     drw_text(drw, m->ww - tw - sp, 0, tw, bh, 0, stext, 0);
   }
 
@@ -988,19 +982,20 @@ void drawbar(Monitor *m) {
   w = blw = TEXTW(m->ltsymbol);
   drw_setscheme(drw, scheme[SchemeTagsNorm]);
   x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
-  
+
   if ((w = m->ww - tw - x) > bh) {
     if (m->sel) {
       drw_setscheme(drw, scheme[m == selmon ? SchemeInfoSel : SchemeInfoNorm]);
-      drw_text(drw, x, 0, w, bh, 820-TEXTW(m->sel->name)/2, (notitle)?" ":m->sel->name, 0);
+      drw_text(drw, x, 0, w, bh, 820 - TEXTW(m->sel->name) / 2,
+               (notitle) ? " " : m->sel->name, 0);
       if (m->sel->isfloating)
         drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
     } else {
-     drw_setscheme(drw, scheme[SchemeInfoNorm]);
+      drw_setscheme(drw, scheme[SchemeInfoNorm]);
       drw_rect(drw, x, 0, w, bh, 1, 1);
     }
- }
- drw_map(drw, m->barwin, 0, 0, m->ww, bh);
+  }
+  drw_map(drw, m->barwin, 0, 0, m->ww, bh);
 }
 
 void drawbars(void) {
@@ -1287,8 +1282,7 @@ void manage(Window w, XWindowAttributes *wa) {
                  ? bh
                  : c->mon->my);
 
-  //	c->bw = (c->isterminal)?borderpx:0; // only set border for terminals
-  c->bw = isgoyo ? 0 : borderpx; // only set border for terminals
+  c->bw = isgoyo ? 0 : borderpx;
 
   wc.border_width = c->bw;
   XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -2151,16 +2145,17 @@ void cycleview(const Arg *arg) {
   for (c = selmon->clients; c; c = c->next)
     occ |= c->tags == 255 ? 0 : c->tags;
 
-  if (arg->i == 1) {
-    selmon->tagset[selmon->seltags] *= 2;
-    if (currtag > 1 << 7)
-      selmon->tagset[selmon->seltags] = 1 << 0;
-  }
 
   if (arg->i == 0) {
     selmon->tagset[selmon->seltags] /= 2;
     if (currtag <= 1)
       selmon->tagset[selmon->seltags] = 1 << 8;
+  }
+
+  if (arg->i == 1) {
+    selmon->tagset[selmon->seltags] *= 2;
+    if (currtag > 1 << 7)
+      selmon->tagset[selmon->seltags] = 1 << 0;
   }
 
   if (arg->i == 3) {
@@ -2839,7 +2834,7 @@ void goyo(const Arg *arg) {
   unsigned int j, currtag = selmon->tagset[selmon->seltags];
   Client *c;
   for (c = selmon->clients; c; c = c->next)
-    c->bw = c->bw ? 0 : borderpx;
+    c->bw = c->bw != 0 ? 0 : borderpx;
   isgoyo = !isgoyo;
   //  setlayout(arg);
   togglebar(arg);
