@@ -544,56 +544,6 @@ static void autostart_exec() {
   }
 }
 
-void swallow(Client *p, Client *c) {
-  Client *s;
-
-  if (c->noswallow > 0 || c->isterminal)
-    return;
-  if (c->noswallow < 0 && !swallowfloating && c->isfloating)
-    return;
-
-  detach(c);
-  detachstack(c);
-
-  setclientstate(c, WithdrawnState);
-  XUnmapWindow(dpy, p->win);
-
-  p->swallowing = c;
-  c->mon = p->mon;
-
-  Window w = p->win;
-  p->win = c->win;
-  c->win = w;
-
-  XChangeProperty(dpy, c->win, netatom[NetClientList], XA_WINDOW, 32,
-                  PropModeReplace, (unsigned char *)&(p->win), 1);
-
-  updatetitle(p);
-  s = scanner ? c : p;
-  XMoveResizeWindow(dpy, p->win, s->x, s->y, s->w, s->h);
-  arrange(p->mon);
-  configure(p);
-  updateclientlist();
-}
-
-void unswallow(Client *c) {
-  c->win = c->swallowing->win;
-
-  free(c->swallowing);
-  c->swallowing = NULL;
-
-  XDeleteProperty(dpy, c->win, netatom[NetClientList]);
-
-  /* unfullscreen the client */
-  setfullscreen(c, 0);
-  updatetitle(c);
-  arrange(c->mon);
-  XMapWindow(dpy, c->win);
-  XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
-  setclientstate(c, NormalState);
-  focus(NULL);
-  arrange(c->mon);
-}
 
 void buttonpress(XEvent *e) {
   unsigned int i, x, click, occ = 0;
@@ -785,30 +735,6 @@ void configurenotify(XEvent *e) {
   }
 }
 
-void sigdwmblocks(const Arg *arg) {
-  union sigval sv;
-  sv.sival_int = (dwmblockssig << 8) | arg->i;
-  if (!dwmblockspid)
-    if (getdwmblockspid() == -1)
-      return;
-
-  if (sigqueue(dwmblockspid, SIGUSR1, sv) == -1) {
-    if (errno == ESRCH) {
-      if (!getdwmblockspid())
-        sigqueue(dwmblockspid, SIGUSR1, sv);
-    }
-  }
-}
-
-int getdwmblockspid() {
-  char buf[16];
-  FILE *fp = popen("pidof -s dwmblocks", "r");
-  fgets(buf, sizeof(buf), fp);
-  pid_t pid = strtoul(buf, NULL, 10);
-  pclose(fp);
-  dwmblockspid = pid;
-  return pid != 0 ? 0 : -1;
-}
 
 void configurerequest(XEvent *e) {
   Client *c;
@@ -1122,6 +1048,16 @@ int getrootptr(int *x, int *y) {
   Window dummy;
 
   return XQueryPointer(dpy, root, &dummy, &dummy, x, y, &di, &di, &dui);
+}
+
+int getdwmblockspid() {
+  char buf[16];
+  FILE *fp = popen("pidof -s dwmblocks", "r");
+  fgets(buf, sizeof(buf), fp);
+  pid_t pid = strtoul(buf, NULL, 10);
+  pclose(fp);
+  dwmblockspid = pid;
+  return pid != 0 ? 0 : -1;
 }
 
 long getstate(Window w) {
@@ -2013,6 +1949,21 @@ void sigchld(int unused) {
   }
 }
 
+void sigdwmblocks(const Arg *arg) {
+  union sigval sv;
+  sv.sival_int = (dwmblockssig << 8) | arg->i;
+  if (!dwmblockspid)
+    if (getdwmblockspid() == -1)
+      return;
+
+  if (sigqueue(dwmblockspid, SIGUSR1, sv) == -1) {
+    if (errno == ESRCH) {
+      if (!getdwmblockspid())
+        sigqueue(dwmblockspid, SIGUSR1, sv);
+    }
+  }
+}
+
 void spawn(const Arg *arg) {
   if (arg->v == dmenucmd)
     dmenumon[0] = '0' + selmon->num;
@@ -2030,6 +1981,38 @@ void spawn(const Arg *arg) {
     perror(" failed");
     exit(EXIT_SUCCESS);
   }
+}
+
+void swallow(Client *p, Client *c) {
+  Client *s;
+
+  if (c->noswallow > 0 || c->isterminal)
+    return;
+  if (c->noswallow < 0 && !swallowfloating && c->isfloating)
+    return;
+
+  detach(c);
+  detachstack(c);
+
+  setclientstate(c, WithdrawnState);
+  XUnmapWindow(dpy, p->win);
+
+  p->swallowing = c;
+  c->mon = p->mon;
+
+  Window w = p->win;
+  p->win = c->win;
+  c->win = w;
+
+  XChangeProperty(dpy, c->win, netatom[NetClientList], XA_WINDOW, 32,
+                  PropModeReplace, (unsigned char *)&(p->win), 1);
+
+  updatetitle(p);
+  s = scanner ? c : p;
+  XMoveResizeWindow(dpy, p->win, s->x, s->y, s->w, s->h);
+  arrange(p->mon);
+  configure(p);
+  updateclientlist();
 }
 
 void tag(const Arg *arg) {
@@ -2232,6 +2215,25 @@ void unmapnotify(XEvent *e) {
     else
       unmanage(c, 0);
   }
+}
+
+void unswallow(Client *c) {
+  c->win = c->swallowing->win;
+
+  free(c->swallowing);
+  c->swallowing = NULL;
+
+  XDeleteProperty(dpy, c->win, netatom[NetClientList]);
+
+  /* unfullscreen the client */
+  setfullscreen(c, 0);
+  updatetitle(c);
+  arrange(c->mon);
+  XMapWindow(dpy, c->win);
+  XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
+  setclientstate(c, NormalState);
+  focus(NULL);
+  arrange(c->mon);
 }
 
 void updatebars(void) {
