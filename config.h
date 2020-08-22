@@ -9,7 +9,7 @@ static const int          showbar           = 1;    /* 0 means no bar */
 static const int          topbar            = 1;    /* 0 means bottom bar */
 static const int          user_bh           = 30;   /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
 static const char         *fonts[]          = { "JetBrains Mono NL:style=Regular:size=9:antialias=true:autohint=true", "Symbols Nerd Font:style=2048-em:size=16"};
-static const char         dmenufont[]       = { "JetBrains Mono NL:style=Regular:size=9:antialias=true:autohint=true"};
+static const char         dmenufont[]       = { "JetBrains Mono:pixelsize=18:antialias=true:autohint=true"};
 static const unsigned int gappih            = 15;   /* horiz inner gap between windows */
 static const unsigned int gappiv            = 15;   /* vert inner gap between windows */
 static const unsigned int gappoh            = 15;   /* horiz outer gap between windows and screen edge */
@@ -84,7 +84,7 @@ static const Layout layouts[] = {
     {"",       tile},   
     {"<>",      NULL}, 
     {"类",      monocle},      
-    {"/\ ",     dwindle},
+    {"/ ",     dwindle},
     {"TTT",     bstack},      
     {"|M|",     centeredmaster},
     {":::",     gaplessgrid}, 
@@ -109,24 +109,25 @@ static const Layout layouts[] = {
     .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL }                       \
   }
 
-/* commands */
-static char dmenumon[2]       = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, 
-                            "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, 
-                            "-sf", col_gray4, NULL };
 
 /* commands spawned when clicking statusbar, the mouse button pressed is
  * exported as BUTTON */
-static char *statuscmds[]     = {"notify-send Mouse$BUTTON"};
-static char *statuscmd[]      = {"/bin/sh", "-c", NULL, NULL};
+static char *statuscmds[]        = {"notify-send Mouse$BUTTON"};
+static char *statuscmd[]         = {"/bin/sh", "-c", NULL, NULL};
 
-static const char *termcmd[]  = {"st", NULL};
+/* commands */
+static char dmenumon[2]          = "0"; /* component of dmenucmd, manipulated in spawn() */
+static const char *dmenucmd[]    = { "/home/dhruv/.config/scripts/mydmenu_run",NULL };
+static const char *termcmd[]     = {"st", NULL};
+static const char *browsercmd[]  = {"/usr/bin/firefox", NULL};
+
+/* Keybindings */
 static Key keys[] = {
 
+    {MODKEY,                           XK_space,         spawn,          {.v = dmenucmd } },
+    {MODKEY  ,                         XK_Return,        spawn,          {.v = termcmd } },
+    {MODKEY  ,                         XK_w,             spawn,          {.v = browsercmd } },
     {MODKEY | Mod1Mask | ShiftMask,    XK_0,             defaultgaps,    {0}},
-    {MODKEY | Mod1Mask,                XK_0,             togglegaps,     {0}},
-    {MODKEY | Mod1Mask,                XK_h,             incrgaps,       {.i = +1}},
-    {MODKEY | Mod1Mask,                XK_l,             incrgaps,       {.i = -1}},
     {MODKEY | ShiftMask,               XK_0,             tag,            {.ui = ~0}},
     {MODKEY | ShiftMask,               XK_Return,        zoom,           {0}},
     {MODKEY | ShiftMask,               XK_equal,         setcfact,       {.f = +0.10}},
@@ -136,6 +137,27 @@ static Key keys[] = {
     {MODKEY | ShiftMask,               XK_period,        tagmon,         {.i = +1}},
     {MODKEY | ShiftMask,               XK_q,             quit,           {0}},
     {MODKEY | ShiftMask,               XK_space,         togglefloating, {0}},
+    {MODKEY,                           XK_comma,         focusmon,       {.i = -1 } },
+    {MODKEY | Mod1Mask,                XK_n,             togglealttag,   {0} },
+
+    /* Resize  gaps */
+    {MODKEY|Mod1Mask,                  XK_h,             incrgaps,       {.i = +1 } },
+    {MODKEY|Mod1Mask,                  XK_l,             incrgaps,       {.i = -1 } },
+    {MODKEY|Mod1Mask|ShiftMask,        XK_h,             incrogaps,      {.i = +1 } },
+    {MODKEY|Mod1Mask|ShiftMask,        XK_l,             incrogaps,      {.i = -1 } },
+    {MODKEY|Mod1Mask|ControlMask,      XK_h,             incrigaps,      {.i = +1 } },
+    {MODKEY|Mod1Mask|ControlMask,      XK_l,             incrigaps,      {.i = -1 } },
+    {MODKEY|Mod1Mask,                  XK_0,             togglegaps,     {0} },
+    {MODKEY|Mod1Mask|ShiftMask,        XK_0,             defaultgaps,    {0} },
+    {MODKEY,                           XK_y,             incrihgaps,     {.i = +1 } },
+    {MODKEY,                           XK_o,             incrihgaps,     {.i = -1 } },
+    {MODKEY|ControlMask,               XK_y,             incrivgaps,     {.i = +1 } },
+    {MODKEY|ControlMask,               XK_o,             incrivgaps,     {.i = -1 } },
+    {MODKEY|Mod1Mask,                  XK_y,             incrohgaps,     {.i = +1 } },
+    {MODKEY|Mod1Mask,                  XK_o,             incrohgaps,     {.i = -1 } },
+    {MODKEY|ShiftMask,                 XK_y,             incrovgaps,     {.i = +1 } },
+    {MODKEY|ShiftMask,                 XK_o,             incrovgaps,     {.i = -1 } },
+
     {MODKEY,                           XK_0,             view,           {.ui = ~0}},
     {MODKEY,                           XK_b,             togglebar,      {0}},
     {MODKEY,                           XK_d,             incnmaster,     {.i = -1}},
@@ -166,11 +188,9 @@ static Key keys[] = {
     {MODKEY,                           XK_Up,            moveresize,     {.v = "0x -10y 0w 0h"}},
 
     
-    {MODKEY | ShiftMask,               XK_Tab,           cycleview,      {.i = 0}},
+    {MODKEY | ShiftMask,               XK_Tab,           cycleview,      {.i = 4}},
+    {MODKEY,                           XK_Tab,           cycleview,      {.i = 3}},
     {MODKEY | ShiftMask,               XK_g,             goyo,           {.v = &layouts[1]}},
-    {MODKEY | ShiftMask,               XK_h,             cycleview,      {.i = 4}},
-    {MODKEY | ShiftMask,               XK_l,             cycleview,      {.i = 3}},
-    {MODKEY,                           XK_Tab,           cycleview,      {.i = 1}},
 
     {MODKEY | ControlMask,             XK_comma,         cyclelayout,    {.i = -1}},
     {MODKEY | ControlMask,             XK_period,        cyclelayout,    {.i = +1}},

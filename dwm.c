@@ -298,6 +298,7 @@ static void sigchld(int unused);
 static void sigdwmblocks(const Arg *arg);
 static void spawn(const Arg *arg);
 static void swallow(Client *p, Client *c);
+static void switchview(int t);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void tile(Monitor *);
@@ -946,7 +947,6 @@ Monitor *dirtomon(int dir) {
 
 void drawbar(Monitor *m) {
   int x, w, wdelta, tw = 0;
-  int ft = 1;
   int boxs = drw->fonts->h / 9;
   int boxw = drw->fonts->h / 6 + 2;
   unsigned int i, occ = 0, urg = 0;
@@ -2139,30 +2139,17 @@ void toggleview(const Arg *arg) {
 }
 
 void cycleview(const Arg *arg) {
-  unsigned int j, currtag = selmon->tagset[selmon->seltags], occ = 0;
+  unsigned int j,  occ = 0;
   Client *c;
 
   for (c = selmon->clients; c; c = c->next)
     occ |= c->tags == 255 ? 0 : c->tags;
 
-
-  if (arg->i == 0) {
-    selmon->tagset[selmon->seltags] /= 2;
-    if (currtag <= 1)
-      selmon->tagset[selmon->seltags] = 1 << 8;
-  }
-
-  if (arg->i == 1) {
-    selmon->tagset[selmon->seltags] *= 2;
-    if (currtag > 1 << 7)
-      selmon->tagset[selmon->seltags] = 1 << 0;
-  }
-
   if (arg->i == 3) {
     for (j = selmon->tagset[selmon->seltags] * 2; j <= 1 << 8; j *= 2) {
       if (occ & j) {
-        selmon->tagset[selmon->seltags] = j;
-        break;
+        switchview(j);
+        return;
       } else {
         continue;
       }
@@ -2172,13 +2159,14 @@ void cycleview(const Arg *arg) {
   if (arg->i == 4) {
     for (j = selmon->tagset[selmon->seltags] / 2; j > 0; j /= 2) {
       if (occ & j) {
-        selmon->tagset[selmon->seltags] = j;
-        break;
+        switchview(j);
+        return;
       } else {
         continue;
       }
     }
   }
+
   focus(NULL);
   arrange(selmon);
   updatecurrentdesktop();
@@ -2464,6 +2452,7 @@ void updatewmhints(Client *c) {
   }
 }
 
+
 void view(const Arg *arg) {
   if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags])
     return;
@@ -2572,6 +2561,20 @@ Client *swallowingclient(Window w) {
 
   return NULL;
 }
+
+void switchview(int t){
+
+  if ((t & TAGMASK) == selmon->tagset[selmon->seltags])
+    return;
+  selmon->seltags ^= 1; /* toggle sel tagset */
+  if (t & TAGMASK)
+    selmon->tagset[selmon->seltags] = t & TAGMASK;
+  focus(NULL);
+  arrange(selmon);
+  updatecurrentdesktop();
+
+}
+
 
 Client *wintoclient(Window w) {
   Client *c;
@@ -2831,7 +2834,6 @@ void moveresizeedge(const Arg *arg) {
 }
 
 void goyo(const Arg *arg) {
-  unsigned int j, currtag = selmon->tagset[selmon->seltags];
   Client *c;
   for (c = selmon->clients; c; c = c->next)
     c->bw = c->bw != 0 ? 0 : borderpx;
