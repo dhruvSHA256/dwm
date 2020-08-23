@@ -936,7 +936,7 @@ void drawbar(Monitor *m) {
   if ((w = m->ww - tw - x) > bh) {
     if (m->sel) {
       drw_setscheme(drw, scheme[m == selmon ? SchemeInfoSel : SchemeInfoNorm]);
-      drw_text(drw, x, 0, w, bh, 820 - TEXTW(m->sel->name) / 2,
+      drw_text(drw, x, 0, w, bh, 920 - TEXTW(m->sel->name) / 2 - x,
                (notitle) ? " " : m->sel->name, 0);
       if (m->sel->isfloating)
         drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
