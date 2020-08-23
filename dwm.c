@@ -1,5 +1,6 @@
 
 
+
 /* See LICENSE file for copyright and license details.
  *
  * dynamic window manager is designed like any other X client as well. It is
@@ -29,6 +30,7 @@
 #include <X11/cursorfont.h>
 #include <X11/keysym.h>
 #include <errno.h>
+#include <fontconfig/fontconfig.h>
 #include <locale.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -44,6 +46,7 @@
 #include <X11/Xft/Xft.h>
 #include <X11/Xlib-xcb.h>
 #include <xcb/res.h>
+#include <math.h>
 
 #include "drw.h"
 #include "util.h"
@@ -65,6 +68,10 @@
 #define TAGMASK ((1 << LENGTH(tags)) - 1)
 #define TEXTW(X) (drw_fontset_getwidth(drw, (X)) + lrpad)
 #define TAGSLENGTH (LENGTH(tags))
+#define LOG "/home/dhruv/.config/dwm/dwm.log"
+
+
+
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
 enum {
@@ -303,7 +310,6 @@ static void sigchld(int unused);
 static void sigdwmblocks(const Arg *arg);
 static void spawn(const Arg *arg);
 static void swallow(Client *p, Client *c);
-static void switchview(int t);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void tile(Monitor *);
@@ -337,6 +343,9 @@ static int statuscmdn;
 static int dwmblockssig;
 pid_t dwmblockspid = 0;
 static char lastbutton[] = "-";
+
+/* logging dwm */
+FILE *dwmlog ;
 
 static const char broken[] = "broken";
 static char stext[1024];
@@ -1194,6 +1203,7 @@ void killclient(const Arg *arg) {
     XUngrabServer(dpy);
   }
 }
+
 
 void manage(Window w, XWindowAttributes *wa) {
   Client *c, *t = NULL, *term = NULL;
@@ -2137,16 +2147,46 @@ void toggleview(const Arg *arg) {
 }
 
 void cycleview(const Arg *arg) {
-  unsigned int j,  occ = 0;
+  unsigned int j,  occ = 0 , currtag = selmon->tagset[selmon->seltags];
   Client *c;
+  Arg argm;
 
   for (c = selmon->clients; c; c = c->next)
     occ |= c->tags == 255 ? 0 : c->tags;
 
+  if (arg->i == 0) {
+    for (j = currtag >> 1 ; j >= 0; j >>=1) {
+      if (j <= 0) {
+        argm.ui = 1 << 8 ;
+        view(&argm);
+        return;
+      } else {
+        argm.ui = j;
+        view(&argm);
+        return;
+      }
+    }
+  }
+
+  if (arg->i == 1) {
+    for (j = currtag << 1 ; j <= 1 << 9; j <<=1 ) {
+      if (j > 1 << 8 ) {
+        argm.ui = 1 << 0;
+        view(&argm);
+        return;
+      } else {
+        argm.ui = j;
+        view(&argm);
+        return;
+      }
+    }
+  }
+
   if (arg->i == 3) {
-    for (j = selmon->tagset[selmon->seltags] * 2; j <= 1 << 8; j *= 2) {
+    for (j = currtag >> 1 ; j >= 0; j >>=1) {
       if (occ & j) {
-        switchview(j);
+        argm.ui = j;
+        view(&argm);
         return;
       } else {
         continue;
@@ -2155,9 +2195,10 @@ void cycleview(const Arg *arg) {
   }
 
   if (arg->i == 4) {
-    for (j = selmon->tagset[selmon->seltags] / 2; j > 0; j /= 2) {
-      if (occ & j) {
-        switchview(j);
+    for (j = currtag << 1 ; j <= 1 << 8; j <<=1 ) {
+      if (occ & j ) {
+        argm.ui = j;
+        view(&argm);
         return;
       } else {
         continue;
@@ -2548,7 +2589,7 @@ int isdescprocess(pid_t p, pid_t c) {
 }
 
 Client *termforwin(const Client *w) {
-  Client *c;
+    Client *c;
   Monitor *m;
 
   if (!w->pid || w->isterminal)
@@ -2578,20 +2619,6 @@ Client *swallowingclient(Window w) {
 
   return NULL;
 }
-
-void switchview(int t){
-
-  if ((t & TAGMASK) == selmon->tagset[selmon->seltags])
-    return;
-  selmon->seltags ^= 1; /* toggle sel tagset */
-  if (t & TAGMASK)
-    selmon->tagset[selmon->seltags] = t & TAGMASK;
-  focus(NULL);
-  arrange(selmon);
-  updatecurrentdesktop();
-
-}
-
 
 Client *wintoclient(Window w) {
   Client *c;
@@ -2873,8 +2900,8 @@ int main(int argc, char *argv[]) {
     die("dwm: cannot open display");
   if (!(xcon = XGetXCBConnection(dpy)))
     die("dwm: cannot get xcb connection\n");
-
   checkotherwm();
+
   autostart_exec();
   setup();
 #ifdef __OpenBSD__
@@ -2885,5 +2912,6 @@ int main(int argc, char *argv[]) {
   run();
   cleanup();
   XCloseDisplay(dpy);
+  fclose(dwmlog); 
   return EXIT_SUCCESS;
 }

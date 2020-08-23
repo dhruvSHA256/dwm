@@ -1,14 +1,14 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int notitle           = 1;    /* display window name*/
+static const unsigned int notitle           = 0;    /* display window name*/
 static const unsigned int borderpx          = 3;    /* border pixel of windows */
 static const unsigned int snap              = 3;    /* snap pixel */
 static const int          swallowfloating   = 0;    /* 1 means swallow floating windows by default */
 static const int          showbar           = 1;    /* 0 means no bar */
 static const int          topbar            = 1;    /* 0 means bottom bar */
 static const int          user_bh           = 30;   /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
-static const char         *fonts[]          = { "JetBrains Mono NL:style=Regular:size=9:antialias=true:autohint=true", "Symbols Nerd Font:style=2048-em:size=16"};
+static const char         *fonts[]          = { "JetBrains Mono NL:style=Regular:size=9:antialias=true:autohint=true", "Symbols Nerd Font:style=2048-em:size=12"};
 static const char         dmenufont[]       = { "JetBrains Mono:pixelsize=18:antialias=true:autohint=true"};
 static const unsigned int gappih            = 15;   /* horiz inner gap between windows */
 static const unsigned int gappiv            = 15;   /* vert inner gap between windows */
@@ -197,8 +197,10 @@ static Key keys[] = {
     {MODKEY,                           XK_Up,            moveresize,     {.v = "0x -10y 0w 0h"}},
 
     
-    {MODKEY | ShiftMask,               XK_Tab,           cycleview,      {.i = 4}},
-    {MODKEY,                           XK_Tab,           cycleview,      {.i = 3}},
+    {MODKEY | ShiftMask,               XK_l,             cycleview,      {.i = 1}},
+    {MODKEY | ShiftMask,               XK_h,             cycleview,      {.i = 0}},
+    {MODKEY,                           XK_Tab,           cycleview,      {.i = 4}},
+    {MODKEY | ShiftMask,               XK_Tab,           cycleview,      {.i = 3}},
     {MODKEY | ShiftMask,               XK_g,             goyo,           {.v = &layouts[1]}},
 
     {MODKEY | ControlMask,             XK_comma,         cyclelayout,    {.i = -1}},
