@@ -193,6 +193,10 @@ typedef struct {
   int isterminal;
   int noswallow;
   int isfakefullscreen;
+  int width;
+  int height;
+  int  x;
+  int  y;
   int monitor;
 } Rule;
 
@@ -389,6 +393,7 @@ void applyrules(Client *c) {
   const char *class, *instance;
   unsigned int i;
   const Rule *r;
+
   Monitor *m;
   XClassHint ch = {NULL, NULL};
 
@@ -396,6 +401,8 @@ void applyrules(Client *c) {
   c->noswallow = -1;
   c->isfloating = 0;
   c->tags = 0;
+ 
+  
 
   XGetClassHint(dpy, c->win, &ch);
   class = ch.res_class ? ch.res_class : broken;
@@ -411,6 +418,10 @@ void applyrules(Client *c) {
       c->isfloating = r->isfloating;
       c->isfakefullscreen = r->isfakefullscreen;
       c->tags |= r->tags;
+      if(c->isfloating){
+        if(!(r->x < 0 && r->y < 0 && r->width < 0 && r->height < 0))
+        resizeclient(c, r->x, r->y, r->width, r->height);
+      }
       for (m = mons; m && m->num != r->monitor; m = m->next)
         ;
       if (m)
