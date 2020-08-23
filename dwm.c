@@ -73,6 +73,7 @@ enum {
   SchemeStatus,
   SchemeTagsSel,
   SchemeTagsNorm,
+  SchemeTagsUrgent,
   SchemeInfoSel,
   SchemeInfoNorm
 }; /* color schemes */
@@ -909,10 +910,13 @@ void drawbar(Monitor *m) {
 
     drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeTagsSel
                                                              : SchemeTagsNorm]);
+
+    if(urg & 1<< i)   drw_setscheme(drw,scheme[SchemeTagsUrgent]); 
+
     wdelta = selmon->alttag ? abs(TEXTW(tags[i]) - TEXTW(tagsalt[i])) / 2 : 0;
     w = TEXTW(tags[i]);
     drw_text(drw, x, 0, w, bh, wdelta + lrpad / 2,
-             (selmon->alttag ? tagsalt[i] : tags[i]), urg & 1 << i);
+             (selmon->alttag ? tagsalt[i] : tags[i]), 0);
 
     x += w;
   }

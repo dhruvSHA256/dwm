@@ -23,13 +23,18 @@ static const char         col_gray3[]       = "#bbbbbb";
 static const char         col_gray4[]       = "#eeeeee";
 static const char         col_cyan[]        = "#005577";
 
+#define BROWSER "firefox"
+#define TERMINAL "st" 
+#define EDITOR "nvim" 
+
 static const char *colors[][3] = {
     /*                         fg          bg          border   */
     [SchemeNorm]      =        {col_gray3, "#1f2430", "#696b70"},
     [SchemeSel]       =        {col_gray4, "#1f2430", "#95e6cb"},
     [SchemeStatus]    =        {"#ffffff", "#1f2430", "#000000"}, // Statusbar right {text,background,not used // but cannot be empty}
-    [SchemeTagsSel]   =        {"#ffffff", "#1f2430", "#000000"}, // Tagbar left selected {text,background,not // used but cannot be empty}
-    [SchemeTagsNorm]  =        {"#888888", "#1f2430", "#000000"}, // Tagbar left unselected {text,background,not used but // cannot be empty}
+    [SchemeTagsSel]   =        {"#1f2430", "#a6e1ff", "#000000"}, // Tagbar left selected {text,background,not // used but cannot be empty}
+    [SchemeTagsNorm]  =        {"#ffffff", "#1f2430", "#000000"}, // Tagbar left unselected {text,background,not used but // cannot be empty}
+    [SchemeTagsUrgent]=        {"#1f2430", "#ff6666", "#000000"}, // Tagbar left unselected {text,background,not used but // cannot be empty}
     [SchemeInfoSel]   =        {col_gray4, "#1f2430", "#000000"}, // infobar middle  selected {text,background,not used but // cannot be empty}
     [SchemeInfoNorm]  =        {col_gray4, "#1f2430", "#000000"}, // infobar middle  unselected {text,background,not used // but cannot be empty}
 };
@@ -50,6 +55,7 @@ static const Rule rules[] = {
     /*  class i                     instance title           tagsmask isfloating  isterminal  noswallow isfakefullscreen  width   height    x    y   monitor */
       {"Gimp",                      NULL,    NULL,            0,          1,         0,            0,         0,           -1,    -1,       -1,   -1,  -1},
       {"Pavucontrol",               NULL,    NULL,            0,          1,         0,            0,         0,           530,   250,      1380,  0,  -1},
+      {"finder",                    NULL,    NULL,            0,          1,         0,            0,         0,           530,   250,      650,  400,  -1},
       {"firefox",                   NULL,    NULL,            1 << 1,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
       {"Chromium",                  NULL,    NULL,            1 << 1,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
       {"TelegramDesktop",           NULL,    NULL,            1 << 7,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
@@ -119,12 +125,14 @@ static char *statuscmd[]         = {"/bin/sh", "-c", NULL, NULL};
 /* commands */
 static char dmenumon[2]          = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]    = { "/home/dhruv/.config/scripts/mydmenu_run",NULL };
-static const char *termcmd[]     = {"st", NULL};
-static const char *browsercmd[]  = {"/usr/bin/firefox", NULL};
+static const char *termcmd[]     = {TERMINAL, NULL};
+static const char *browsercmd[]  = {BROWSER, NULL};
+static const char *editorcmd[]   = {TERMINAL,"-c",EDITOR,"-e",EDITOR, NULL};
 
 /* Keybindings */
 static Key keys[] = {
 
+    {MODKEY,                           XK_e,             spawn,          {.v = editorcmd } },
     {MODKEY,                           XK_space,         spawn,          {.v = dmenucmd } },
     {MODKEY  ,                         XK_Return,        spawn,          {.v = termcmd } },
     {MODKEY  ,                         XK_w,             spawn,          {.v = browsercmd } },
