@@ -1,6 +1,5 @@
 
 
-
 /* See LICENSE file for copyright and license details.
  *
  * dynamic window manager is designed like any other X client as well. It is
@@ -926,7 +925,11 @@ void drawbar(Monitor *m) {
     w = TEXTW(tags[i]);
     drw_text(drw, x, 0, w, bh, wdelta + lrpad / 2,
              (selmon->alttag ? tagsalt[i] : tags[i]), 0);
-
+    // draw a rectangle below selected tags
+// if(selmon->sel && selmon->sel->tags & 1 << i)
+// drw_rect(drw, x + 4*boxs, bh-7, 5*boxw, boxw/2,
+// 1,  urg & 1 << i);
+    
     x += w;
   }
   w = blw = TEXTW(m->ltsymbol);
@@ -2205,10 +2208,6 @@ void cycleview(const Arg *arg) {
       }
     }
   }
-
-  focus(NULL);
-  arrange(selmon);
-  updatecurrentdesktop();
 }
 
 void unfocus(Client *c, int setfocus) {
