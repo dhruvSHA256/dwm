@@ -62,6 +62,7 @@ static const Rule rules[] = {
       {"Pavucontrol",               NULL,    NULL,            1 << 3,     1,         0,            0,         0,           530,   250,     1380,  0,  -1},
       {"finder",                    NULL,    NULL,            0,          1,         0,            0,         0,           530,   250,     650,  400, -1},
       {"firefox",                   NULL,    NULL,            1 << 1,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
+      {"firefox",                   NULL,"Picture-in-Picture",1 << 1,     1,         0,           -1,         0,           710,    400,       0,    0,  -1},
       {"Chromium",                  NULL,    NULL,            1 << 1,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
       {"TelegramDesktop",           NULL,    NULL,            1 << 7,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
       {"St",                        NULL,    NULL,            0,          0,         1,            0,         0,           -1,    -1,      -1,   -1,  -1},
