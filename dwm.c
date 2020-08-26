@@ -82,7 +82,7 @@ enum {
   SchemeTagsUrgent,
   SchemeInfoSel,
   SchemeInfoNorm,
-  SchemeUnderline
+  SchemeBarBorder
 }; /* color schemes */
 enum {
   NetSupported,
@@ -893,6 +893,7 @@ Monitor *dirtomon(int dir) {
 }
 
 void drawbar(Monitor *m) {
+
   int x, w, wdelta, tw = 0;
   int boxs = drw->fonts->h / 9;
   int boxw = drw->fonts->h / 6 + 2;
@@ -948,8 +949,10 @@ void drawbar(Monitor *m) {
  
   /* draw underline under bar */
   if(drawunderline)
-  drw_setscheme(drw, scheme[SchemeUnderline]) , drw_rect(drw, 0, bh-underlinepx, 1920, underlinepx, 1,  0);
-
+  drw_setscheme(drw, scheme[SchemeBarBorder]) , drw_rect(drw, 0, bh-barborderpx, 1920, barborderpx, 1,  0);
+  if(barborder)
+  drw_rect(drw, 0, 0, 1920, barborderpx, 1,  0), drw_rect(drw, 0, 0, barborderpx, bh ,1,  0), drw_rect(drw, 1920-barborderpx,0, barborderpx, bh, 1, 0);
+  
   drw_map(drw, m->barwin, 0, 0, m->ww, bh);
 }
 
