@@ -134,6 +134,9 @@ static const char *dmenucmd[]    = { "/home/dhruv/.config/scripts/dmenu_run/dmen
 static const char *termcmd[]     = {TERMINAL, NULL};
 static const char *browsercmd[]  = {BROWSER, NULL};
 static const char *editorcmd[]   = {TERMINAL,"-c",EDITOR,"-e",EDITOR, NULL};
+static const char *chromecommand[]= {"chromium", NULL};
+static const char *mailcommand[]  = {"thunderbird", NULL};
+static const char *filecommand[]  = {"thunar", NULL};
 
 /* Keybindings */
 static Key keys[] = {
@@ -142,7 +145,11 @@ static Key keys[] = {
     {MODKEY,                           XK_space,         spawn,          {.v = dmenucmd } },
     {MODKEY  ,                         XK_Return,        spawn,          {.v = termcmd } },
     {MODKEY  ,                         XK_w,             spawn,          {.v = browsercmd } },
+    {MODKEY  ,                         XK_c,             spawn,          {.v = chromecommand} },
+    {MODKEY  ,                         XK_m,             spawn,          {.v = mailcommand} },
+    {MODKEY  ,                         XK_n,             spawn,          {.v = filecommand} },
     {MODKEY | Mod1Mask | ShiftMask,    XK_0,             defaultgaps,    {0}},
+    {MODKEY | ShiftMask,               XK_w,             switchurgent,   {.ui =  0}},
     {MODKEY | ShiftMask,               XK_0,             tag,            {.ui = ~0}},
     {MODKEY | ShiftMask,               XK_Return,        zoom,           {0}},
     {MODKEY | ShiftMask,               XK_equal,         setcfact,       {.f = +0.10}},

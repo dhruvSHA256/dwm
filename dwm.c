@@ -310,6 +310,7 @@ static void sigchld(int unused);
 static void sigdwmblocks(const Arg *arg);
 static void spawn(const Arg *arg);
 static void swallow(Client *p, Client *c);
+static void switchurgent(const Arg *arg);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void tile(Monitor *);
@@ -343,6 +344,7 @@ static int statuscmdn;
 static int dwmblockssig;
 pid_t dwmblockspid = 0;
 static char lastbutton[] = "-";
+unsigned int urgenttag = 1 << 0;
 
 /* logging dwm */
 FILE *dwmlog ;
@@ -1230,6 +1232,7 @@ void manage(Window w, XWindowAttributes *wa) {
   c->oldbw = wa->border_width;
   c->cfact = 1.0;
   updatetitle(c);
+
   if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
     c->mon = t->mon;
     c->tags = t->tags;
@@ -1280,6 +1283,7 @@ void manage(Window w, XWindowAttributes *wa) {
   c->mon->sel = c;
   arrange(c->mon);
   XMapWindow(dpy, c->win);
+
   if (term)
     swallow(term, c);
   focus(NULL);
@@ -1938,6 +1942,7 @@ void seturgent(Client *c, int urg) {
   XWMHints *wmh;
 
   c->isurgent = urg;
+  urgenttag = c->tags * urg ;
   if (!(wmh = XGetWMHints(dpy, c->win)))
     return;
   wmh->flags = urg ? (wmh->flags | XUrgencyHint) : (wmh->flags & ~XUrgencyHint);
@@ -2046,6 +2051,14 @@ void swallow(Client *p, Client *c) {
   arrange(p->mon);
   configure(p);
   updateclientlist();
+}
+
+void switchurgent(const Arg *arg){
+
+  Arg argm;
+  argm.ui = urgenttag;
+  view(&argm);
+
 }
 
 void tag(const Arg *arg) {
