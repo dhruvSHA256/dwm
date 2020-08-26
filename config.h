@@ -52,23 +52,23 @@ static const Rule rules[] = {
      *  WM_CLASS(STRING) = instance, class
      *  WM_NAME(STRING) = title
      */
-    /*  class i                     instance title           tagsmask isfloating  isterminal  noswallow isfakefullscreen  width   height    x    y   monitor */
-      {"Gimp",                      NULL,    NULL,            0,          1,         0,            0,         0,           -1,    -1,       -1,   -1,  -1},
-      {"Pavucontrol",               NULL,    NULL,            1 << 3,     1,         0,            0,         0,           530,   250,      1380,  0,  -1},
-      {"finder",                    NULL,    NULL,            0,          1,         0,            0,         0,           530,   250,      650,  400,  -1},
-      {"firefox",                   NULL,    NULL,            1 << 1,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
-      {"Chromium",                  NULL,    NULL,            1 << 1,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
-      {"TelegramDesktop",           NULL,    NULL,            1 << 7,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
-      {"St",                        NULL,    NULL,            0,          0,         1,            0,         0,           -1,    -1,      	-1,    -1,  -1},
-      {NULL,                        NULL,    "Event Tester",  0,          1,         0,            1,         0,           -1,    -1,       -1,   -1,  -1}, /* xev */
-      {"Thunar",                    NULL,    NULL,            1 << 5,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
-      {"code-oss",                  NULL,    NULL,            1 << 2,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
-      {"VSCodium",                  NULL,    NULL,            1 << 2,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
-      {"jetbrains-studio",          NULL,    NULL,            1 << 4,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
-      {"Genymotion Player",         NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
-      {"Genymotion",                NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
-      {"Microsoft Teams - Preview", NULL,    NULL,            1 << 6,     1,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
-      {"Thunderbird",               NULL,    NULL,            1 << 6,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
+    /*  class i                     instance title           tagsmask isfloating  isterminal  noswallow isfakefullscreen  width   height    x     y   monitor */
+      {"Gimp",                      NULL,    NULL,            0,          1,         0,            0,         0,           -1,    -1,      -1,   -1,  -1},
+      {"Pavucontrol",               NULL,    NULL,            1 << 3,     1,         0,            0,         0,           530,   250,     1380,  0,  -1},
+      {"finder",                    NULL,    NULL,            0,          1,         0,            0,         0,           530,   250,     650,  400, -1},
+      {"firefox",                   NULL,    NULL,            1 << 1,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
+      {"Chromium",                  NULL,    NULL,            1 << 1,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
+      {"TelegramDesktop",           NULL,    NULL,            1 << 7,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
+      {"St",                        NULL,    NULL,            0,          0,         1,            0,         0,           -1,    -1,      -1,   -1,  -1},
+      {NULL,                        NULL,    "Event Tester",  0,          1,         0,            1,         0,           -1,    -1,      -1,   -1,  -1}, /* xev */
+      {"Thunar",                    NULL,    NULL,            1 << 5,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
+      {"code-oss",                  NULL,    NULL,            1 << 2,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
+      {"VSCodium",                  NULL,    NULL,            1 << 2,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
+      {"jetbrains-studio",          NULL,    NULL,            1 << 4,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
+      {"Genymotion Player",         NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
+      {"Genymotion",                NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
+      {"Microsoft Teams - Preview", NULL,    NULL,            1 << 6,     1,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
+      {"Thunderbird",               NULL,    NULL,            1 << 6,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
 };
 
 #include "layouts/bstack.c"
