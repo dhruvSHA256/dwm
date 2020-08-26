@@ -14,7 +14,7 @@ static const unsigned int gappih            = 15;   /* horiz inner gap between w
 static const unsigned int gappiv            = 15;   /* vert inner gap between windows */
 static const unsigned int gappoh            = 15;   /* horiz outer gap between windows and screen edge */
 static const unsigned int gappov            = 15;   /* vert outer gap between windows and screen edge */
-static const int          smartgaps         = 0;    /* 1 means no outer gap when there is only one window */
+static const int          smartgaps         = 1;    /* 1 means no outer gap when there is only one window */
 static const int          vertpad           = 0;    /* vertical padding of bar */
 static const int          sidepad           = 0;    /* horizontal padding of bar */
 static const char         col_gray1[]       = "#222222";
@@ -54,7 +54,7 @@ static const Rule rules[] = {
      */
     /*  class i                     instance title           tagsmask isfloating  isterminal  noswallow isfakefullscreen  width   height    x    y   monitor */
       {"Gimp",                      NULL,    NULL,            0,          1,         0,            0,         0,           -1,    -1,       -1,   -1,  -1},
-      {"Pavucontrol",               NULL,    NULL,            0,          1,         0,            0,         0,           530,   250,      1380,  0,  -1},
+      {"Pavucontrol",               NULL,    NULL,            1 << 3,     1,         0,            0,         0,           530,   250,      1380,  0,  -1},
       {"finder",                    NULL,    NULL,            0,          1,         0,            0,         0,           530,   250,      650,  400,  -1},
       {"firefox",                   NULL,    NULL,            1 << 1,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
       {"Chromium",                  NULL,    NULL,            1 << 1,     0,         0,           -1,         0,           -1,    -1,       -1,   -1,  -1},
@@ -124,7 +124,7 @@ static char *statuscmd[]         = {"/bin/sh", "-c", NULL, NULL};
 
 /* commands */
 static char dmenumon[2]          = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[]    = { "/home/dhruv/.config/scripts/mydmenu_run",NULL };
+static const char *dmenucmd[]    = { "/home/dhruv/.config/scripts/dmenu_run/dmenu_run",NULL };
 static const char *termcmd[]     = {TERMINAL, NULL};
 static const char *browsercmd[]  = {BROWSER, NULL};
 static const char *editorcmd[]   = {TERMINAL,"-c",EDITOR,"-e",EDITOR, NULL};
