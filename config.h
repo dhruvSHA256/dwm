@@ -1,6 +1,8 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
+static const unsigned int drawunderline     = 1;    /* draw underline under bar*/
+static const unsigned int underlinepx       = 2;    /* size of underline under bar*/
 static const unsigned int notitle           = 1;    /* display window name*/
 static const unsigned int borderpx          = 3;    /* border pixel of windows */
 static const unsigned int snap              = 3;    /* snap pixel */
@@ -28,7 +30,7 @@ static const char         col_cyan[]        = "#005577";
 #define EDITOR "nvim" 
 
 static const char *colors[][3] = {
-    /*                         fg          bg          border   */
+    /*                         fg             bg        border   */
     [SchemeNorm]      =        {col_gray3, "#1f2430", "#696b70"},
     [SchemeSel]       =        {col_gray4, "#1f2430", "#95e6cb"},
     [SchemeStatus]    =        {"#ffffff", "#1f2430", "#000000"}, // Statusbar right {text,background,not used // but cannot be empty}
@@ -37,6 +39,7 @@ static const char *colors[][3] = {
     [SchemeTagsUrgent]=        {"#1f2430", "#ff6666", "#000000"}, // Tagbar left unselected {text,background,not used but // cannot be empty}
     [SchemeInfoSel]   =        {col_gray4, "#1f2430", "#000000"}, // infobar middle  selected {text,background,not used but // cannot be empty}
     [SchemeInfoNorm]  =        {col_gray4, "#1f2430", "#000000"}, // infobar middle  unselected {text,background,not used // but cannot be empty}
+    [SchemeUnderline] =        {"#a6e1ff", "#a6e1ff", "#a6e1ff"},
 };
 
 static const char *const autostart[] = {

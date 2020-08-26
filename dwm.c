@@ -81,7 +81,8 @@ enum {
   SchemeTagsNorm,
   SchemeTagsUrgent,
   SchemeInfoSel,
-  SchemeInfoNorm
+  SchemeInfoNorm,
+  SchemeUnderline
 }; /* color schemes */
 enum {
   NetSupported,
@@ -925,10 +926,6 @@ void drawbar(Monitor *m) {
     w = TEXTW(tags[i]);
     drw_text(drw, x, 0, w, bh, wdelta + lrpad / 2,
              (selmon->alttag ? tagsalt[i] : tags[i]), 0);
-    // draw a rectangle below selected tags
-// if(selmon->sel && selmon->sel->tags & 1 << i)
-// drw_rect(drw, x + 4*boxs, bh-7, 5*boxw, boxw/2,
-// 1,  urg & 1 << i);
     
     x += w;
   }
@@ -948,6 +945,11 @@ void drawbar(Monitor *m) {
       drw_rect(drw, x, 0, w, bh, 1, 1);
     }
   }
+ 
+  /* draw underline under bar */
+  if(drawunderline)
+  drw_setscheme(drw, scheme[SchemeUnderline]) , drw_rect(drw, 0, bh-underlinepx, 1920, underlinepx, 1,  0);
+
   drw_map(drw, m->barwin, 0, 0, m->ww, bh);
 }
 
