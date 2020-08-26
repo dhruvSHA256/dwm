@@ -1,6 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
+static const unsigned int floatindicator    = 0;    /* draw a rectanglular indicator for floating windows */
 static const unsigned int drawunderline     = 1;    /* draw only underline under bar */
 static const unsigned int barborder         = 0;    /* draw border around bar , overrider drawunderline*/
 static const unsigned int barborderpx       = 2;    /* size of underline under bar*/
