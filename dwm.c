@@ -2188,7 +2188,7 @@ void cycleview(const Arg *arg) {
   }
 
   if (arg->i == 3) {
-    for (j = currtag >> 1 ; j >= 0; j >>=1) {
+    for (j = currtag >> 1 ; j >0; j >>=1) {
       if (occ & j) {
         argm.ui = j;
         view(&argm);
