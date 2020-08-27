@@ -969,7 +969,7 @@ void drawbar(Monitor *m) {
   drw_setscheme(drw, scheme[SchemeBarBorder]) , drw_rect(drw, 0, bh-barborderpx, sw, barborderpx, 1,  0);
 
   if(barborder)
-  drw_rect(drw, 0, 0, 1920, barborderpx, 1,  0), drw_rect(drw, 0, 0, barborderpx, bh ,1,  0), drw_rect(drw, 1920-barborderpx,0, barborderpx, bh, 1, 0);
+  drw_rect(drw, 0, 0, sw, barborderpx, 1,  0), drw_rect(drw, 0, 0, barborderpx, bh ,1,  0), drw_rect(drw, sw-barborderpx,0, barborderpx, bh, 1, 0);
   
   drw_map(drw, m->barwin, 0, 0, m->ww, bh);
 }
