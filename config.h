@@ -6,7 +6,7 @@ static const unsigned int drawunderline     = 1;    /* draw only underline under
 static const unsigned int barborder         = 0;    /* draw border around bar , overrider drawunderline*/
 static const unsigned int barborderpx       = 2;    /* size of underline under bar*/
 static const unsigned int notitle           = 1;    /* display window name*/
-static const unsigned int borderpx          = 3;    /* border pixel of windows */
+static unsigned int borderpx          = 3;    /* border pixel of windows */
 static const unsigned int snap              = 3;    /* snap pixel */
 static const int          swallowfloating   = 0;    /* 1 means swallow floating windows by default */
 static const int          showbar           = 1;    /* 0 means no bar */
@@ -45,6 +45,7 @@ static const char *colors[][3] = {
 };
 
 static const char *const autostart[] = {
+// "xrdb", "-merge", "/home/dhruv/.config/X11/dwm.Xresources",NULL,
     NULL /* terminate */
 };
 
@@ -138,6 +139,25 @@ static const char *chromecommand[]= {"chromium", NULL};
 static const char *mailcommand[]  = {"thunderbird", NULL};
 static const char *filecommand[]  = {"thunar", NULL};
 
+/*
+ * Xresources preferences to load at startup
+ */
+ResourcePref resources[] = {
+// { "normbgcolor",        STRING,  &normbgcolor },
+// { "normbordercolor",    STRING,  &normbordercolor },
+// { "normfgcolor",        STRING,  &normfgcolor },
+// { "selbgcolor",         STRING,  &selbgcolor },
+// { "selbordercolor",     STRING,  &selbordercolor },
+// { "selfgcolor",         STRING,  &selfgcolor },
+{ "borderpx",          	INTEGER, &borderpx },
+// { "snap",          		INTEGER, &snap },
+// { "showbar",          	INTEGER, &showbar },
+// { "topbar",          	INTEGER, &topbar },
+// { "nmaster",          	INTEGER, &nmaster },
+// { "resizehints",       	INTEGER, &resizehints },
+// { "mfact",      	 	FLOAT,   &mfact },
+};
+
 /* Keybindings */
 static Key keys[] = {
 
@@ -160,7 +180,7 @@ static Key keys[] = {
     {MODKEY | ShiftMask,               XK_q,             quit,           {0}},
     {MODKEY | ShiftMask,               XK_space,         togglefloating, {0}},
     {MODKEY,                           XK_comma,         focusmon,       {.i = -1 } },
-    {MODKEY | Mod1Mask,                XK_n,             togglealttag,   {0} },
+    {MODKEY | ShiftMask,               XK_n,             togglealttag,   {0} },
 
     /* Resize  gaps */
     {MODKEY|Mod1Mask,                  XK_h,             incrgaps,       {.i = +1 } },
