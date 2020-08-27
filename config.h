@@ -12,7 +12,8 @@ static const int          swallowfloating   = 0;    /* 1 means swallow floating 
 static const int          showbar           = 1;    /* 0 means no bar */
 static const int          topbar            = 1;    /* 0 means bottom bar */
 static const int          user_bh           = 30;   /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
-static const char         *fonts[]          = { "JetBrains Mono NL:style=Regular:size=9:antialias=true:autohint=true", "Symbols Nerd Font:style=2048-em:size=12"};
+// static const char         *fonts[]          = { "JetBrains Mono NL:style=Regular:size=9:antialias=true:autohint=true", "Symbols Nerd Font:style=2048-em:size=12"};
+static const char         *fonts[]          = {"Symbols Nerd Font:style=2048-em:size=12","Hurmit Nerd Font Mono:style=medium:size=9"};
 static const char         dmenufont[]       = { "JetBrains Mono:pixelsize=18:antialias=true:autohint=true"};
 static const unsigned int gappih            = 15;   /* horiz inner gap between windows */
 static const unsigned int gappiv            = 15;   /* vert inner gap between windows */
