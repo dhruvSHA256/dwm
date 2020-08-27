@@ -966,7 +966,8 @@ void drawbar(Monitor *m) {
  
   /* draw underline under bar */
   if(drawunderline)
-  drw_setscheme(drw, scheme[SchemeBarBorder]) , drw_rect(drw, 0, bh-barborderpx, 1920, barborderpx, 1,  0);
+  drw_setscheme(drw, scheme[SchemeBarBorder]) , drw_rect(drw, 0, bh-barborderpx, sw, barborderpx, 1,  0);
+
   if(barborder)
   drw_rect(drw, 0, 0, 1920, barborderpx, 1,  0), drw_rect(drw, 0, 0, barborderpx, bh ,1,  0), drw_rect(drw, 1920-barborderpx,0, barborderpx, bh, 1, 0);
   
