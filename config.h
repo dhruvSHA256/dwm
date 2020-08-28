@@ -22,13 +22,10 @@ static const unsigned int gappov            = 15;   /* vert outer gap between wi
 static const int          smartgaps         = 0;    /* 1 means no outer gap when there is only one window */
 static const int          vertpad           = 0;    /* vertical padding of bar */
 static const int          sidepad           = 0;    /* horizontal padding of bar */
-static const char         col_gray1[]       = "#222222";
-static const char         col_gray2[]       = "#444444";
 static const char         col_gray3[]       = "#bbbbbb";
 static const char         col_gray4[]       = "#eeeeee";
-static const char         col_cyan[]        = "#005577";
 #define OPAQUE                  0xffU
-static const unsigned int baralpha = 0xf0;
+static const unsigned int baralpha = 0xff;
 static const unsigned int borderalpha = OPAQUE;
 
 #define BROWSER "firefox"
@@ -37,10 +34,8 @@ static const unsigned int borderalpha = OPAQUE;
 
 static const char *colors[][3] = {
     /*                         fg             bg        border   */
-// [SchemeNorm]      =        {col_gray3, "#1f2430", "#696b70"},
-// [SchemeSel]       =        {col_gray4, "#1f2430", "#95e6cb"},
-    [SchemeNorm]      =        {"#ffffff", "#000000", "#696b70"},
-    [SchemeSel]       =        {"#ffffff", "#000000", "#95e6cb"},
+    [SchemeNorm]      =        {col_gray3, "#1f2430", "#696b70"},
+    [SchemeSel]       =        {col_gray4, "#1f2430", "#95e6cb"},
     [SchemeStatus]    =        {"#ffffff", "#1f2430", "#000000"}, // Statusbar right {text,background,not used // but cannot be empty}
     [SchemeTagsSel]   =        {"#1f2430", "#a6e1ff", "#000000"}, // Tagbar left selected {text,background,not // used but cannot be empty}
     [SchemeTagsNorm]  =        {"#ffffff", "#1f2430", "#000000"}, // Tagbar left unselected {text,background,not used but // cannot be empty}
@@ -53,7 +48,7 @@ static const char *colors[][3] = {
 static const unsigned int alphas[][3] = {
     /*               fg      bg        border     */
     [SchemeNorm] = {OPAQUE, baralpha, borderalpha},
-    [SchemeNorm] = {OPAQUE, baralpha, borderalpha},
+    [SchemeSel] = {OPAQUE, baralpha, borderalpha},
     [SchemeStatus] = {OPAQUE, baralpha, borderalpha},
     [SchemeTagsSel] = {OPAQUE, baralpha, borderalpha},
     [SchemeTagsNorm] = {OPAQUE, baralpha, borderalpha},
@@ -275,6 +270,8 @@ static Button buttons[] = {
     /* click                event mask      button          function       argument
      */
     {ClkLtSymbol,              0,           Button1,         setlayout,      {0}},
+    {ClkMpcNextSymbol,              0,           Button1,        spawn,          {.v = editorcmd }},
+    {ClkMpcPrevSymbol,              0,           Button1,        spawn,          {.v = termcmd }},
     {ClkLtSymbol,              0,           Button3,         setlayout,      {.v = &layouts[2]}},
     {ClkWinTitle,              0,           Button2,         zoom,           {0}},
     {ClkClientWin,           MODKEY,        Button1,         movemouse,      {0}},
