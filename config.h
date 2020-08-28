@@ -27,6 +27,9 @@ static const char         col_gray2[]       = "#444444";
 static const char         col_gray3[]       = "#bbbbbb";
 static const char         col_gray4[]       = "#eeeeee";
 static const char         col_cyan[]        = "#005577";
+#define OPAQUE                  0xffU
+static const unsigned int baralpha = 0xf0;
+static const unsigned int borderalpha = OPAQUE;
 
 #define BROWSER "firefox"
 #define TERMINAL "st" 
@@ -34,8 +37,10 @@ static const char         col_cyan[]        = "#005577";
 
 static const char *colors[][3] = {
     /*                         fg             bg        border   */
-    [SchemeNorm]      =        {col_gray3, "#1f2430", "#696b70"},
-    [SchemeSel]       =        {col_gray4, "#1f2430", "#95e6cb"},
+// [SchemeNorm]      =        {col_gray3, "#1f2430", "#696b70"},
+// [SchemeSel]       =        {col_gray4, "#1f2430", "#95e6cb"},
+    [SchemeNorm]      =        {"#ffffff", "#000000", "#696b70"},
+    [SchemeSel]       =        {"#ffffff", "#000000", "#95e6cb"},
     [SchemeStatus]    =        {"#ffffff", "#1f2430", "#000000"}, // Statusbar right {text,background,not used // but cannot be empty}
     [SchemeTagsSel]   =        {"#1f2430", "#a6e1ff", "#000000"}, // Tagbar left selected {text,background,not // used but cannot be empty}
     [SchemeTagsNorm]  =        {"#ffffff", "#1f2430", "#000000"}, // Tagbar left unselected {text,background,not used but // cannot be empty}
@@ -45,6 +50,18 @@ static const char *colors[][3] = {
     [SchemeBarBorder] =        {"#a6e1ff", "#a6e1ff", "#a6e1ff"}, // border around bar
 };
 
+static const unsigned int alphas[][3] = {
+    /*               fg      bg        border     */
+    [SchemeNorm] = {OPAQUE, baralpha, borderalpha},
+    [SchemeNorm] = {OPAQUE, baralpha, borderalpha},
+    [SchemeStatus] = {OPAQUE, baralpha, borderalpha},
+    [SchemeTagsSel] = {OPAQUE, baralpha, borderalpha},
+    [SchemeTagsNorm] = {OPAQUE, baralpha, borderalpha},
+    [SchemeTagsUrgent] = {OPAQUE, baralpha, borderalpha},
+    [SchemeInfoSel] = {OPAQUE, baralpha, borderalpha},
+    [SchemeInfoNorm] = {OPAQUE, baralpha, borderalpha},
+    [SchemeBarBorder] = {OPAQUE, baralpha, borderalpha},
+};
 static const char *const autostart[] = {
 // "xrdb", "-merge", "/home/dhruv/.config/X11/dwm.Xresources",NULL,
     NULL /* terminate */
@@ -95,7 +112,7 @@ static const int resizehints  = 1;    /* 1 means respect size hints in tiled res
 
 static const Layout layouts[] = {
     /* symbol   arrange function */
-    {"",       spiral},
+    {"\\",       spiral},
     {"",       tile},   
     {"<>",      NULL}, 
     {"类",      monocle},      
