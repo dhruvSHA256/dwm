@@ -270,8 +270,6 @@ static Button buttons[] = {
     /* click                event mask      button          function       argument
      */
     {ClkLtSymbol,              0,           Button1,         setlayout,      {0}},
-    {ClkMpcNextSymbol,              0,           Button1,        spawn,          {.v = editorcmd }},
-    {ClkMpcPrevSymbol,              0,           Button1,        spawn,          {.v = termcmd }},
     {ClkLtSymbol,              0,           Button3,         setlayout,      {.v = &layouts[2]}},
     {ClkWinTitle,              0,           Button2,         zoom,           {0}},
     {ClkClientWin,           MODKEY,        Button1,         movemouse,      {0}},

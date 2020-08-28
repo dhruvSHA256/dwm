@@ -113,9 +113,7 @@ enum {
   ClkWinTitle,
   ClkClientWin,
   ClkRootWin,
-  ClkLast,
-  ClkMpcPrevSymbol,
-  ClkMpcNextSymbol
+  ClkLast
 }; /* clicks */
 
 typedef union {
@@ -620,10 +618,6 @@ void buttonpress(XEvent *e) {
       arg.ui = 1 << i;
     } else if (ev->x < x + blw)
       click = ClkLtSymbol;
-     else if (ev->x < x + blw + TEXTW(""))
-      click = ClkMpcPrevSymbol;
-     else if (ev->x < x + blw + TEXTW("")+ TEXTW(""))
-      click = ClkMpcNextSymbol;
     else if (ev->x > (x = selmon->ww - TEXTW(stext) + lrpad)) {
       click = ClkStatusText;
 
@@ -961,15 +955,6 @@ void drawbar(Monitor *m) {
   w = blw = TEXTW(m->ltsymbol);
   drw_setscheme(drw, scheme[SchemeTagsNorm]);
   x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
-
-  // mpc buttons 
-  w = TEXTW("");
-  drw_setscheme(drw, scheme[SchemeTagsNorm]);
-  x = drw_text(drw, x, 0, w, bh, lrpad / 2,"", 0);
-  w = TEXTW("");
-  drw_setscheme(drw, scheme[SchemeTagsNorm]);
-  x = drw_text(drw, x, 0, w, bh, lrpad / 2,"", 0);
-
 
   if ((w = m->ww - tw - x) > bh) {
     if (m->sel) {
