@@ -24,8 +24,8 @@ static const int          vertpad           = 0;    /* vertical padding of bar *
 static const int          sidepad           = 0;    /* horizontal padding of bar */
 static const char         col_gray3[]       = "#bbbbbb";
 static const char         col_gray4[]       = "#eeeeee";
-#define OPAQUE                  0xff
-static const unsigned int baralpha = 0x9f;
+#define OPAQUE                  0xffU
+static const unsigned int baralpha = 0xff;
 static const unsigned int borderalpha = OPAQUE;
 
 #define BROWSER "firefox"

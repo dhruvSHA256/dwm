@@ -1848,14 +1848,8 @@ void incrivgaps(const Arg *arg) {
 }
 
 void setlayout(const Arg *arg) {
-
   if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt])
-  {
-    Layout *l;
-    for (l = (Layout *)layouts; l != selmon->lt[selmon->sellt]; l++) ;
-    selmon->lt[selmon->sellt] = l+1;
-  }
-
+    selmon->sellt ^= 1;
   if (arg && arg->v)
     selmon->lt[selmon->sellt] = (Layout *)arg->v;
   strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol,
@@ -2198,6 +2192,7 @@ void toggleview(const Arg *arg) {
 void cycleview(const Arg *arg) {
   unsigned int j,  occ = 0 , currtag = selmon->tagset[selmon->seltags];
   Client *c;
+  Arg argm;
 
   for (c = selmon->clients; c; c = c->next)
     occ |= c->tags == 255 ? 0 : c->tags;
@@ -2205,10 +2200,12 @@ void cycleview(const Arg *arg) {
   if (arg->i == 0) {
     for (j = currtag >> 1 ; j >= 0; j >>=1) {
       if (j <= 0) {
-        view(&((Arg){.ui = (1 << 8)}));
+        argm.ui = 1 << 8 ;
+        view(&argm);
         return;
       } else {
-        view(&((Arg){.ui = (j)}));
+        argm.ui = j;
+        view(&argm);
         return;
       }
     }
@@ -2217,10 +2214,12 @@ void cycleview(const Arg *arg) {
   if (arg->i == 1) {
     for (j = currtag << 1 ; j <= 1 << 9; j <<=1 ) {
       if (j > 1 << 8 ) {
-        view(&((Arg){.ui = (1 << 0)}));
+        argm.ui = 1 << 0;
+        view(&argm);
         return;
       } else {
-        view(&((Arg){.ui = (j)}));
+        argm.ui = j;
+        view(&argm);
         return;
       }
     }
@@ -2229,7 +2228,8 @@ void cycleview(const Arg *arg) {
   if (arg->i == 3) {
     for (j = currtag >> 1 ; j >0; j >>=1) {
       if (occ & j) {
-        view(&((Arg){.ui = (j)}));
+        argm.ui = j;
+        view(&argm);
         return;
       } else {
         continue;
@@ -2240,7 +2240,8 @@ void cycleview(const Arg *arg) {
   if (arg->i == 4) {
     for (j = currtag << 1 ; j <= 1 << 8; j <<=1 ) {
       if (occ & j ) {
-        view(&((Arg){.ui = (j)}));
+        argm.ui = j;
+        view(&argm);
         return;
       } else {
         continue;
