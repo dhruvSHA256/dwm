@@ -46,19 +46,18 @@ static const char *colors[][3] = {
 };
 
 static const unsigned int alphas[][3] = {
-    /*               fg      bg        border     */
-    [SchemeNorm] = {OPAQUE, baralpha, borderalpha},
-    [SchemeSel] = {OPAQUE, baralpha, borderalpha},
-    [SchemeStatus] = {OPAQUE, baralpha, borderalpha},
-    [SchemeTagsSel] = {OPAQUE, baralpha, borderalpha},
-    [SchemeTagsNorm] = {OPAQUE, baralpha, borderalpha},
+    /*                      fg      bg        border     */
+    [SchemeNorm]       = {OPAQUE, baralpha, borderalpha},
+    [SchemeSel]        = {OPAQUE, baralpha, borderalpha},
+    [SchemeStatus]     = {OPAQUE, baralpha, borderalpha},
+    [SchemeTagsSel]    = {OPAQUE, baralpha, borderalpha},
+    [SchemeTagsNorm]   = {OPAQUE, baralpha, borderalpha},
     [SchemeTagsUrgent] = {OPAQUE, baralpha, borderalpha},
-    [SchemeInfoSel] = {OPAQUE, baralpha, borderalpha},
-    [SchemeInfoNorm] = {OPAQUE, baralpha, borderalpha},
-    [SchemeBarBorder] = {OPAQUE, baralpha, borderalpha},
+    [SchemeInfoSel]    = {OPAQUE, baralpha, borderalpha},
+    [SchemeInfoNorm]   = {OPAQUE, baralpha, borderalpha},
+    [SchemeBarBorder]  = {OPAQUE, baralpha, borderalpha},
 };
 static const char *const autostart[] = {
-// "xrdb", "-merge", "/home/dhruv/.config/X11/dwm.Xresources",NULL,
     NULL /* terminate */
 };
 
@@ -67,17 +66,12 @@ static char *tags[]          = {"", "", "", "", "", "", "",
 static const char *tagsalt[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
 static const Rule rules[] = {
-    /* xprop(1):
-     *  WM_CLASS(STRING) = instance, class
-     *  WM_NAME(STRING) = title
-     */
     /*  class i                     instance title           tagsmask isfloating  isterminal  noswallow isfakefullscreen  width   height    x     y   monitor */
       {"Gimp",                      NULL,    NULL,            0,          1,         0,            0,         0,           -1,    -1,      -1,   -1,  -1},
       {"Pavucontrol",               NULL,    NULL,            1 << 3,     1,         0,            0,         0,           530,   250,     1380,  0,  -1},
       {"finder",                    NULL,    NULL,            0,          1,         0,            0,         0,           530,   250,     650,  400, -1},
       {"firefox",                   NULL,    NULL,            1 << 1,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
       {"firefox",                   NULL,"Picture-in-Picture",1 << 1,     1,         0,           -1,         0,           710,   400,     1188, 40,  -1},
-      {"Chromium",                  NULL,    NULL,            1 << 1,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
       {"TelegramDesktop",           NULL,    NULL,            1 << 7,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
       {"St",                        NULL,    NULL,            0,          0,         1,            0,         0,           -1,    -1,      -1,   -1,  -1},
       {NULL,                        NULL,    "Event Tester",  0,          1,         0,            1,         0,           -1,    -1,      -1,   -1,  -1}, /* xev */
@@ -263,9 +257,6 @@ static Key keys[] = {
     TAGKEYS(XK_9, 8)
 };
 
-/* button definitions */
-/* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
- * ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
     /* click                event mask      button          function       argument
      */
