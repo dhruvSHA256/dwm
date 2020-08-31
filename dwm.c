@@ -258,7 +258,7 @@ static void configure(Client *c);
 static void configurenotify(XEvent *e);
 static void configurerequest(XEvent *e);
 static void cyclelayout(const Arg *arg);
-static void cycleview(const Arg *arg);
+static void shiftview(const Arg *arg);
 static void defaultgaps(const Arg *arg);
 static void destroynotify(XEvent *e);
 static void detach(Client *c);
@@ -2189,58 +2189,36 @@ void toggleview(const Arg *arg) {
   updatecurrentdesktop();
 }
 
-void cycleview(const Arg *arg) {
-  unsigned int j,  occ = 0 , currtag = selmon->tagset[selmon->seltags];
-  Client *c;
+void
+shiftview(const Arg *arg)
+{
+	Arg a;
+	Client *c;
+	unsigned visible = 0;
+	int i = arg->i;
+	int count = 0;
+	int nextseltags, curseltags = selmon->tagset[selmon->seltags];
 
-  for (c = selmon->clients; c; c = c->next)
-    occ |= c->tags == 255 ? 0 : c->tags;
+	do {
+		if(i > 0) // left circular shift
+			nextseltags = (curseltags << i) | (curseltags >> (LENGTH(tags) - i));
 
-  if (arg->i == 0) {
-    for (j = currtag >> 1 ; j >= 0; j >>=1) {
-      if (j <= 0) {
-        view((&((Arg){.ui = (1 << 8)})));
-        return;
-      } else {
-        view((&((Arg){.ui = (j)})));
-        return;
-      }
-    }
-  }
+		else // right circular shift
+			nextseltags = curseltags >> (- i) | (curseltags << (LENGTH(tags) + i));
 
-  if (arg->i == 1) {
-    for (j = currtag << 1 ; j <= 1 << 9; j <<=1 ) {
-      if (j > 1 << 8 ) {
-        view((&((Arg){.ui = (1 << 0)})));
-        return;
-      } else {
-        view((&((Arg){.ui = (j)})));
-        return;
-      }
-    }
-  }
+                // Check if tag is visible
+		for (c = selmon->clients; c && !visible; c = c->next)
+			if (nextseltags & c->tags) {
+				visible = 1;
+				break;
+			}
+		i += arg->i;
+	} while (!visible && ++count < 10);
 
-  if (arg->i == 3) {
-    for (j = currtag >> 1 ; j >0; j >>=1) {
-      if (occ & j) {
-        view((&((Arg){.ui = (j)})));
-        return;
-      } else {
-        continue;
-      }
-    }
-  }
-
-  if (arg->i == 4) {
-    for (j = currtag << 1 ; j <= 1 << 8; j <<=1 ) {
-      if (occ & j ) {
-        view((&((Arg){.ui = (j)})));
-        return;
-      } else {
-        continue;
-      }
-    }
-  }
+	if (count < 10) {
+		a.i = nextseltags;
+		view(&a);
+	}
 }
 
 void unfocus(Client *c, int setfocus) {

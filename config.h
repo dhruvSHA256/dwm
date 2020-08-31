@@ -236,11 +236,8 @@ static Key keys[] = {
     {MODKEY,                           XK_Right,         moveresize,     {.v = "10x 0y 0w 0h"}},
     {MODKEY,                           XK_Up,            moveresize,     {.v = "0x -10y 0w 0h"}},
 
-    
-    {MODKEY | ShiftMask,               XK_l,             cycleview,      {.i = 1}},
-    {MODKEY | ShiftMask,               XK_h,             cycleview,      {.i = 0}},
-    {MODKEY,                           XK_Tab,           cycleview,      {.i = 4}},
-    {MODKEY | ShiftMask,               XK_Tab,           cycleview,      {.i = 3}},
+    {MODKEY,                           XK_Tab,           shiftview,      {.i = +1}},
+    {MODKEY | ShiftMask,               XK_Tab,           shiftview,      {.i = -1}},
     {MODKEY | ShiftMask,               XK_g,             goyo,           {.v = &layouts[1]}},
 
     {MODKEY | ControlMask,             XK_comma,         cyclelayout,    {.i = -1}},
