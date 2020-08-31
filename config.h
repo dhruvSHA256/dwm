@@ -2,7 +2,7 @@
 
 /* appearance */
 static const unsigned int floatindicator    = 0;    /* draw a rectanglular indicator for floating windows */
-static const unsigned int drawunderline     = 1;    /* draw only underline under bar */
+static const unsigned int drawunderline     = 0;    /* draw only underline under bar */
 static const unsigned int barborder         = 0;    /* draw border around bar , overrider drawunderline*/
 static const unsigned int barborderpx       = 2;    /* size of underline under bar*/
 static const unsigned int notitle           = 1;    /* display window name*/
@@ -50,9 +50,9 @@ static const unsigned int alphas[][3] = {
     [SchemeNorm]       = {OPAQUE, baralpha, borderalpha},
     [SchemeSel]        = {OPAQUE, baralpha, borderalpha},
     [SchemeStatus]     = {OPAQUE, baralpha, borderalpha},
-    [SchemeTagsSel]    = {OPAQUE, baralpha, borderalpha},
+    [SchemeTagsSel]    = {OPAQUE, OPAQUE, borderalpha},
     [SchemeTagsNorm]   = {OPAQUE, baralpha, borderalpha},
-    [SchemeTagsUrgent] = {OPAQUE, baralpha, borderalpha},
+    [SchemeTagsUrgent] = {OPAQUE, OPAQUE, borderalpha},
     [SchemeInfoSel]    = {OPAQUE, baralpha, borderalpha},
     [SchemeInfoNorm]   = {OPAQUE, baralpha, borderalpha},
     [SchemeBarBorder]  = {OPAQUE, baralpha, borderalpha},
