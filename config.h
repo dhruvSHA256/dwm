@@ -30,19 +30,7 @@ static const unsigned int borderalpha = OPAQUE;
 
 #define BROWSER "firefox"
 #define TERMINAL "st" 
-#define EDITOR "nvim"
-
-typedef struct {
-  const char *name;
-  const void *cmd;
-} Sp;
-
-const char *spcmd1[] = {"st", "-n", "spterm", "-g", "120x34", NULL};
-
-static Sp scratchpads[] = {
-    /* name          cmd  */
-    {"spterm", spcmd1},
-};
+#define EDITOR "nvim" 
 
 static const char *colors[][3] = {
     /*                         fg             bg        border   */
@@ -95,7 +83,6 @@ static const Rule rules[] = {
       {"Genymotion",                NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
       {"Microsoft Teams - Preview", NULL,    NULL,            1 << 6,     1,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
       {"Thunderbird",               NULL,    NULL,            1 << 6,     0,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
-     	{ NULL,                     "spterm",  NULL,            SPTAG(0),   1,         0,           -1,         0,           -1,    -1,      -1,   -1,  -1},
 };
 
 #include "layouts/bstack.c"
@@ -256,8 +243,6 @@ static Key keys[] = {
     {MODKEY | ControlMask,             XK_comma,         cyclelayout,    {.i = -1}},
     {MODKEY | ControlMask,             XK_period,        cyclelayout,    {.i = +1}},
   
-    { MODKEY,            			XK_y,  	   togglescratch,  {.ui = 0 } },
-
     TAGKEYS(XK_1, 0) 
     TAGKEYS(XK_2, 1) 
     TAGKEYS(XK_3, 2) 
@@ -277,7 +262,7 @@ static Button buttons[] = {
     {ClkWinTitle,              0,           Button2,         zoom,           {0}},
     {ClkClientWin,           MODKEY,        Button1,         movemouse,      {0}},
     {ClkClientWin,           MODKEY,        Button2,         togglefloating, {0}},
-    { ClkClientWin,          MODKEY,        Button1,         resizemouse,    {0} },
+    {ClkClientWin,           MODKEY,        Button3,         resizemouse,    {0}},
     {ClkTagBar,                0,           Button1,         view,           {0}},
     {ClkTagBar,                0,           Button3,         toggleview,     {0}},
     {ClkTagBar,              MODKEY,        Button1,         tag,            {0}},

@@ -64,10 +64,7 @@
 #define MOUSEMASK (BUTTONMASK | PointerMotionMask)
 #define WIDTH(X) ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X) ((X)->h + 2 * (X)->bw)
-#define NUMTAGS (LENGTH(tags) + LENGTH(scratchpads))
-#define TAGMASK ((1 << NUMTAGS) - 1)
-#define SPTAG(i) ((1 << LENGTH(tags)) << (i))
-#define SPTAGMASK (((1 << LENGTH(scratchpads)) - 1) << LENGTH(tags))
+#define TAGMASK ((1 << LENGTH(tags)) - 1)
 #define TEXTW(X) (drw_fontset_getwidth(drw, (X)) + lrpad)
 #define TAGSLENGTH (LENGTH(tags))
 #define LOG "/home/dhruv/.config/dwm/dwm.log"
@@ -331,7 +328,6 @@ static void tagmon(const Arg *arg);
 static void tile(Monitor *);
 static void togglealttag();
 static void togglebar(const Arg *arg);
-static void togglescratch(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglefullscr(const Arg *arg);
 static void togglegaps(const Arg *arg);
@@ -438,6 +434,7 @@ void applyrules(Client *c) {
   c->isfloating = 0;
   c->tags = 0;
  
+  
 
   XGetClassHint(dpy, c->win, &ch);
   class = ch.res_class ? ch.res_class : broken;
@@ -453,18 +450,10 @@ void applyrules(Client *c) {
       c->isfloating = r->isfloating;
       c->isfakefullscreen = r->isfakefullscreen;
       c->tags |= r->tags;
-      
-
       if(c->isfloating){
         if(!(r->x < 0 && r->y < 0 && r->width < 0 && r->height < 0))
         resizeclient(c, r->x, r->y, r->width, r->height);
       }
-
-      if ((r->tags & SPTAGMASK) && r->isfloating) {
-        c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
-        c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
-      }
-
       for (m = mons; m && m->num != r->monitor; m = m->next)
         ;
       if (m)
@@ -475,8 +464,8 @@ void applyrules(Client *c) {
     XFree(ch.res_class);
   if (ch.res_name)
     XFree(ch.res_name);
-  
-  c->tags = c->tags & TAGMASK ? c->tags & TAGMASK : (c->mon->tagset[c->mon->seltags] & ~SPTAGMASK);
+  c->tags =
+      c->tags & TAGMASK ? c->tags & TAGMASK : c->mon->tagset[c->mon->seltags];
 }
 
 int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact) {
@@ -1987,10 +1976,6 @@ void showhide(Client *c) {
   if (!c)
     return;
   if (ISVISIBLE(c)) {
-    if ((c->tags & SPTAGMASK) && c->isfloating) {
-      c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
-      c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
-    }
     /* show clients top down */
     XMoveWindow(dpy, c->win, c->x, c->y);
     if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) &&
@@ -2159,31 +2144,6 @@ void togglebar(const Arg *arg) {
   XMoveResizeWindow(dpy, selmon->barwin, selmon->wx + sp, selmon->by + vp,
                     selmon->ww - 2 * sp, bh);
   arrange(selmon);
-}
-
-void togglescratch(const Arg *arg) {
-  Client *c;
-  unsigned int found = 0;
-  unsigned int scratchtag = SPTAG(arg->ui);
-  Arg sparg = {.v = scratchpads[arg->ui].cmd};
-
-  for (c = selmon->clients; c && !(found = c->tags & scratchtag); c = c->next)
-    ;
-  if (found) {
-    unsigned int newtagset = selmon->tagset[selmon->seltags] ^ scratchtag;
-    if (newtagset) {
-      selmon->tagset[selmon->seltags] = newtagset;
-      focus(NULL);
-      arrange(selmon);
-    }
-    if (ISVISIBLE(c)) {
-      focus(c);
-      restack(selmon);
-    }
-  } else {
-    selmon->tagset[selmon->seltags] |= scratchtag;
-    spawn(&sparg);
-  }
 }
 
 void togglefloating(const Arg *arg) {
