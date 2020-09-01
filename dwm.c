@@ -58,8 +58,8 @@
    (ShiftMask | ControlMask | Mod1Mask | Mod2Mask | Mod3Mask | Mod4Mask |      \
     Mod5Mask))
 #define INTERSECT(x, y, w, h, m)                                               \
-  (MAX(0, MIN((x) + (w), (m)->wx + (m)->ww) - MAX((x), (m)->wx)) *             \
-   MAX(0, MIN((y) + (h), (m)->wy + (m)->wh) - MAX((y), (m)->wy)))
+  (MAX(0, MIN((x) + (w), (m)->mx + (m)->mw) - MAX((x), (m)->mx)) *             \
+   MAX(0, MIN((y) + (h), (m)->my + (m)->mh) - MAX((y), (m)->my)))
 #define ISVISIBLE(C) ((C->tags & C->mon->tagset[C->mon->seltags]))
 #define LENGTH(X) (sizeof X / sizeof X[0])
 #define MOUSEMASK (BUTTONMASK | PointerMotionMask)
@@ -185,7 +185,8 @@ struct Monitor {
   float mfact;
   int nmaster;
   int num;
-  int by;             /* bar geometry */
+  int by, bh;         /* bar geometry */
+  int tx, tw;         /* bar tray geometry */
   int mx, my, mw, mh; /* screen size */
   int wx, wy, ww, wh; /* window area  */
   int gappih;         /* horizontal gap between windows */
@@ -205,6 +206,7 @@ struct Monitor {
   Client *stack;
   Monitor *next;
   Window barwin;
+  Window traywin;
   const Layout *lt[2];
   unsigned int alttag;
 };
@@ -240,6 +242,13 @@ typedef struct {
 
 
 /* function declarations */
+static void managealtbar(Window win, XWindowAttributes *wa);
+static void scantray(void);
+static void spawnbar();
+static void unmanagealtbar(Window w);
+static int wmclasscontains(Window win, const char *class, const char *name);
+static void unmanagetray(Window w);
+static void managetray(Window win, XWindowAttributes *wa);
 static Atom getatomprop(Client *c, Atom prop);
 static Client *nexttiled(Client *c);
 static Client *swallowingclient(Window w);
@@ -765,8 +774,10 @@ void cleanupmon(Monitor *mon) {
       ;
     m->next = mon->next;
   }
-  XUnmapWindow(dpy, mon->barwin);
-  XDestroyWindow(dpy, mon->barwin);
+  if (!usealtbar) {
+    XUnmapWindow(dpy, mon->barwin);
+    XDestroyWindow(dpy, mon->barwin);
+  }
   free(mon);
 }
 
@@ -824,7 +835,7 @@ void configurenotify(XEvent *e) {
           if (c->isfullscreen && !c->isfakefullscreen)
             resizeclient(c, m->mx, m->my, m->mw, m->mh);
         XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp,
-                          m->ww - 2 * sp, bh);
+                          m->ww - 2 * sp, m->bh);
       }
       focus(NULL);
       arrange(NULL);
@@ -891,6 +902,7 @@ Monitor *createmon(void) {
   m->tagset[0] = m->tagset[1] = 1;
   m->mfact = mfact;
   m->nmaster = nmaster;
+  m->bh = bh;
   m->showbar = showbar;
   m->topbar = topbar;
   m->gappih = gappih;
@@ -922,11 +934,15 @@ void cyclelayout(const Arg *arg) {
 
 void destroynotify(XEvent *e) {
   Client *c;
+  Monitor *m;
   XDestroyWindowEvent *ev = &e->xdestroywindow;
 
   if ((c = wintoclient(ev->window)))
     unmanage(c, 1);
-
+  else if ((m = wintomon(ev->window)) && m->barwin == ev->window)
+    unmanagealtbar(ev->window);
+  else if (m->traywin == ev->window)
+    unmanagetray(ev->window);
   else if ((c = swallowingclient(ev->window)))
     unmanage(c->swallowing, 1);
 }
@@ -968,7 +984,48 @@ Monitor *dirtomon(int dir) {
   return m;
 }
 
+void managealtbar(Window win, XWindowAttributes *wa) {
+  Monitor *m;
+  if (!(m = recttomon(wa->x, wa->y, wa->width, wa->height)))
+    return;
+
+  m->barwin = win;
+  m->by = wa->y;
+  bh = m->bh = wa->height;
+  updatebarpos(m);
+  arrange(m);
+  XSelectInput(dpy, win,
+               EnterWindowMask | FocusChangeMask | PropertyChangeMask |
+                   StructureNotifyMask);
+  XMoveResizeWindow(dpy, win, wa->x, wa->y, wa->width, wa->height);
+  XMapWindow(dpy, win);
+  XChangeProperty(dpy, root, netatom[NetClientList], XA_WINDOW, 32,
+                  PropModeAppend, (unsigned char *)&win, 1);
+}
+
+void managetray(Window win, XWindowAttributes *wa) {
+  Monitor *m;
+  if (!(m = recttomon(wa->x, wa->y, wa->width, wa->height)))
+    return;
+
+  m->traywin = win;
+  m->tx = wa->x;
+  m->tw = wa->width;
+  updatebarpos(m);
+  arrange(m);
+  XSelectInput(dpy, win,
+               EnterWindowMask | FocusChangeMask | PropertyChangeMask |
+                   StructureNotifyMask);
+  XMoveResizeWindow(dpy, win, wa->x, wa->y, wa->width, wa->height);
+  XMapWindow(dpy, win);
+  XChangeProperty(dpy, root, netatom[NetClientList], XA_WINDOW, 32,
+                  PropModeAppend, (unsigned char *)&win, 1);
+}
+
 void drawbar(Monitor *m) {
+
+  if (usealtbar)
+    return;
 
   int x, w, wdelta, tw = 0;
   int boxs = drw->fonts->h / 9;
@@ -1380,7 +1437,9 @@ void maprequest(XEvent *e) {
     return;
   if (wa.override_redirect)
     return;
-  if (!wintoclient(ev->window))
+  if (wmclasscontains(ev->window, altbarclass, ""))
+    managealtbar(ev->window, &wa);
+  else if (!wintoclient(ev->window))
     manage(ev->window, &wa);
 }
 
@@ -1713,7 +1772,9 @@ void scan(void) {
       if (!XGetWindowAttributes(dpy, wins[i], &wa) || wa.override_redirect ||
           XGetTransientForHint(dpy, wins[i], &d1))
         continue;
-      if (wa.map_state == IsViewable || getstate(wins[i]) == IconicState)
+      if (wmclasscontains(wins[i], altbarclass, ""))
+        managealtbar(wins[i], &wa);
+      else if (wa.map_state == IsViewable || getstate(wins[i]) == IconicState)
         manage(wins[i], &wa);
       else if (gettextprop(wins[i], netatom[NetClientList], swin, sizeof swin))
         manage(wins[i], &wa);
@@ -1729,6 +1790,25 @@ void scan(void) {
       XFree(wins);
   }
   scanner = 0;
+}
+
+void scantray(void) {
+  unsigned int num;
+  Window d1, d2, *wins = NULL;
+  XWindowAttributes wa;
+
+  if (XQueryTree(dpy, root, &d1, &d2, &wins, &num)) {
+    for (unsigned int i = 0; i < num; i++) {
+      if (wmclasscontains(wins[i], altbarclass, alttrayname)) {
+        if (!XGetWindowAttributes(dpy, wins[i], &wa))
+          break;
+        managetray(wins[i], &wa);
+      }
+    }
+  }
+
+  if (wins)
+    XFree(wins);
 }
 
 void sendmon(Client *c, Monitor *m) {
@@ -1984,7 +2064,8 @@ void setup(void) {
   if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
     die("no fonts could be loaded.");
   lrpad = drw->fonts->h;
-  bh = user_bh ? user_bh : drw->fonts->h + 2;
+//  bh = user_bh ? user_bh : drw->fonts->h + 2;
+  bh = usealtbar ? 0 : drw->fonts->h + 2;
   updategeom();
   sp = sidepad;
   vp = (topbar == 1) ? vertpad : -vertpad;
@@ -2052,6 +2133,12 @@ void setup(void) {
   grabkeys();
   focus(NULL);
   setupepoll();
+  spawnbar();
+}
+
+void spawnbar() {
+  if (*altbarcmd)
+    system(altbarcmd);
 }
 
 void setupepoll(void) {
@@ -2260,11 +2347,47 @@ void tile(Monitor *m) {
 }
 
 void togglebar(const Arg *arg) {
+  /**
+   * Polybar tray does not raise maprequest event. It must be manually scanned
+   * for. Scanning it too early while the tray is being populated would give
+   * wrong dimensions.
+   */
+  if (!selmon->traywin)
+    scantray();
+
   selmon->showbar = !selmon->showbar;
   updatebarpos(selmon);
-  XMoveResizeWindow(dpy, selmon->barwin, selmon->wx + sp, selmon->by + vp,
-                    selmon->ww - 2 * sp, bh);
+  XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww,
+                    selmon->bh);
+  XMoveResizeWindow(dpy, selmon->traywin, selmon->tx, selmon->by, selmon->tw,
+                    selmon->bh);
   arrange(selmon);
+}
+
+void unmanagealtbar(Window w) {
+  Monitor *m = wintomon(w);
+
+  if (!m)
+    return;
+
+  m->barwin = 0;
+  m->by = 0;
+  m->bh = 0;
+  updatebarpos(m);
+  arrange(m);
+}
+
+void unmanagetray(Window w) {
+  Monitor *m = wintomon(w);
+
+  if (!m)
+    return;
+
+  m->traywin = 0;
+  m->tx = 0;
+  m->tw = 0;
+  updatebarpos(m);
+  arrange(m);
 }
 
 void togglefloating(const Arg *arg) {
@@ -2394,6 +2517,7 @@ void unmanage(Client *c, int destroyed) {
 
 void unmapnotify(XEvent *e) {
   Client *c;
+  Monitor *m;
   XUnmapEvent *ev = &e->xunmap;
 
   if ((c = wintoclient(ev->window))) {
@@ -2401,7 +2525,10 @@ void unmapnotify(XEvent *e) {
       setclientstate(c, WithdrawnState);
     else
       unmanage(c, 0);
-  }
+  } else if ((m = wintomon(ev->window)) && m->barwin == ev->window)
+    unmanagealtbar(ev->window);
+  else if (m->traywin == ev->window)
+    unmanagetray(ev->window);
 }
 
 void unswallow(Client *c) {
@@ -2424,6 +2551,9 @@ void unswallow(Client *c) {
 }
 
 void updatebars(void) {
+  if (usealtbar)
+    return;
+
   Monitor *m;
   XSetWindowAttributes wa = {.override_redirect = True,
                              .background_pixel = 0,
@@ -2449,11 +2579,11 @@ void updatebarpos(Monitor *m) {
   m->wy = m->my;
   m->wh = m->mh;
   if (m->showbar) {
-    m->wh = m->wh - vertpad - bh;
+    m->wh = m->wh - m->bh;
     m->by = m->topbar ? m->wy : m->wy + m->wh + vertpad;
-    m->wy = m->topbar ? m->wy + bh + vp : m->wy;
+    m->wy = m->topbar ? m->wy + m->bh : m->wy;
   } else
-    m->by = -bh - vp;
+    m->by = -m->bh;
 }
 
 void updateclientlist() {
@@ -2780,11 +2910,31 @@ Monitor *wintomon(Window w) {
   if (w == root && getrootptr(&x, &y))
     return recttomon(x, y, 1, 1);
   for (m = mons; m; m = m->next)
-    if (w == m->barwin)
+    if (w == m->barwin || w == m->traywin)
       return m;
   if ((c = wintoclient(w)))
     return c->mon;
   return selmon;
+}
+
+int wmclasscontains(Window win, const char *class, const char *name) {
+  XClassHint ch = {NULL, NULL};
+  int res = 1;
+
+  if (XGetClassHint(dpy, win, &ch)) {
+    if (ch.res_name && strstr(ch.res_name, name) == NULL)
+      res = 0;
+    if (ch.res_class && strstr(ch.res_class, class) == NULL)
+      res = 0;
+  } else
+    res = 0;
+
+  if (ch.res_class)
+    XFree(ch.res_class);
+  if (ch.res_name)
+    XFree(ch.res_name);
+
+  return res;
 }
 
 /* There's no way to check accesses to destroyed windows, thus those cases are
