@@ -21,6 +21,10 @@
  *
  * To understand everything else, start reading main().
  */
+
+#include <sys/stat.h>
+#include <assert.h>
+#include <libgen.h>
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <X11/Xproto.h>
@@ -186,10 +190,7 @@ struct Monitor {
   int nmaster;
   int num;
   int by, bh;         /* bar geometry */
-<<<<<<< HEAD
-=======
   int tx, tw;         /* bar tray geometry */
->>>>>>> c5028203aa1
   int mx, my, mw, mh; /* screen size */
   int wx, wy, ww, wh; /* window area  */
   int gappih;         /* horizontal gap between windows */
@@ -262,7 +263,7 @@ static Monitor *dirtomon(int dir);
 static Monitor *recttomon(int x, int y, int w, int h);
 static Monitor *wintomon(Window w);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h,int interact);
-static int getdwmblockspid();
+//static int getdwmblockspid();
 static int getrootptr(int *x, int *y);
 static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static int isdescprocess(pid_t p, pid_t c);
@@ -283,11 +284,6 @@ static void attachstack(Client *c);
 static int handlexevent(struct epoll_event *ev);
 static void setlayoutsafe(const Arg *arg);
 static void setupepoll(void);
-static void managealtbar(Window win, XWindowAttributes *wa);
-static void unmanagealtbar(Window w);
-static void spawnbar();
-static void unmanagealtbar(Window w);
-static int wmclasscontains(Window win, const char *class, const char *name);
 static void autostart_exec(void);
 static void buttonpress(XEvent *e);
 static void checkotherwm(void);
@@ -392,7 +388,8 @@ static void zoom(const Arg *arg);
 static void xinitvisual();
 static void load_xresources(void);
 static void resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst);
-
+static void tagtoleft(const Arg *arg);
+static void tagtoright(const Arg *arg);
 /* variables */
 static int useargb = 0;
 static Visual *visual;
@@ -499,7 +496,7 @@ void applyrules(Client *c) {
       c->isfakefullscreen = r->isfakefullscreen;
       c->tags |= r->tags;
       if(c->isfloating){
-        if(!(r->x < 0 && r->y < 0 && r->width < 0 && r->height < 0))
+        if(r->width && r->height)
         resizeclient(c, r->x, r->y, r->width, r->height);
       }
       for (m = mons; m && m->num != r->monitor; m = m->next)
@@ -1106,24 +1103,6 @@ void drawbars(void) {
     drawbar(m);
 }
 
-void managealtbar(Window win, XWindowAttributes *wa) {
-  Monitor *m;
-  if (!(m = recttomon(wa->x, wa->y, wa->width, wa->height)))
-    return;
-
-  m->barwin = win;
-  m->by = wa->y;
-  bh = m->bh = wa->height;
-  updatebarpos(m);
-  arrange(m);
-  XSelectInput(dpy, win,
-               EnterWindowMask | FocusChangeMask | PropertyChangeMask |
-                   StructureNotifyMask);
-  XMoveResizeWindow(dpy, win, wa->x, wa->y, wa->width, wa->height);
-  XMapWindow(dpy, win);
-  XChangeProperty(dpy, root, netatom[NetClientList], XA_WINDOW, 32,
-                  PropModeAppend, (unsigned char *)&win, 1);
-}
 
 void enternotify(XEvent *e) {
   Client *c;
@@ -1244,15 +1223,15 @@ int getrootptr(int *x, int *y) {
   return XQueryPointer(dpy, root, &dummy, &dummy, x, y, &di, &di, &dui);
 }
 
-int getdwmblockspid() {
-  char buf[16];
-  FILE *fp = popen("pidof -s dwmblocks", "r");
-  fgets(buf, sizeof(buf), fp);
-  pid_t pid = strtoul(buf, NULL, 10);
-  pclose(fp);
-  dwmblockspid = pid;
-  return pid != 0 ? 0 : -1;
-}
+// int getdwmblockspid() {
+// char buf[16];
+// FILE *fp = popen("pidof -s dwmblocks", "r");
+// fgets(buf, sizeof(buf), fp);
+// pid_t pid = strtoul(buf, NULL, 10);
+// pclose(fp);
+// dwmblockspid = pid;
+// return pid != 0 ? 0 : -1;
+// }
 
 long getstate(Window w) {
   int format;
@@ -1763,7 +1742,7 @@ void run(void) {
         ipc_handle_socket_epoll_event(events + i);
       } else if (ipc_is_client_registered(event_fd)) {
         if (ipc_handle_client_epoll_event(events + i, mons, &lastselmon, selmon,
-                                          tags, LENGTH(tags), layouts,
+                                          (const char **)tags, LENGTH(tags), layouts,
                                           LENGTH(layouts)) < 0) {
           fprintf(stderr, "Error handling IPC event on fd %d\n", event_fd);
         }
@@ -2092,13 +2071,8 @@ void setup(void) {
   if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
     die("no fonts could be loaded.");
   lrpad = drw->fonts->h;
-<<<<<<< HEAD
-  bh = user_bh ? user_bh : drw->fonts->h + 2;
-	bh = usealtbar ? 0 : bh;
-=======
 //  bh = user_bh ? user_bh : drw->fonts->h + 2;
   bh = usealtbar ? 0 : drw->fonts->h + 2;
->>>>>>> c5028203aa1
   updategeom();
   sp = sidepad;
   vp = (topbar == 1) ? vertpad : -vertpad;
@@ -2265,7 +2239,10 @@ void sigchld(int unused) {
 // }
 // }
 
+
 void spawn(const Arg *arg) {
+
+
   if (arg->v == dmenucmd)
     dmenumon[0] = '0' + selmon->num;
   else if (arg->v == statuscmd) {
@@ -2276,6 +2253,29 @@ void spawn(const Arg *arg) {
   if (fork() == 0) {
     if (dpy)
       close(ConnectionNumber(dpy));
+
+    if (selmon->sel) {
+      char buf[255];
+      char path[64];
+
+      snprintf(path, sizeof(path), "/proc/%d/cwd", selmon->lastsel->pid);
+      readlink(path, buf, 255);
+
+      dwmlog=fopen(LOG,"a");
+      fprintf(dwmlog, "lastsel buf %s\n" , buf);
+      fprintf(dwmlog, "lastsel path %s\n" , path);
+      fprintf(dwmlog, "lastsel name %s\n" , selmon->lastsel->name);
+      
+      snprintf(path, sizeof(path), "/proc/%d/cwd", selmon->sel->pid);
+      readlink(path, buf, 255);
+      
+      fprintf(dwmlog, "sel buf %s\n" , buf);
+      fprintf(dwmlog, "sel path %s\n" , path);
+      fprintf(dwmlog, "sel name %s\n" , selmon->sel->name);
+
+      fclose(dwmlog);
+      chdir(buf);
+    }
     setsid();
     execvp(((char **)arg->v)[0], (char **)arg->v);
     fprintf(stderr, "dwm: execvp %s", ((char **)arg->v)[0]);
@@ -2318,9 +2318,7 @@ void swallow(Client *p, Client *c) {
 
 void switchurgent(const Arg *arg){
 
-  Arg argm;
-  argm.ui = urgenttag;
-  view(&argm);
+  view(&((Arg){.ui=urgenttag}));
 
 }
 
@@ -2390,17 +2388,10 @@ void togglebar(const Arg *arg) {
 
   selmon->showbar = !selmon->showbar;
   updatebarpos(selmon);
-<<<<<<< HEAD
-// XMoveResizeWindow(dpy, selmon->barwin, selmon->wx + sp, selmon->by + vp,
-// selmon->ww - 2 * sp, bh);
-  XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww,
-                    selmon->bh);
-=======
   XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww,
                     selmon->bh);
   XMoveResizeWindow(dpy, selmon->traywin, selmon->tx, selmon->by, selmon->tw,
                     selmon->bh);
->>>>>>> c5028203aa1
   arrange(selmon);
 }
 
@@ -2417,8 +2408,6 @@ void unmanagealtbar(Window w) {
   arrange(m);
 }
 
-<<<<<<< HEAD
-=======
 void unmanagetray(Window w) {
   Monitor *m = wintomon(w);
 
@@ -2432,7 +2421,6 @@ void unmanagetray(Window w) {
   arrange(m);
 }
 
->>>>>>> c5028203aa1
 void togglefloating(const Arg *arg) {
   if (!selmon->sel)
     return;
@@ -2508,6 +2496,26 @@ shiftview(const Arg *arg)
 	}
 }
 
+void tagtoleft(const Arg *arg) {
+  if (selmon->sel != NULL &&
+      __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1 &&
+      selmon->tagset[selmon->seltags] > 1) {
+    selmon->sel->tags >>= 1;
+    focus(NULL);
+    arrange(selmon);
+  }
+}
+
+void tagtoright(const Arg *arg) {
+  if (selmon->sel != NULL &&
+      __builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1 &&
+      selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
+    selmon->sel->tags <<= 1;
+    focus(NULL);
+    arrange(selmon);
+  }
+}
+
 void unfocus(Client *c, int setfocus) {
   if (!c)
     return;
@@ -2570,11 +2578,8 @@ void unmapnotify(XEvent *e) {
       unmanage(c, 0);
   } else if ((m = wintomon(ev->window)) && m->barwin == ev->window)
     unmanagealtbar(ev->window);
-<<<<<<< HEAD
-=======
   else if (m->traywin == ev->window)
     unmanagetray(ev->window);
->>>>>>> c5028203aa1
 }
 
 void unswallow(Client *c) {
@@ -2625,19 +2630,11 @@ void updatebarpos(Monitor *m) {
   m->wy = m->my;
   m->wh = m->mh;
   if (m->showbar) {
-<<<<<<< HEAD
-    m->wh = m->wh - vertpad - m->bh;
-    m->by = m->topbar ? m->wy : m->wy + m->wh + vertpad;
-    m->wy = m->topbar ? m->wy + m->bh + vp : m->wy;
-  } else
-    m->by = -m->bh - vp;
-=======
     m->wh = m->wh - m->bh;
     m->by = m->topbar ? m->wy : m->wy + m->wh + vertpad;
     m->wy = m->topbar ? m->wy + m->bh : m->wy;
   } else
     m->by = -m->bh;
->>>>>>> c5028203aa1
 }
 
 void updateclientlist() {
@@ -2991,25 +2988,6 @@ Monitor *wintomon(Window w) {
   return selmon;
 }
 
-int wmclasscontains(Window win, const char *class, const char *name) {
-  XClassHint ch = {NULL, NULL};
-  int res = 1;
-
-  if (XGetClassHint(dpy, win, &ch)) {
-    if (ch.res_name && strstr(ch.res_name, name) == NULL)
-      res = 0;
-    if (ch.res_class && strstr(ch.res_class, class) == NULL)
-      res = 0;
-  } else
-    res = 0;
-
-  if (ch.res_class)
-    XFree(ch.res_class);
-  if (ch.res_name)
-    XFree(ch.res_name);
-
-  return res;
-}
 
 /* There's no way to check accesses to destroyed windows, thus those cases are
  * ignored (especially on UnmapNotify's). Other types of errors call Xlibs
