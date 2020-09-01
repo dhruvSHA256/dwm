@@ -29,7 +29,7 @@ static const unsigned int baralpha = 0x90;
 static const unsigned int borderalpha = OPAQUE;
 static const int usealtbar          = 1;        /* 1 means use non-dwm status bar */
 static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
-static const char *altbarcmd        = "$HOME/bar.sh"; /* Alternate bar launch command */
+static const char *altbarcmd        = "$HOME/.config/polybar/launch.sh"; /* Alternate bar launch command */
 
 #define BROWSER "firefox"
 #define TERMINAL "st" 
@@ -53,9 +53,9 @@ static const unsigned int alphas[][3] = {
     [SchemeNorm]       = {OPAQUE, baralpha, borderalpha},
     [SchemeSel]        = {OPAQUE, baralpha, borderalpha},
     [SchemeStatus]     = {OPAQUE, baralpha, borderalpha},
-    [SchemeTagsSel]    = {OPAQUE, baralpha, borderalpha},
+    [SchemeTagsSel]    = {OPAQUE, OPAQUE, borderalpha},
     [SchemeTagsNorm]   = {OPAQUE, baralpha, borderalpha},
-    [SchemeTagsUrgent] = {OPAQUE, baralpha, borderalpha},
+    [SchemeTagsUrgent] = {OPAQUE, OPAQUE, borderalpha},
     [SchemeInfoSel]    = {OPAQUE, baralpha, borderalpha},
     [SchemeInfoNorm]   = {OPAQUE, baralpha, borderalpha},
     [SchemeBarBorder]  = {OPAQUE, baralpha, borderalpha},
@@ -65,8 +65,9 @@ static const char *const autostart[] = {
 };
 
 /* tagging */
-static char *tags[]          = {"", "", "", "", "", "", "", "", ""};
+static char *tags[]          = {"", "", "", "", "", "", "", "", ""};
 static const char *tagsalt[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
+//static const char *tags[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
 static const Rule rules[] = {
     /*  class i                     instance title           tagsmask isfloating  isterminal  noswallow isfakefullscreen  width   height    x     y   monitor */
