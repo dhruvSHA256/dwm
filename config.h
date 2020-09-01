@@ -29,8 +29,14 @@ static const unsigned int baralpha = 0x90;
 static const unsigned int borderalpha = OPAQUE;
 static const int usealtbar          = 1;        /* 1 means use non-dwm status bar */
 static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
+<<<<<<< HEAD
 static const char *altbarcmd        = "$HOME/.config/polybar/launch.sh"; /* Alternate bar launch command */
 
+=======
+static const char *alttrayname      = "tray";    /* Polybar tray instance name */
+static const char *altbarcmd        = "$HOME/.config/polybar/launch.sh"; /* Alternate bar launch command */
+ 
+>>>>>>> c5028203aa1
 #define BROWSER "firefox"
 #define TERMINAL "st" 
 #define EDITOR "nvim" 
