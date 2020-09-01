@@ -27,6 +27,9 @@ static const char         col_gray4[]       = "#eeeeee";
 #define OPAQUE                       0xff
 static const unsigned int baralpha = 0x90;
 static const unsigned int borderalpha = OPAQUE;
+static const int usealtbar          = 1;        /* 1 means use non-dwm status bar */
+static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
+static const char *altbarcmd        = "$HOME/bar.sh"; /* Alternate bar launch command */
 
 #define BROWSER "firefox"
 #define TERMINAL "st" 
