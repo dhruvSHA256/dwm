@@ -148,9 +148,9 @@ static const char *dmenucmd[]    = { "/home/dhruv/.config/scripts/dmenu_run/dmen
 static const char *termcmd[]     = {TERMINAL,NULL};
 static const char *browsercmd[]  = {BROWSER, NULL};
 static const char *editorcmd[]   = {TERMINAL,"-c",EDITOR,"-e",EDITOR, NULL};
-static const char *chromecommand[]= {"chromium", NULL};
+/* static const char *chromecommand[]= {"chromium", NULL};
 static const char *mailcommand[]  = {"thunderbird", NULL};
-static const char *filecommand[]  = {"thunar", NULL};
+static const char *filecommand[]  = {"thunar", NULL}; */
 
 /*
  * Xresources preferences to load at startup
@@ -178,10 +178,10 @@ static Key keys[] = {
     {MODKEY,                           XK_space,         spawn,          {.v = dmenucmd } },
     {MODKEY  ,                         XK_Return,        spawn,          {.v = termcmd } },
     {MODKEY  ,                         XK_w,             spawn,          {.v = browsercmd } },
-    {MODKEY  ,                         XK_c,             spawn,          {.v = chromecommand} },
+    /* {MODKEY  ,                         XK_c,             spawn,          {.v = chromecommand} }, */
     {MODKEY | ShiftMask ,              XK_c,             spawn,          SHCMD("/home/dhruv/.local/share/go/bin/rofi-code -r 'rofi -dmenu -p code'") },
-    {MODKEY  ,                         XK_m,             spawn,          {.v = mailcommand} },
-    {MODKEY  ,                         XK_n,             spawn,          {.v = filecommand} },
+    /* {MODKEY  ,                         XK_m,             spawn,          {.v = mailcommand} },
+    {MODKEY  ,                         XK_n,             spawn,          {.v = filecommand} }, */
     {MODKEY | Mod1Mask | ShiftMask,    XK_0,             defaultgaps,    {0}},
     {MODKEY | ShiftMask,               XK_w,             switchurgent,   {.ui =  0}},
     {MODKEY | ShiftMask,               XK_0,             tag,            {.ui = ~0}},
@@ -190,10 +190,10 @@ static Key keys[] = {
     {MODKEY | ShiftMask,               XK_f,             togglefullscr,  {0}},
     {MODKEY | ShiftMask,               XK_minus,         setcfact,       {.f = -0.10}},
     {MODKEY | ShiftMask,               XK_o,             setcfact,       {.f = 0.00}},
-    {MODKEY | ShiftMask,               XK_period,        tagmon,         {.i = +1}},
+    /* {MODKEY | ShiftMask,               XK_period,        tagmon,         {.i = +1}}, */
     {MODKEY | ShiftMask,               XK_q,             quit,           {0}},
     {MODKEY | ShiftMask,               XK_space,         togglefloating, {0}},
-    {MODKEY,                           XK_comma,         focusmon,       {.i = -1 } },
+    /* {MODKEY,                           XK_comma,         focusmon,       {.i = -1 } }, */
     {MODKEY | ShiftMask,               XK_n,             togglealttag,   {0} },
 
     /* Resize  gaps */
@@ -248,7 +248,9 @@ static Key keys[] = {
     {MODKEY | ShiftMask,               XK_Tab,           shiftview,      {.i = -1}},
     {MODKEY | ShiftMask,               XK_period,        tagtoright,     {0}},
     {MODKEY | ShiftMask,               XK_comma,         tagtoleft,      {0}},
-    {MODKEY,                          XK_g,             goyo,           {.v = &layouts[1]}},
+    {MODKEY ,                          XK_period,        viewtoright,    {0}},
+    {MODKEY ,                          XK_comma,         viewtoleft,     {0}},
+    {MODKEY,                           XK_g,             goyo,           {.v = &layouts[1]}},
 
     {MODKEY | ControlMask,             XK_comma,         cyclelayout,    {.i = -1}},
     {MODKEY | ControlMask,             XK_period,        cyclelayout,    {.i = +1}},

@@ -390,6 +390,9 @@ static void load_xresources(void);
 static void resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst);
 static void tagtoleft(const Arg *arg);
 static void tagtoright(const Arg *arg);
+static void viewtoleft(const Arg *arg);
+static void viewtoright(const Arg *arg);
+
 /* variables */
 static int useargb = 0;
 static Visual *visual;
@@ -2514,6 +2517,36 @@ void tagtoright(const Arg *arg) {
     focus(NULL);
     arrange(selmon);
   }
+}
+ 
+void
+viewtoleft(const Arg *arg) {
+  if (selmon->tagset[selmon->seltags]<=1) {
+    view(&(Arg){.ui = 1 << 8});
+    return;
+  }
+	if(__builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
+	&& selmon->tagset[selmon->seltags] > 1) {
+		selmon->seltags ^= 1; /* toggle sel tagset */
+		selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] >> 1;
+		focus(NULL);
+		arrange(selmon);
+	}
+}
+
+void
+viewtoright(const Arg *arg) {
+  if (selmon->tagset[selmon->seltags]>=1 << 8) {
+    view(&(Arg){.ui = 1 << 0});
+    return;
+  }
+	if(__builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
+	&& selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
+		selmon->seltags ^= 1; /* toggle sel tagset */
+		selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] << 1;
+		focus(NULL);
+		arrange(selmon);
+	}
 }
 
 void unfocus(Client *c, int setfocus) {
