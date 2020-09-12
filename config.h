@@ -243,6 +243,8 @@ static Key keys[] = {
     {MODKEY,                           XK_Left,          moveresize,     {.v = "-10x 0y 0w 0h"}},
     {MODKEY,                           XK_Right,         moveresize,     {.v = "10x 0y 0w 0h"}},
     {MODKEY,                           XK_Up,            moveresize,     {.v = "0x -10y 0w 0h"}},
+    { MODKEY|ShiftMask,             XK_j,      aspectresize,   {.i = +24} },
+    { MODKEY|ShiftMask,             XK_k,      aspectresize,   {.i = -24} },
 
     {MODKEY,                           XK_Tab,           shiftview,      {.i = +1}},
     {MODKEY | ShiftMask,               XK_Tab,           shiftview,      {.i = -1}},

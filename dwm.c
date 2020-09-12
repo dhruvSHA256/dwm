@@ -392,6 +392,7 @@ static void tagtoleft(const Arg *arg);
 static void tagtoright(const Arg *arg);
 static void viewtoleft(const Arg *arg);
 static void viewtoright(const Arg *arg);
+static void aspectresize(const Arg *arg);
 
 /* variables */
 static int useargb = 0;
@@ -2519,8 +2520,7 @@ void tagtoright(const Arg *arg) {
   }
 }
  
-void
-viewtoleft(const Arg *arg) {
+void viewtoleft(const Arg *arg) {
   if (selmon->tagset[selmon->seltags]<=1) {
     view(&(Arg){.ui = 1 << 8});
     return;
@@ -2534,8 +2534,7 @@ viewtoleft(const Arg *arg) {
 	}
 }
 
-void
-viewtoright(const Arg *arg) {
+void viewtoright(const Arg *arg) {
   if (selmon->tagset[selmon->seltags]>=1 << 8) {
     view(&(Arg){.ui = 1 << 0});
     return;
@@ -2547,6 +2546,29 @@ viewtoright(const Arg *arg) {
 		focus(NULL);
 		arrange(selmon);
 	}
+}
+
+void aspectresize(const Arg *arg) {
+  /* only floating windows can be moved */
+  Client *c;
+  c = selmon->sel;
+  float ratio;
+  int w, h, nw, nh;
+
+  if (!c || !arg)
+    return;
+  if (selmon->lt[selmon->sellt]->arrange && !c->isfloating)
+    return;
+
+  ratio = (float)c->w / (float)c->h;
+  h = arg->i;
+  w = (int)(ratio * h);
+
+  nw = c->w + w;
+  nh = c->h + h;
+
+  XRaiseWindow(dpy, c->win);
+  resize(c, c->x, c->y, nw, nh, True);
 }
 
 void unfocus(Client *c, int setfocus) {
