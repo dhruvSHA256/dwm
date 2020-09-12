@@ -2,7 +2,7 @@
 
 /* appearance */
 static const unsigned int floatindicator    = 0;    /* draw a rectanglular indicator for floating windows */
-static const unsigned int drawunderline     = 0;    /* draw only underline under bar */
+static const unsigned int drawunderline     = 1;    /* draw only underline under bar */
 static const unsigned int barborder         = 0;    /* draw border around bar , overrider drawunderline*/
 static const unsigned int barborderpx       = 2;    /* size of underline under bar*/
 static const unsigned int notitle           = 1;    /* display window name*/
@@ -29,15 +29,14 @@ static const unsigned int borderalpha = OPAQUE;
 static const int usealtbar          = 1;        /* 1 means use non-dwm status bar */
 static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
 static const char *alttrayname      = "tray";    /* Polybar tray instance name */
-/* static const char *altbarcmd        = "$HOME/.config/polybar/launch.sh &"; [>Alternate bar launch command<] */
-static const char *altbarcmd        = "/home/dhruv/.config/polybar/launch.sh &"; /* Alternate bar launch command */
+static const char *altbarcmd        = "/home/dhruv/.config/polybar/launch.sh &"; // Alternate bar launch command 
 #define BROWSER "firefox"
 #define TERMINAL "st" 
 #define EDITOR "nvim" 
 
 static const char *colors[][3] = {
     /*                         fg             bg        border   */
-    [SchemeNorm]      =        {col_gray3, "#1f2430", "#696b70"},
+    [SchemeNorm]      =        {col_gray3, "#1f2430", "#2E3440"},
     [SchemeSel]       =        {col_gray4, "#1f2430", "#a6e1ff"},
     [SchemeStatus]    =        {"#ffffff", "#1f2430", "#000000"}, // Statusbar right {text,background,not used // but cannot be empty}
     [SchemeTagsSel]   =        {"#1f2430", "#a6e1ff", "#000000"}, // Tagbar left selected {text,background,not // used but cannot be empty}
