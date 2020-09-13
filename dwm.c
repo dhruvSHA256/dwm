@@ -792,6 +792,7 @@ void cleanupmon(Monitor *mon) {
 void clientmessage(XEvent *e) {
   XClientMessageEvent *cme = &e->xclient;
   Client *c = wintoclient(cme->window);
+  unsigned int i;
 
   if (!c)
     return;
@@ -803,7 +804,15 @@ void clientmessage(XEvent *e) {
                             && (!c->isfullscreen || c->isfakefullscreen))));
   } else if (cme->message_type == netatom[NetActiveWindow]) {
     if (c != selmon->sel && !c->isurgent)
-      seturgent(c, 1);
+    seturgent(c, 1);
+    for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++) ;
+    if (i < LENGTH(tags)) {
+      const Arg a = {.ui = 1 << i};
+      selmon = c->mon;
+      view(&a);
+      focus(c);
+      restack(selmon);
+    }
   }
 }
 
