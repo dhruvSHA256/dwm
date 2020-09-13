@@ -1056,7 +1056,7 @@ void drawbar(Monitor *m) {
   if (m == selmon) { /* status is only drawn on selected monitor */
     drw_setscheme(drw, scheme[SchemeStatus]);
     tw = TEXTW(stext); /* 2px right padding */
-    drw_text(drw, m->ww - tw - sp, 0, tw, bh, 0, stext, 0);
+    drw_text(drw, m->ww - tw - 2 * sp, 0, tw, bh, 0, stext, 0);
   }
 
   for (c = m->clients; c; c = c->next) {
@@ -1092,29 +1092,37 @@ void drawbar(Monitor *m) {
 
       /** drw_text(drw, x, 0, w, bh, 920 - TEXTW(m->sel->name) / 2 - x,
                (notitle) ? " " : m->sel->name, 0); */
-      if(!notitle){
   /* fix overflow when window name is bigger than window width */
       int mid = (m->ww - (int)TEXTW(m->sel->name)) / 2 - x;
       /* make sure name will not overlap on tags even when it is very long */
       mid = mid >= lrpad / 2 ? mid : lrpad / 2;
-      drw_text(drw, x, 0, w, bh, mid, m->sel->name, 0);
+      if(!notitle){
+      drw_text(drw, x, 0, w - 2 * sp, bh + vp, mid, m->sel->name, 0);
       }
+      else {
+      drw_text(drw, x, 0, w - 2 * sp, bh + vp, mid, "", 0);
+      }
+
       if (m->sel->isfloating && floatindicator )
         drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
     } else {
       drw_setscheme(drw, scheme[SchemeInfoNorm]);
-      drw_rect(drw, x, 0, w, bh, 1, 1);
+      drw_rect(drw, x, 0, w - 2 * sp, bh, 1, 1);
     }
   }
  
-  /* draw underline under bar */
-  if(drawunderline)
-  drw_setscheme(drw, scheme[SchemeBarBorder]) , drw_rect(drw, 0, bh-barborderpx, sw, barborderpx, 1,  0);
+  //  draw underline under bar
+if(drawunderline)
+  drw_setscheme(drw, scheme[SchemeBarBorder]) , drw_rect(drw, 0, bh-barborderpx, selmon->ww - sp, barborderpx, 1,  0);
 
-  if(barborder)
-  drw_rect(drw, 0, 0, sw, barborderpx, 1,  0), drw_rect(drw, 0, 0, barborderpx, bh ,1,  0), drw_rect(drw, sw-barborderpx,0, barborderpx, bh, 1, 0);
-  
-  drw_map(drw, m->barwin, 0, 0, m->ww, bh);
+if(barborder)
+drw_setscheme(drw, scheme[SchemeBarBorder]) ,
+drw_rect(drw, sp-2*barborderpx, 0, selmon->ww - sp, barborderpx, 1,  0),
+drw_rect(drw, barborderpx, 0-barborderpx, barborderpx, bh+2*barborderpx, 1, 0),
+drw_rect(drw, selmon->ww -2*sp-barborderpx, 0-barborderpx, barborderpx, bh+2*barborderpx, 1, 0);
+if(!drawunderline && barborder)   drw_setscheme(drw, scheme[SchemeBarBorder]) , drw_rect(drw, 0, bh-barborderpx, selmon->ww - sp, barborderpx, 1,  0);
+
+  drw_map(drw, m->barwin, 0, 0, m->ww, bh); 
 }
 
 void drawbars(void) {
@@ -2092,11 +2100,10 @@ void setup(void) {
   if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
     die("no fonts could be loaded.");
   lrpad = drw->fonts->h;
-//  bh = user_bh ? user_bh : drw->fonts->h + 2;
-  bh = usealtbar ? 0 : drw->fonts->h + 2;
+  bh = usealtbar ? 0 : user_bh ? user_bh : drw->fonts->h + 2;
   updategeom();
-  sp = sidepad;
-  vp = (topbar == 1) ? vertpad : -vertpad;
+  sp = usealtbar == 1 ? 0 : sidepad;
+  vp = usealtbar == 1 ? 0 : (topbar == 1) ? vertpad : -vertpad;
 
   /* init atoms */
   utf8string = XInternAtom(dpy, "UTF8_STRING", False);
@@ -2409,7 +2416,7 @@ void togglebar(const Arg *arg) {
 
   selmon->showbar = !selmon->showbar;
   updatebarpos(selmon);
-  XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww,
+  XMoveResizeWindow(dpy, selmon->barwin, selmon->wx + sp, selmon->by + vp, selmon->ww,
                     selmon->bh);
   XMoveResizeWindow(dpy, selmon->traywin, selmon->tx, selmon->by, selmon->tw,
                     selmon->bh);
@@ -2687,7 +2694,7 @@ void updatebars(void) {
   for (m = mons; m; m = m->next) {
     if (m->barwin)
       continue;
-    m->barwin = XCreateWindow(dpy, root, m->wx, m->by, m->ww, bh, 0, depth,
+    m->barwin = XCreateWindow(dpy, root, m->wx + sp, m->by + vp, m->ww - 2 * sp , bh, 0, depth,
                               InputOutput, visual,
                               CWOverrideRedirect | CWBackPixel | CWBorderPixel |
                                   CWColormap | CWEventMask,
@@ -2702,11 +2709,11 @@ void updatebarpos(Monitor *m) {
   m->wy = m->my;
   m->wh = m->mh;
   if (m->showbar) {
-    m->wh = m->wh - m->bh;
-    m->by = m->topbar ? m->wy : m->wy + m->wh + vertpad;
-    m->wy = m->topbar ? m->wy + m->bh : m->wy;
+    m->wh = m->wh - vp - m->bh;
+    m->by = m->topbar ? m->wy : m->wy + m->wh + sp;
+    m->wy = m->topbar ? m->wy + bh + vp : m->wy;
   } else
-    m->by = -m->bh;
+    m->by = -m->bh - vp;
 }
 
 void updateclientlist() {
