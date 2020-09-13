@@ -23,7 +23,7 @@ static const int          vertpad           = 14;    /* vertical padding of bar 
 static const int          sidepad           = 14;    /* horizontal padding of bar */
 static const char         col_gray3[]       = "#bbbbbb";
 static const char         col_gray4[]       = "#eeeeee";
-#define OPAQUE                       0xf0
+#define OPAQUE                       0xff
 static const unsigned int baralpha = 0xaf;
 static const unsigned int borderalpha = OPAQUE;
 static const int usealtbar          = 1;        /* 1 means use non-dwm status bar */
@@ -101,7 +101,7 @@ static const Rule rules[] = {
 #include "layouts/horizgrid.c"
 
 /* layout(s) */
-static const float mfact      = 0.70; /* factor of master area size [0.05..0.95] */
+static const float mfact      = 0.65; /* factor of master area size [0.05..0.95] */
 static const int nmaster      = 1;    /* number of clients in master area */
 static const int resizehints  = 1;    /* 1 means respect size hints in tiled resizals */
 
