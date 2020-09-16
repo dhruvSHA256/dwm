@@ -123,20 +123,20 @@ enum {
 
 typedef struct TagState TagState;
 struct TagState {
-	int selected;
-	int occupied;
-	int urgent;
+  int selected;
+  int occupied;
+  int urgent;
 };
 
 typedef struct ClientState ClientState;
 struct ClientState {
-	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
+  int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
 };
 
 
 typedef union {
-	long i;
-	unsigned long ui;
+  long i;
+  unsigned long ui;
   float f;
   const void *v;
 } Arg;
@@ -161,14 +161,14 @@ struct Client {
   int bw, oldbw;
   unsigned int tags;
   int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen,
-      isterminal, noswallow, isfakefullscreen;
+      isterminal, noswallow, isfakefullscreen, floatborderpx;
   pid_t pid;
   Client *next;
   Client *snext;
   Client *swallowing;
   Monitor *mon;
   Window win;
-	ClientState prevstate;
+  ClientState prevstate;
 };
 
 typedef struct {
@@ -185,7 +185,7 @@ typedef struct {
 
 struct Monitor {
   char ltsymbol[16];
-	char lastltsymbol[16];
+  char lastltsymbol[16];
   float mfact;
   int nmaster;
   int num;
@@ -228,20 +228,21 @@ typedef struct {
   int height;
   int  x;
   int  y;
+  int floatborderpx;
   int monitor;
 } Rule;
 
 /* Xresources preferences */
 enum resource_type {
-	STRING = 0,
-	INTEGER = 1,
-	FLOAT = 2
+  STRING = 0,
+  INTEGER = 1,
+  FLOAT = 2
 };
 
 typedef struct {
-	char *name;
-	enum resource_type type;
-	void *dst;
+  char *name;
+  enum resource_type type;
+  void *dst;
 } ResourcePref;
 
 
@@ -499,13 +500,14 @@ void applyrules(Client *c) {
       c->isfloating = r->isfloating;
       c->isfakefullscreen = r->isfakefullscreen;
       c->tags |= r->tags;
-      if(c->isfloating){
-        if(r->width && r->height)
-        //resizeclient(c, r->x, r->y, r->width, r->height);
-        c->x = r->x;
-        c->y = r->y;
-        c->w = r->width;
-        c->h = r->height;
+      c->floatborderpx = r->floatborderpx;
+      if(r->isfloating){
+        if (r->width && r->height) {
+          c->x = r->x;
+          c->y = r->y;
+          c->w = r->width;
+          c->h = r->height;
+        }
       }
       for (m = mons; m && m->num != r->monitor; m = m->next)
         ;
@@ -1401,8 +1403,13 @@ void manage(Window w, XWindowAttributes *wa) {
   c->y = c->oldy = wa->y;
   c->w = c->oldw = wa->width;
   c->h = c->oldh = wa->height;
-  c->oldbw = wa->border_width;
   c->cfact = 1.0;
+  if (c->isfloating)
+    wc.border_width = c->floatborderpx;
+  else
+    wc.border_width = c->bw;
+
+  c->oldbw = wa->border_width;
   updatetitle(c);
 
   if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
@@ -2501,33 +2508,33 @@ void toggleview(const Arg *arg) {
 void
 shiftview(const Arg *arg)
 {
-	Arg a;
-	Client *c;
-	unsigned visible = 0;
-	int i = arg->i;
-	int count = 0;
-	int nextseltags, curseltags = selmon->tagset[selmon->seltags];
+  Arg a;
+  Client *c;
+  unsigned visible = 0;
+  int i = arg->i;
+  int count = 0;
+  int nextseltags, curseltags = selmon->tagset[selmon->seltags];
 
-	do {
-		if(i > 0) // left circular shift
-			nextseltags = (curseltags << i) | (curseltags >> (LENGTH(tags) - i));
+  do {
+    if(i > 0) // left circular shift
+      nextseltags = (curseltags << i) | (curseltags >> (LENGTH(tags) - i));
 
-		else // right circular shift
-			nextseltags = curseltags >> (- i) | (curseltags << (LENGTH(tags) + i));
+    else // right circular shift
+      nextseltags = curseltags >> (- i) | (curseltags << (LENGTH(tags) + i));
 
                 // Check if tag is visible
-		for (c = selmon->clients; c && !visible; c = c->next)
-			if (nextseltags & c->tags) {
-				visible = 1;
-				break;
-			}
-		i += arg->i;
-	} while (!visible && ++count < 10);
+    for (c = selmon->clients; c && !visible; c = c->next)
+      if (nextseltags & c->tags) {
+        visible = 1;
+        break;
+      }
+    i += arg->i;
+  } while (!visible && ++count < 10);
 
-	if (count < 10) {
-		a.i = nextseltags;
-		view(&a);
-	}
+  if (count < 10) {
+    a.i = nextseltags;
+    view(&a);
+  }
 }
 
 void tagtoleft(const Arg *arg) {
@@ -2555,13 +2562,13 @@ void viewtoleft(const Arg *arg) {
     view(&(Arg){.ui = 1 << 8});
     return;
   }
-	if(__builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
-	&& selmon->tagset[selmon->seltags] > 1) {
-		selmon->seltags ^= 1; /* toggle sel tagset */
-		selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] >> 1;
-		focus(NULL);
-		arrange(selmon);
-	}
+  if(__builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
+  && selmon->tagset[selmon->seltags] > 1) {
+    selmon->seltags ^= 1; /* toggle sel tagset */
+    selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] >> 1;
+    focus(NULL);
+    arrange(selmon);
+  }
 }
 
 void viewtoright(const Arg *arg) {
@@ -2569,13 +2576,13 @@ void viewtoright(const Arg *arg) {
     view(&(Arg){.ui = 1 << 0});
     return;
   }
-	if(__builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
-	&& selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
-		selmon->seltags ^= 1; /* toggle sel tagset */
-		selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] << 1;
-		focus(NULL);
-		arrange(selmon);
-	}
+  if(__builtin_popcount(selmon->tagset[selmon->seltags] & TAGMASK) == 1
+  && selmon->tagset[selmon->seltags] & (TAGMASK >> 1)) {
+    selmon->seltags ^= 1; /* toggle sel tagset */
+    selmon->tagset[selmon->seltags] = selmon->tagset[selmon->seltags ^ 1] << 1;
+    focus(NULL);
+    arrange(selmon);
+  }
 }
 
 void aspectresize(const Arg *arg) {
@@ -3351,55 +3358,56 @@ void goyo(const Arg *arg) {
 void
 resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst)
 {
-	char *sdst = NULL;
-	int *idst = NULL;
-	float *fdst = NULL;
+  char *sdst = NULL;
+  int *idst = NULL;
+  float *fdst = NULL;
 
-	sdst = dst;
-	idst = dst;
-	fdst = dst;
+  sdst = dst;
+  idst = dst;
+  fdst = dst;
 
-	char fullname[256];
-	char *type;
-	XrmValue ret;
+  char fullname[256];
+  char *type;
+  XrmValue ret;
 
-	snprintf(fullname, sizeof(fullname), "%s.%s", "dwm", name);
-	fullname[sizeof(fullname) - 1] = '\0';
+  snprintf(fullname, sizeof(fullname), "%s.%s", "dwm", name);
+  fullname[sizeof(fullname) - 1] = '\0';
 
-	XrmGetResource(db, fullname, "*", &type, &ret);
-	if (!(ret.addr == NULL || strncmp("String", type, 64)))
-	{
-		switch (rtype) {
-		case STRING:
-			strcpy(sdst, ret.addr);
-			break;
-		case INTEGER:
-			*idst = strtoul(ret.addr, NULL, 10);
-			break;
-		case FLOAT:
-			*fdst = strtof(ret.addr, NULL);
-			break;
-		}
-	}
+  XrmGetResource(db, fullname, "*", &type, &ret);
+  if (!(ret.addr == NULL || strncmp("String", type, 64)))
+  {
+    switch (rtype) {
+    case STRING:
+      strcpy(sdst, ret.addr);
+      break;
+    case INTEGER:
+      *idst = strtoul(ret.addr, NULL, 10);
+      break;
+    case FLOAT:
+      *fdst = strtof(ret.addr, NULL);
+      break;
+    }
+  }
 }
 
 void
 load_xresources(void)
 {
-	Display *display;
-	char *resm;
-	XrmDatabase db;
-	ResourcePref *p;
+  Display *display;
+  char *resm;
+  XrmDatabase db;
+  ResourcePref *p;
 
-	display = XOpenDisplay(NULL);
-	resm = XResourceManagerString(display);
-	if (!resm)
-		return;
+  display = XOpenDisplay(NULL);
+  resm = XResourceManagerString(display);
+  if (!resm)
+    return;
 
-	db = XrmGetStringDatabase(resm);
-	for (p = resources; p < resources + LENGTH(resources); p++)
-		resource_load(db, p->name, p->type, p->dst);
-	XCloseDisplay(display);
+  db = XrmGetStringDatabase(resm);
+  if((LENGTH(resources)>1))
+  for (p = resources; p < resources + LENGTH(resources) -1; p++)
+    resource_load(db, p->name, p->type, p->dst);
+  XCloseDisplay(display);
 }
 
 int main(int argc, char *argv[]) {
@@ -3415,8 +3423,8 @@ int main(int argc, char *argv[]) {
     die("dwm: cannot get xcb connection\n");
   checkotherwm();
   
-	XrmInitialize();
-	load_xresources();
+  XrmInitialize();
+  load_xresources();
 
   autostart_exec();
   setup();

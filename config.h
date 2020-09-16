@@ -6,7 +6,8 @@ static const unsigned int drawunderline     = 1;    /* draw only underline under
 static const unsigned int barborder         = 0;    /* draw border around bar , overrider drawunderline*/
 static const unsigned int barborderpx       = 2;    /* size of underline under bar*/
 static const unsigned int notitle           = 1;    /* display window name*/
-static unsigned int       borderpx          = 3;    /* border pixel of windows */
+static unsigned int       borderpx          = 1;    /* border pixel of windows */
+static const unsigned int _borderpx         = 0;
 static const unsigned int snap              = 3;    /* snap pixel */
 static const int          swallowfloating   = 0;    /* 1 means swallow floating windows by default */
 static const int          showbar           = 1;    /* 0 means no bar */
@@ -71,24 +72,24 @@ static const char *tagsalt[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 //static const char *tags[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
 static const Rule rules[] = {
-    /*  class i                     instance title           tagsmask isfloating  isterminal  noswallow isfakefullscreen  width  height   x              y         monitor */
-      {"Gimp",                      NULL,    NULL,            0,          1,         0,            0,         0,           0,    0,      -1,            -1,           -1},
-      {"Pavucontrol",               NULL,    NULL,            1 << 3,     1,         0,            0,         0,           400,  650,    1515 - gappov, 55  - gappoh, -1},
-      {"finder",                    NULL,    NULL,            0,          1,         0,            0,         0,           530,  250,    665  - gappov, 415 - gappoh, -1},
-      {"firefox",                   NULL,    NULL,            1 << 1,     0,         0,           -1,         1,           0,    0,      -1,            -1,           -1},
-      {"firefox",                   NULL,"Picture-in-Picture",1 << 1,     1,         0,           -1,         0,           710,  400,    1205 - gappov, 55 - gappoh,  -1},
-      {"TelegramDesktop",           NULL,    NULL,            1 << 7,     0,         0,           -1,         0,           0,    0,      -1,            -1,           -1},
-      {"St",                        NULL,    NULL,            0,          0,         1,            0,         0,           0,    0,      -1,            -1,           -1},
-      {NULL,                        NULL,    "Event Tester",  0,          1,         0,            1,         0,           0,    0,      -1,            -1,           -1}, /* xev */
-      {"Thunar",                    NULL,    NULL,            1 << 5,     0,         0,           -1,         0,           0,    0,      -1,            -1,           -1},
-      {"code-oss",                  NULL,    NULL,            1 << 2,     0,         0,           -1,         0,           0,    0,      -1,            -1,           -1},
-      {"VSCodium",                  NULL,    NULL,            1 << 2,     0,         0,           -1,         0,           0,    0,      -1,            -1,           -1},
-      {"jetbrains-studio",          NULL,    NULL,            1 << 4,     0,         0,           -1,         0,           0,    0,      -1,            -1,           -1},
-      {"Genymotion Player",         NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           0,    0,      -1,            -1,           -1},
-      {"Genymotion",                NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           0,    0,      -1,            -1,           -1},
-      {"Microsoft Teams - Preview", NULL,    NULL,            1 << 7,     1,         0,           -1,         0,           0,    0,      -1,            -1,           -1},
-      {"Thunderbird",               NULL,    NULL,            1 << 7,     0,         0,           -1,         0,           0,    0,      -1,            -1,           -1},
-      {"discord",                   NULL,    NULL,            1 << 6,     0,         0,           -1,         0,           0,    0,      -1,            -1,           -1},
+    /*  class i                     instance title           tagsmask isfloating  isterminal  noswallow isfakefullscreen  width  height   x              y         floatborderpx  monitor */
+      {"Gimp",                      NULL,    NULL,            0,          1,         0,            0,         0,           0,    0,      -1,            -1,             _borderpx         -1},
+      {"Pavucontrol",               NULL,    NULL,            1 << 3,     1,         0,            0,         0,           400,  650,    1515 - gappov, 55  - gappoh,   _borderpx         -1},
+      {"finder",                    NULL,    NULL,            0,          1,         0,            0,         0,           530,  250,    665  - gappov, 415 - gappoh,   _borderpx         -1},
+      {"firefox",                   NULL,    NULL,            1 << 1,     0,         0,           -1,         1,           0,    0,      -1,            -1,             _borderpx         -1},
+      {"firefox",                   NULL,"Picture-in-Picture",1 << 1,     1,         0,           -1,         0,           710,  400,    1205 - gappov, 55 - gappoh,    0         -1},
+      {"TelegramDesktop",           NULL,    NULL,            1 << 7,     0,         0,           -1,         0,           0,    0,      -1,            -1,             _borderpx         -1},
+      {"St",                        NULL,    NULL,            0,          0,         1,            0,         0,           0,    0,      -1,            -1,             _borderpx         -1},
+      {NULL,                        NULL,    "Event Tester",  0,          1,         0,            1,         0,           0,    0,      -1,            -1,             _borderpx         -1}, /* xev */
+      {"Thunar",                    NULL,    NULL,            1 << 5,     0,         0,           -1,         0,           0,    0,      -1,            -1,             _borderpx         -1},
+      {"code-oss",                  NULL,    NULL,            1 << 2,     0,         0,           -1,         0,           0,    0,      -1,            -1,             _borderpx         -1},
+      {"VSCodium",                  NULL,    NULL,            1 << 2,     0,         0,           -1,         0,           0,    0,      -1,            -1,             _borderpx         -1},
+      {"jetbrains-studio",          NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           0,    0,      -1,            -1,             0         -1},
+      {"Genymotion Player",         NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           0,    0,      -1,            -1,             _borderpx         -1},
+      {"Genymotion",                NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           0,    0,      -1,            -1,             _borderpx         -1},
+      {"Microsoft Teams - Preview", NULL,    NULL,            1 << 7,     1,         0,           -1,         0,           0,    0,      -1,            -1,             _borderpx         -1},
+      {"Thunderbird",               NULL,    NULL,            1 << 7,     0,         0,           -1,         0,           0,    0,      -1,            -1,             _borderpx         -1},
+      {"discord",                   NULL,    NULL,            1 << 6,     0,         0,           -1,         0,           0,    0,      -1,            -1,             _borderpx         -1},
 };
 
 #include "layouts/bstack.c"
@@ -162,13 +163,14 @@ ResourcePref resources[] = {
 // { "selbgcolor",         STRING,  &selbgcolor },
 // { "selbordercolor",     STRING,  &selbordercolor },
 // { "selfgcolor",         STRING,  &selfgcolor },
-{ "borderpx",          	INTEGER, &borderpx },
-// { "snap",          		INTEGER, &snap },
-// { "showbar",          	INTEGER, &showbar },
-// { "topbar",          	INTEGER, &topbar },
-// { "nmaster",          	INTEGER, &nmaster },
-// { "resizehints",       	INTEGER, &resizehints },
-// { "mfact",      	 	FLOAT,   &mfact },
+{ "borderpx",           INTEGER, &borderpx },
+// { "snap",              INTEGER, &snap },
+// { "showbar",           INTEGER, &showbar },
+// { "topbar",            INTEGER, &topbar },
+// { "nmaster",           INTEGER, &nmaster },
+// { "resizehints",         INTEGER, &resizehints },
+// { "mfact",         FLOAT,   &mfact },
+   {NULL, INTEGER, NULL},
 };
 
 /* Keybindings */
