@@ -493,17 +493,20 @@ main(int argc, char *argv[])
     fprintf(stderr, "Failed to connect to socket\n");
     return 1;
   }
-
+  /** if ( argc < 2) {
+    usage_error(prog_name, "Expected an argument, got none");
+  } */
   int i = 1;
+  if ( argc <= i) usage_error(prog_name, "Expected an argument, got none");
+  if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "--help") == 0)
+  { print_usage(prog_name) ; return 0;}
+
   if (strcmp(argv[i], "--ignore-reply") == 0) {
     ignore_reply = 1;
     i++;
   }
 
-  if (i >= argc) usage_error(prog_name, "Expected an argument, got none");
 
-  if (strcmp(argv[i], "help") == 0)
-    print_usage(prog_name);
   else if (strcmp(argv[i], "run_command") == 0) {
     if (++i >= argc) usage_error(prog_name, "No command specified");
     // Command name

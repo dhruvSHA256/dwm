@@ -66,8 +66,8 @@ static const char *const autostart[] = {
 };
 
 /* tagging */
-static char *tags[]          = {"", "", "", "", "", "", "ﭮ", "", ""};
-static const char *tagsalt[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
+static char *tags[]          = { "", "", "", "", "", "", "ﭮ", "", ""};
+static const char *tagsalt[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 //static const char *tags[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
 static const Rule rules[] = {
@@ -75,8 +75,8 @@ static const Rule rules[] = {
       {"Gimp",                      NULL,    NULL,            0,          1,         0,            0,         0,           0,    0,      -1,   -1,    0           -1},
       {"Pavucontrol",               NULL,    NULL,            1 << 3,     1,         0,            0,         0,           400,  650,    1529, 69 ,   0           -1},
       {"finder",                    NULL,    NULL,            0,          1,         0,            0,         0,           530,  250,    679 , 439,   0           -1},
-      {"firefox",                   NULL,    NULL,            1 << 1,     0,         0,           -1,         1,           0,    0,      -1,   -1,    0           -1},
-      {"firefox",                   NULL,"Picture-in-Picture",1 << 1,     1,         0,           -1,         0,           710,  400,    1219, 69,    0           -1},
+      {"firefox",                   NULL,    NULL,            0     ,     0,         0,           -1,         1,           0,    0,      -1,   -1,    0           -1},
+      {"firefox",                   NULL,"Picture-in-Picture",0,          1,         0,           -1,         0,           710,  400,    1219, 69,    0           -1},
       {"TelegramDesktop",           NULL,    NULL,            1 << 7,     0,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
       {"St",                        NULL,    NULL,            0,          0,         1,            0,         0,           0,    0,      -1,   -1,    0           -1},
       {NULL,                        NULL,    "Event Tester",  0,          1,         0,            1,         0,           0,    0,      -1,   -1,    0           -1}, /* xev */
@@ -101,7 +101,7 @@ static const Rule rules[] = {
 #include "layouts/horizgrid.c"
 
 /* layout(s) */
-static const float mfact      = 0.65; /* factor of master area size [0.05..0.95] */
+static float mfact      = 0.65; /* factor of master area size [0.05..0.95] */
 static const int nmaster      = 1;    /* number of clients in master area */
 static const int resizehints  = 1;    /* 1 means respect size hints in tiled resizals */
 
@@ -172,12 +172,12 @@ ResourcePref resources[] = {
 { "smartgaps",        INTEGER, &smartgaps },
 { "vertpad",          INTEGER, &vertpad },
 { "sidepad",          INTEGER, &sidepad },
+{ "mfact",            FLOAT,   &mfact },
 // { "snap",              INTEGER, &snap },
 // { "showbar",           INTEGER, &showbar },
 // { "topbar",            INTEGER, &topbar },
 // { "nmaster",           INTEGER, &nmaster },
 // { "resizehints",         INTEGER, &resizehints },
-// { "mfact",         FLOAT,   &mfact },
    {NULL, INTEGER, NULL},
 };
 

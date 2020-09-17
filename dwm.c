@@ -2302,20 +2302,20 @@ void spawn(const Arg *arg) {
 
       snprintf(path, sizeof(path), "/proc/%d/cwd", selmon->lastsel->pid);
       readlink(path, buf, 255);
-
+/** 
       dwmlog=fopen(LOG,"a");
       fprintf(dwmlog, "lastsel buf %s\n" , buf);
       fprintf(dwmlog, "lastsel path %s\n" , path);
-      fprintf(dwmlog, "lastsel name %s\n" , selmon->lastsel->name);
+      fprintf(dwmlog, "lastsel name %s\n" , selmon->lastsel->name); */
       
       snprintf(path, sizeof(path), "/proc/%d/cwd", selmon->sel->pid);
       readlink(path, buf, 255);
-      
+      /** 
       fprintf(dwmlog, "sel buf %s\n" , buf);
       fprintf(dwmlog, "sel path %s\n" , path);
       fprintf(dwmlog, "sel name %s\n" , selmon->sel->name);
 
-      fclose(dwmlog);
+      fclose(dwmlog); */
       chdir(buf);
     }
     setsid();
