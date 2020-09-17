@@ -2424,12 +2424,17 @@ void togglebar(const Arg *arg) {
    * for. Scanning it too early while the tray is being populated would give
    * wrong dimensions.
    */
+  if (usealtbar) {
+    spawn(&(const Arg ){.v = (const char *[]) { "/bin/sh", "-c", "polybar-msg cmd toggle", NULL }});
+    return;
+  }
+
   if (!selmon->traywin)
     scantray();
 
   selmon->showbar = !selmon->showbar;
   updatebarpos(selmon);
-  XMoveResizeWindow(dpy, selmon->barwin, selmon->wx + sp, selmon->by + vp, selmon->ww,
+  XMoveResizeWindow(dpy, selmon->barwin, selmon->wx + sp , selmon->by + vp, selmon->ww - 2*sp,
                     selmon->bh);
   XMoveResizeWindow(dpy, selmon->traywin, selmon->tx, selmon->by, selmon->tw,
                     selmon->bh);
@@ -2723,8 +2728,8 @@ void updatebarpos(Monitor *m) {
   m->wh = m->mh;
   if (m->showbar) {
     m->wh = m->wh - vp - m->bh;
-    m->by = m->topbar ? m->wy : m->wy + m->wh + sp;
-    m->wy = m->topbar ? m->wy + bh + vp : m->wy;
+    m->by = m->topbar ? m->wy : m->wy + m->wh + vp;
+    m->wy = m->topbar ? m->wy + m->bh +vp : m->wy;
   } else
     m->by = -m->bh - vp;
 }

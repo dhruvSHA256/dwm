@@ -31,7 +31,7 @@ static const int usealtbar          = 1;        /* 1 means use non-dwm status ba
 static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
 static const char *alttrayname      = "tray";    /* Polybar tray instance name */
 static const char *altbarcmd        = "/home/dhruv/.config/polybar/launch.sh &"; // Alternate bar launch command
-/* static const char *altbarcmd        = ""; // Alternate bar launch command  */
+/* static const char *altbarcmd        = ""; // Alternate bar launch command */
 #define BROWSER "firefox"
 #define TERMINAL "st" 
 #define EDITOR "nvim" 
@@ -217,8 +217,7 @@ static Key keys[] = {
     {MODKEY|ShiftMask,                 XK_o,             incrovgaps,     {.i = -1 } },
 
     {MODKEY,                           XK_0,             view,           {.ui = ~0}},
-  //{MODKEY,                           XK_b,             togglebar,      {0}},
-    {MODKEY,                           XK_b,             spawn,           SHCMD("polybar-msg cmd toggle")},
+    {MODKEY,                           XK_b,             togglebar,      {0}},
     {MODKEY,                           XK_d,             incnmaster,     {.i = -1}},
     {MODKEY,                           XK_h,             setmfact,       {.f = -0.05}},
     {MODKEY,                           XK_i,             incnmaster,     {.i = +1}},
