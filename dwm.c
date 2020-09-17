@@ -1016,7 +1016,8 @@ void managealtbar(Window win, XWindowAttributes *wa) {
 
   m->barwin = win;
   m->by = wa->y;
-  bh = m->bh = wa->height;
+  /** bh = m->bh = wa->height; */
+  bh = m->bh = altbar_bh; 
   updatebarpos(m);
   arrange(m);
   XSelectInput(dpy, win,
@@ -2113,7 +2114,7 @@ void setup(void) {
   if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
     die("no fonts could be loaded.");
   lrpad = drw->fonts->h;
-  bh = usealtbar ? 0 : user_bh ? user_bh : drw->fonts->h + 2;
+  bh = usealtbar ? altbar_bh : user_bh ? user_bh : drw->fonts->h + 2;
   updategeom();
   sp = usealtbar == 1 ? 0 : sidepad;
   vp = usealtbar == 1 ? 0 : (topbar == 1) ? vertpad : -vertpad;
@@ -2185,7 +2186,7 @@ void setup(void) {
 }
 
 void spawnbar() {
-  if (*altbarcmd)
+  if (*altbarcmd && usealtbar)
     system(altbarcmd);
 }
 
@@ -3353,7 +3354,6 @@ void goyo(const Arg *arg) {
   for (c = selmon->clients; c; c = c->next)
     c->bw = c->bw != 0 ? 0 : borderpx;
   isgoyo = !isgoyo;
-  //  setlayout(arg);
   togglebar(arg);
   togglegaps(arg);
   arrange(selmon);
