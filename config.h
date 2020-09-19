@@ -27,17 +27,17 @@ static const char         col_gray4[]       = "#eeeeee";
 static const unsigned int baralpha          = 0xff;
 static const unsigned int borderalpha       = OPAQUE;
 static int usealtbar                        = 1;     /* 1 means use non-dwm status bar */
-static int altbar_bh                        = 28;    /* altbar height */
+static int altbar_bh                        = 30;    /* altbar height */
 static const char *altbarclass              = "Polybar"; /* Alternate bar class name */
 static const char *alttrayname              = "tray";    /* Polybar tray instance name */
 static const char *altbarcmd                = "/home/dhruv/.config/polybar/launch.sh &"; /* Alternate bar launch command */
 #define BROWSER "firefox"
-#define TERMINAL "st" 
-#define EDITOR "nvim" 
+#define TERMINAL "st"
+#define EDITOR "nvim"
 
 static const char *colors[][3] = {
     /*                         fg             bg        border   */
-    [SchemeNorm]      =        {col_gray3, "#1f2430", "#2E3440"},
+    [SchemeNorm]      =        {col_gray3, "#1f2430", "#5E6470"},
     [SchemeSel]       =        {col_gray4, "#1f2430", "#a6e1ff"},
     [SchemeStatus]    =        {"#ffffff", "#1f2430", "#000000"}, // Statusbar right {text,background,not used // but cannot be empty}
     [SchemeTagsSel]   =        {"#1f2430", "#a6e1ff", "#000000"}, // Tagbar left selected {text,background,not // used but cannot be empty}
@@ -66,24 +66,25 @@ static const char *const autostart[] = {
 };
 
 /* tagging */
-static char *tags[]          = { "", "", "", "", "", "", "ﭮ", "", ""};
-static const char *tagsalt[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-//static const char *tags[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
+static char *tags[]    = { "", "", "", "", "", "", "ﭮ", "", ""};
+static char *tagsalt[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
 static const Rule rules[] = {
     /*  class i                     instance title           tagsmask isfloating  isterminal  noswallow isfakefullscreen  width  height   x     y floatborderpx  monitor */
       {"Gimp",                      NULL,    NULL,            0,          1,         0,            0,         0,           0,    0,      -1,   -1,    0           -1},
-      {"Pavucontrol",               NULL,    NULL,            1 << 3,     1,         0,            0,         0,           400,  650,    1529, 69 ,   0           -1},
+      {"Pavucontrol",               NULL,    NULL,            1 << 3,     1,         0,            0,         0,           400,  650,    0, 0 ,   0           -1},
       {"finder",                    NULL,    NULL,            0,          1,         0,            0,         0,           530,  250,    679 , 439,   0           -1},
-      {"firefox",                   NULL,    NULL,            0     ,     0,         0,           -1,         1,           0,    0,      -1,   -1,    0           -1},
-      {"firefox",                   NULL,"Picture-in-Picture",0,          1,         0,           -1,         0,           710,  400,    1219, 69,    0           -1},
+      {"firefox",                   NULL,    NULL,            1 << 0,     0,         0,           -1,         1,           0,    0,      -1,   -1,    0           -1},
+      {"firefox",                   NULL,"Picture-in-Picture",0,          1,         0,           -1,         0,           710,  400,    0, 0,    0           -1},
       {"TelegramDesktop",           NULL,    NULL,            1 << 7,     0,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
       {"St",                        NULL,    NULL,            0,          0,         1,            0,         0,           0,    0,      -1,   -1,    0           -1},
       {NULL,                        NULL,    "Event Tester",  0,          1,         0,            1,         0,           0,    0,      -1,   -1,    0           -1}, /* xev */
       {"Thunar",                    NULL,    NULL,            1 << 5,     0,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
+      {"lemonbar",                  NULL,    NULL,            0,          1,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
+      {"bar",                  NULL,    NULL,            0,          1,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
       {"code-oss",                  NULL,    NULL,            1 << 2,     0,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
       {"VSCodium",                  NULL,    NULL,            1 << 2,     0,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
-      {"jetbrains-studio",          NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
+      {"jetbrains-studio",          NULL,    NULL,            1 << 4,     0,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
       {"Genymotion Player",         NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
       {"Genymotion",                NULL,    NULL,            1 << 4,     1,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
       {"Microsoft Teams - Preview", NULL,    NULL,            1 << 7,     1,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
@@ -107,18 +108,18 @@ static const int resizehints  = 1;    /* 1 means respect size hints in tiled res
 
 static const Layout layouts[] = {
     /* symbol   arrange function */
-    {"",       tile},   
+    {"[]",       tile},
     {"\\",       spiral},
-    {"<>",      NULL}, 
-    {"类",      monocle},      
+    {"<>",      NULL},
+    {"M",      monocle},
     {"/ ",     dwindle},
-    {"TTT",     bstack},      
+    {"TTT",     bstack},
     {"|M|",     centeredmaster},
-    {":::",     gaplessgrid}, 
+    {":::",     gaplessgrid},
     {">M>",     centeredfloatingmaster},
-    {"HHH",     grid},        
+    {"HHH",     grid},
     {"---",     horizgrid},
-    {"|||",     col},         
+    {"|||",     col},
     {NULL,      NULL},
 };
 
@@ -234,7 +235,7 @@ static Key keys[] = {
     {MODKEY,                           XK_l,             setmfact,       {.f = +0.05}},
     {MODKEY,                           XK_q,             killclient,     {0}},
     {Mod1Mask,                         XK_Tab,           view,           {0}},
-    
+
     /* move resize patch */
     {MODKEY | ControlMask | ShiftMask, XK_Down,          moveresizeedge, {.v = "B"}},
     {MODKEY | ControlMask | ShiftMask, XK_Left,          moveresizeedge, {.v = "L"}},
@@ -265,14 +266,14 @@ static Key keys[] = {
 
     {MODKEY | ControlMask,             XK_comma,         cyclelayout,    {.i = -1}},
     {MODKEY | ControlMask,             XK_period,        cyclelayout,    {.i = +1}},
-  
-    TAGKEYS(XK_1, 0) 
-    TAGKEYS(XK_2, 1) 
-    TAGKEYS(XK_3, 2) 
+
+    TAGKEYS(XK_1, 0)
+    TAGKEYS(XK_2, 1)
+    TAGKEYS(XK_3, 2)
     TAGKEYS(XK_4, 3)
-    TAGKEYS(XK_5, 4) 
-    TAGKEYS(XK_6, 5) 
-    TAGKEYS(XK_7, 6) 
+    TAGKEYS(XK_5, 4)
+    TAGKEYS(XK_6, 5)
+    TAGKEYS(XK_7, 6)
     TAGKEYS(XK_8, 7)
     TAGKEYS(XK_9, 8)
 };
@@ -295,7 +296,7 @@ static Button buttons[] = {
 // {ClkStatusText,            0,           Button3,         sigdwmblocks,   {.i = 3}},
 // {ClkStatusText,            0,           Button4,         sigdwmblocks,   {.i = 4}},
 // {ClkStatusText,            0,           Button5,         sigdwmblocks,   {.i = 5}},
-// 
+//
 };
 
 static const char *ipcsockpath = "/tmp/dwm.sock";
@@ -316,4 +317,3 @@ static IPCCommand ipccommands[] = {
   IPCCOMMAND(  setlayoutsafe,       1,      {ARG_TYPE_PTR}    ),
   IPCCOMMAND(  quit,                1,      {ARG_TYPE_NONE}   )
 };
-
