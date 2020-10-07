@@ -61,7 +61,6 @@ static const unsigned int alphas[][3] = {
     [SchemeBarBorder]  = {OPAQUE, baralpha, borderalpha},
 };
 static const char *const autostart[] = {
-  "sxhkd", "-c" ,"/home/dhruv/.config/sxhkd/sxhkdrc",NULL,
     NULL /* terminate */
 };
 
