@@ -321,6 +321,7 @@ static void detachstack(Client *c);
 static void drawbar(Monitor *m);
 static void drawbars(void);
 static void enternotify(XEvent *e);
+static Client *findbefore(Client *c);
 static void expose(XEvent *e);
 static void focus(Client *c);
 static void focusin(XEvent *e);
@@ -414,6 +415,7 @@ static void viewtoright(const Arg *arg);
 static void aspectresize(const Arg *arg);
 
 /* variables */
+static Client *prevzoom = NULL;
 static int useargb = 0;
 static Visual *visual;
 static int depth;
@@ -1277,6 +1279,16 @@ void enternotify(XEvent *e)
     else if (!c || c == selmon->sel)
         return;
     focus(c);
+}
+
+Client *
+findbefore(Client *c)
+{
+  Client *tmp;
+  if (c == selmon->clients)
+    return NULL;
+  for (tmp = selmon->clients; tmp && tmp->next != c; tmp = tmp->next);
+  return tmp;
 }
 
 void expose(XEvent *e)
@@ -3487,17 +3499,45 @@ void xinitvisual()
     }
 }
 
-void zoom(const Arg *arg)
-{
-    Client *c = selmon->sel;
+void zoom(const Arg *arg) {
+  Client *c = selmon->sel;
+  Client *at = NULL, *cold, *cprevious = NULL;
 
-    if (!selmon->lt[selmon->sellt]->arrange ||
-        (selmon->sel && selmon->sel->isfloating))
+  if (!selmon->lt[selmon->sellt]->arrange ||
+      (selmon->sel && selmon->sel->isfloating))
+    return;
+  /** if (c == nexttiled(selmon->clients))
+      if (!c || !(c = nexttiled(c->next)))
+          return; */
+  if (c == nexttiled(selmon->clients)) {
+    at = findbefore(prevzoom);
+    if (at)
+      cprevious = nexttiled(at->next);
+    if (!cprevious || cprevious != prevzoom) {
+      prevzoom = NULL;
+      if (!c || !(c = nexttiled(c->next)))
         return;
-    if (c == nexttiled(selmon->clients))
-        if (!c || !(c = nexttiled(c->next)))
-            return;
-    pop(c);
+    } else
+      c = cprevious;
+  }
+  cold = nexttiled(selmon->clients);
+  if (c != cold && !at)
+    at = findbefore(c);
+  detach(c);
+  attach(c);
+  /* swap windows instead of pushing the previous one down */
+  if (c != cold && at) {
+    prevzoom = cold;
+    if (cold && at != cold) {
+      detach(cold);
+      cold->next = at->next;
+      at->next = cold;
+    }
+  }
+  focus(c);
+  arrange(c->mon);
+
+  pop(c);
 }
 
 void togglealttag()
