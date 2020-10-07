@@ -14,13 +14,13 @@ static const int          topbar            = 1;    /* 0 means bottom bar */
 static const int          user_bh           = 29;   /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
 static const char         *fonts[]          = {"Symbols Nerd Font:style=2048-em:size=12","Hurmit Nerd Font Mono:style=medium:size=9"};
 static const char         dmenufont[]       = { "JetBrains Mono:pixelsize=18:antialias=true:autohint=true"};
-static unsigned int gappih            = 10;   /* horiz inner gap between windows */
-static unsigned int gappiv            = 10;   /* vert inner gap between windows */
-static unsigned int gappoh            = 10;   /* horiz outer gap between windows and screen edge */
-static unsigned int gappov            = 10;   /* vert outer gap between windows and screen edge */
-static int          smartgaps         = 0;    /* 1 means no outer gap when there is only one window */
-static int          vertpad           = 1;    /* vertical padding of bar */
-static int          sidepad           = 1;    /* horizontal padding of bar */
+static unsigned int       gappih            = 10;   /* horiz inner gap between windows */
+static unsigned int       gappiv            = 10;   /* vert inner gap between windows */
+static unsigned int       gappoh            = 10;   /* horiz outer gap between windows and screen edge */
+static unsigned int       gappov            = 10;   /* vert outer gap between windows and screen edge */
+static int                smartgaps         = 0;    /* 1 means no outer gap when there is only one window */
+static int                vertpad           = 1;    /* vertical padding of bar */
+static int                sidepad           = 1;    /* horizontal padding of bar */
 static const char         col_gray3[]       = "#bbbbbb";
 static const char         col_gray4[]       = "#eeeeee";
 #define OPAQUE                                0xff
@@ -72,16 +72,16 @@ static char *tagsalt[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 static const Rule rules[] = {
     /*  class i                     instance title           tagsmask isfloating  isterminal  noswallow isfakefullscreen  width  height   x     y floatborderpx  monitor */
       {"Gimp",                      NULL,    NULL,            0,          1,         0,            0,         0,           0,    0,      -1,   -1,    0           -1},
-      {"Pavucontrol",               NULL,    NULL,            1 << 3,     1,         0,            0,         0,           400,  650,    0, 0 ,   0           -1},
+      {"Pavucontrol",               NULL,    NULL,            1 << 3,     1,         0,            0,         0,           400,  650,    0,     0 ,   0           -1},
       {"finder",                    NULL,    NULL,            0,          1,         0,            0,         0,           530,  250,    679 , 439,   0           -1},
       {"firefox",                   NULL,    NULL,            1 << 0,     0,         0,           -1,         1,           0,    0,      -1,   -1,    0           -1},
-      {"firefox",                   NULL,"Picture-in-Picture",0,          1,         0,           -1,         0,           710,  400,    0, 0,    0           -1},
+      {"firefox",                   NULL,"Picture-in-Picture",0,          1,         0,           -1,         0,           710,  400,    0, 0,  0           -1},
       {"TelegramDesktop",           NULL,    NULL,            1 << 7,     0,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
       {"St",                        NULL,    NULL,            0,          0,         1,            0,         0,           0,    0,      -1,   -1,    0           -1},
       {NULL,                        NULL,    "Event Tester",  0,          1,         0,            1,         0,           0,    0,      -1,   -1,    0           -1}, /* xev */
       {"Thunar",                    NULL,    NULL,            1 << 5,     0,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
       {"lemonbar",                  NULL,    NULL,            0,          1,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
-      {"bar",                  NULL,    NULL,            0,          1,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
+      {"bar",                       NULL,    NULL,            0,          1,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
       {"code-oss",                  NULL,    NULL,            1 << 2,     0,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
       {"VSCodium",                  NULL,    NULL,            1 << 2,     0,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},
       {"jetbrains-studio",          NULL,    NULL,            1 << 4,     0,         0,           -1,         0,           0,    0,      -1,   -1,    0           -1},

@@ -282,7 +282,7 @@ static Monitor *dirtomon(int dir);
 static Monitor *recttomon(int x, int y, int w, int h);
 static Monitor *wintomon(Window w);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
-//static int getdwmblockspid();
+/** static int getdwmblockspid(); */
 static int getrootptr(int *x, int *y);
 static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static int isdescprocess(pid_t p, pid_t c);
@@ -422,7 +422,7 @@ static Colormap cmap;
 static char rawstext[256];
 static int statuscmdn;
 static int dwmblockssig;
-pid_t dwmblockspid = 0;
+/** pid_t dwmblockspid = 0; */
 static char lastbutton[] = "-";
 unsigned int urgenttag = 1 << 0;
 
@@ -529,6 +529,9 @@ void applyrules(Client *c)
                     c->y = r->y;
                     c->w = r->width;
                     c->h = r->height;
+                } else {
+                  c->x = -1;
+                  c->y = -1;
                 }
             }
             for (m = mons; m && m->num != r->monitor; m = m->next)
@@ -976,10 +979,14 @@ void configurerequest(XEvent *e)
                 c->oldh = c->h;
                 c->h = ev->height;
             }
-            if ((c->x + c->w) > m->mx + m->mw && c->isfloating)
-                c->x = m->mx + (m->mw / 2 - WIDTH(c) / 2); /* center in x direction */
-            if ((c->y + c->h) > m->my + m->mh && c->isfloating)
-                c->y = m->my + (m->mh / 2 - HEIGHT(c) / 2); /* center in y direction */
+            /** if (c->x == -1 && c->y == -1) {
+              if ((c->x + c->w) > m->mx + m->mw && c->isfloating)
+                c->x = m->mx +
+                       (m->mw / 2 - WIDTH(c) / 2); // center in x direction
+              if ((c->y + c->h) > m->my + m->mh && c->isfloating)
+                c->y = m->my +
+                       (m->mh / 2 - HEIGHT(c) / 2); // center in y direction
+            } */
             if ((ev->value_mask & (CWX | CWY)) &&
                 !(ev->value_mask & (CWWidth | CWHeight)))
                 configure(c);
@@ -1388,15 +1395,16 @@ int getrootptr(int *x, int *y)
     return XQueryPointer(dpy, root, &dummy, &dummy, x, y, &di, &di, &dui);
 }
 
-// int getdwmblockspid() {
-// char buf[16];
-// FILE *fp = popen("pidof -s dwmblocks", "r");
-// fgets(buf, sizeof(buf), fp);
-// pid_t pid = strtoul(buf, NULL, 10);
-// pclose(fp);
-// dwmblockspid = pid;
-// return pid != 0 ? 0 : -1;
-// }
+/** int getdwmblockspid() {
+
+  char buf[16];
+  FILE *fp = popen("pidof -s dwmblocks", "r");
+  fgets(buf, sizeof(buf), fp);
+  pid_t pid = strtoul(buf, NULL, 10);
+  pclose(fp);
+  dwmblockspid = pid;
+  return pid != 0 ? 0 : -1;
+} */
 
 long getstate(Window w)
 {
@@ -2503,20 +2511,6 @@ void sigchld(int unused)
     }
 }
 
-// void sigdwmblocks(const Arg *arg) {
-// union sigval sv;
-// sv.sival_int = (dwmblockssig << 8) | arg->i;
-// if (!dwmblockspid)
-// if (getdwmblockspid() == -1)
-// return;
-//
-// if (sigqueue(dwmblockspid, SIGUSR1, sv) == -1) {
-// if (errno == ESRCH) {
-// if (!getdwmblockspid())
-// sigqueue(dwmblockspid, SIGUSR1, sv);
-// }
-// }
-// }
 
 void spawn(const Arg *arg)
 {
@@ -2536,26 +2530,28 @@ void spawn(const Arg *arg)
 
         if (selmon->sel)
         {
-            /** char buf[255];
-      char path[64]; */
+            char buf[255];
+            char path[64];
 
-            /** snprintf(path, sizeof(path), "/proc/%d/cwd", selmon->lastsel->pid);
-      readlink(path, buf, 255); */
-            /** 
-      dwmlog=fopen(LOG,"a");
-      fprintf(dwmlog, "lastsel buf %s\n" , buf);
-      fprintf(dwmlog, "lastsel path %s\n" , path);
-      fprintf(dwmlog, "lastsel name %s\n" , selmon->lastsel->name); */
+            snprintf(path, sizeof(path), "/proc/%d/cwd", selmon->lastsel->pid);
+            readlink(path, buf, 255);
 
-            /** snprintf(path, sizeof(path), "/proc/%d/cwd", selmon->sel->pid);
-      readlink(path, buf, 255); */
-            /** 
-      fprintf(dwmlog, "sel buf %s\n" , buf);
-      fprintf(dwmlog, "sel path %s\n" , path);
-      fprintf(dwmlog, "sel name %s\n" , selmon->sel->name);
+            /**
+            dwmlog=fopen(LOG,"a");
+            fprintf(dwmlog, "lastsel buf %s\n" , buf);
+            fprintf(dwmlog, "lastsel path %s\n" , path);
+            fprintf(dwmlog, "lastsel name %s\n" , selmon->lastsel->name); */
 
-      fclose(dwmlog); */
-            /** chdir(buf); */
+            snprintf(path, sizeof(path), "/proc/%d/cwd", selmon->sel->pid);
+            readlink(path, buf, 255);
+
+            /**
+            fprintf(dwmlog, "sel buf %s\n" , buf);
+            fprintf(dwmlog, "sel path %s\n" , path);
+            fprintf(dwmlog, "sel name %s\n" , selmon->sel->name);
+            fclose(dwmlog); */
+
+            chdir(buf);
         }
         setsid();
         execvp(((char **)arg->v)[0], (char **)arg->v);
@@ -3781,33 +3777,44 @@ void load_xresources(void)
     XCloseDisplay(display);
 }
 
-int main(int argc, char *argv[])
-{
-    if (argc == 2 && !strcmp("-v", argv[1]))
-        die("dwm-" VERSION);
-    else if (argc != 1)
-        die("usage: dwm [-v]");
-    if (!setlocale(LC_CTYPE, "") || !XSupportsLocale())
-        fputs("warning: no locale support\n", stderr);
-    if (!(dpy = XOpenDisplay(NULL)))
-        die("dwm: cannot open display");
-    if (!(xcon = XGetXCBConnection(dpy)))
-        die("dwm: cannot get xcb connection\n");
-    checkotherwm();
+/** void sigdwmblocks(const Arg *arg) {
 
-    XrmInitialize();
-    load_xresources();
+  union sigval sv;
+  sv.sival_int = (dwmblockssig << 8) | arg->i;
+  if (!dwmblockspid)
+    if (getdwmblockspid() == -1) return;
 
-    autostart_exec();
-    setup();
+  if (sigqueue(dwmblockspid, SIGUSR1, sv) == -1) {
+    if (errno == ESRCH) {
+      if (!getdwmblockspid()) sigqueue(dwmblockspid, SIGUSR1, sv);
+    }
+  }
+} */
+
+int main(int argc, char *argv[]) {
+
+  if (argc == 2 && !strcmp("-v", argv[1]))
+    die("dwm-" VERSION);
+  else if (argc != 1)
+    die("usage: dwm [-v]");
+  if (!setlocale(LC_CTYPE, "") || !XSupportsLocale())
+    fputs("warning: no locale support\n", stderr);
+  if (!(dpy = XOpenDisplay(NULL))) die("dwm: cannot open display");
+  if (!(xcon = XGetXCBConnection(dpy))) die("dwm: cannot get xcb connection\n");
+  checkotherwm();
+
+  XrmInitialize();
+  load_xresources();
+
+  autostart_exec();
+  setup();
 #ifdef __OpenBSD__
-    if (pledge("stdio rpath proc exec", NULL) == -1)
-        die("pledge");
+  if (pledge("stdio rpath proc exec", NULL) == -1) die("pledge");
 #endif /* __OpenBSD__ */
-    scan();
-    run();
-    cleanup();
-    XCloseDisplay(dpy);
-    fclose(dwmlog);
-    return EXIT_SUCCESS;
+  scan();
+  run();
+  cleanup();
+  XCloseDisplay(dpy);
+  fclose(dwmlog);
+  return EXIT_SUCCESS;
 }
