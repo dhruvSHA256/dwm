@@ -38,9 +38,9 @@ static const char *altbarcmd                = "/home/dhruv/.config/polybar/launc
 static const char *colors[][3] = {
     /*                         fg             bg        border   */
     [SchemeNorm]      =        {col_gray3, "#1f2430", "#5E6470"},
-    [SchemeSel]       =        {col_gray4, "#1f2430", "#a6e1ff"},
+    [SchemeSel]       =        {col_gray4, "#1f2430", "#dab997"},
     [SchemeStatus]    =        {"#ffffff", "#1f2430", "#000000"}, // Statusbar right {text,background,not used // but cannot be empty}
-    [SchemeTagsSel]   =        {"#1f2430", "#a6e1ff", "#000000"}, // Tagbar left selected {text,background,not // used but cannot be empty}
+    [SchemeTagsSel]   =        {"#1f2430", "#dab997", "#000000"}, // Tagbar left selected {text,background,not // used but cannot be empty}
     [SchemeTagsNorm]  =        {"#ffffff", "#1f2430", "#000000"}, // Tagbar left unselected {text,background,not used but // cannot be empty}
     [SchemeTagsUrgent]=        {"#1f2430", "#ff6666", "#000000"}, // Tagbar left unselected {text,background,not used but // cannot be empty}
     [SchemeInfoSel]   =        {col_gray4, "#1f2430", "#000000"}, // infobar middle  selected {text,background,not used but // cannot be empty}
@@ -139,8 +139,6 @@ static const Layout layouts[] = {
 
 /* commands spawned when clicking statusbar, the mouse button pressed is
  * exported as BUTTON */
-static char *statuscmds[]        = {"notify-send Mouse$BUTTON"};
-static char *statuscmd[]         = {"/bin/sh", "-c", NULL, NULL};
 
 /* commands */
 static char dmenumon[2]          = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -266,6 +264,11 @@ static Key keys[] = {
     {MODKEY | ControlMask,             XK_comma,         cyclelayout,    {.i = -1}},
     {MODKEY | ControlMask,             XK_period,        cyclelayout,    {.i = +1}},
 
+    {MODKEY,                           XK_m,             hidewin,        {0}},
+    {MODKEY|ShiftMask,                 XK_m,             restorewin,     {0}},
+    {MODKEY,                           XK_n,             hideotherwins,  {0}},
+    {MODKEY|ShiftMask,                 XK_n,             restoreotherwins,{0}},
+
     TAGKEYS(XK_1, 0)
     TAGKEYS(XK_2, 1)
     TAGKEYS(XK_3, 2)
@@ -290,12 +293,6 @@ static Button buttons[] = {
     {ClkTagBar,                0,           Button3,         toggleview,     {0}},
     {ClkTagBar,              MODKEY,        Button1,         tag,            {0}},
     {ClkTagBar,              MODKEY,        Button3,         toggletag,      {0}},
-// {ClkStatusText,            0,           Button1,         sigdwmblocks,   {.i = 1}},
-// {ClkStatusText,            0,           Button2,         sigdwmblocks,   {.i = 2}},
-// {ClkStatusText,            0,           Button3,         sigdwmblocks,   {.i = 3}},
-// {ClkStatusText,            0,           Button4,         sigdwmblocks,   {.i = 4}},
-// {ClkStatusText,            0,           Button5,         sigdwmblocks,   {.i = 5}},
-//
 };
 
 static const char *ipcsockpath = "/tmp/dwm.sock";

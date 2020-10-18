@@ -65,6 +65,7 @@
      MAX(0, MIN((y) + (h), (m)->my + (m)->mh) - MAX((y), (m)->my)))
 #define ISVISIBLE(C) ((C->tags & C->mon->tagset[C->mon->seltags]))
 #define LENGTH(X) (sizeof X / sizeof X[0])
+#define HIDDEN(C)               ((getstate(C->win) == IconicState))
 #define MOUSEMASK (BUTTONMASK | PointerMotionMask)
 #define WIDTH(X) ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X) ((X)->h + 2 * (X)->bw)
@@ -281,7 +282,6 @@ static Monitor *dirtomon(int dir);
 static Monitor *recttomon(int x, int y, int w, int h);
 static Monitor *wintomon(Window w);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact);
-/** static int getdwmblockspid(); */
 static int getrootptr(int *x, int *y);
 static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static int isdescprocess(pid_t p, pid_t c);
@@ -312,6 +312,7 @@ static void configure(Client *c);
 static void configurenotify(XEvent *e);
 static void configurerequest(XEvent *e);
 static void cyclelayout(const Arg *arg);
+void show(Client *c);
 static void shiftview(const Arg *arg);
 static void defaultgaps(const Arg *arg);
 static void destroynotify(XEvent *e);
@@ -374,7 +375,6 @@ static void seturgent(Client *c, int urg);
 static void setviewport(void);
 static void showhide(Client *c);
 static void sigchld(int unused);
-// static void sigdwmblocks(const Arg *arg);
 static void spawn(const Arg *arg);
 static void swallow(Client *p, Client *c);
 static void switchurgent(const Arg *arg);
@@ -388,6 +388,13 @@ static void togglefullscr(const Arg *arg);
 static void togglegaps(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
+static void hide(Client *c);
+static void hidewin(const Arg *arg);
+static void restorewin(const Arg *arg);
+static void hideotherwins(const Arg *arg);
+static void restoreotherwins(const Arg *arg);
+static int issinglewin(const Arg *arg);
+static void focuswin(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void unmapnotify(XEvent *e);
@@ -420,11 +427,6 @@ static Visual *visual;
 static int depth;
 static Colormap cmap;
 
-static char rawstext[256];
-static int statuscmdn;
-static int dwmblockssig;
-/** pid_t dwmblockspid = 0; */
-static char lastbutton[] = "-";
 unsigned int urgenttag = 1 << 0;
 
 /* logging dwm */
@@ -481,6 +483,11 @@ static size_t autostart_len;
 #include "ipc.c"
 #include "yajl_dumps.c"
 #endif
+
+#define hiddenWinStackMax 100
+static int hiddenWinStackTop = -1;
+static Client *hiddenWinStack[hiddenWinStackMax];
+
 /* configuration, allows nested code to access above variables */
 #include "config.h"
 
@@ -692,7 +699,6 @@ void buttonpress(XEvent *e)
     Client *c;
     Monitor *m;
     XButtonPressedEvent *ev = &e->xbutton;
-    *lastbutton = '0' + ev->button;
 
     click = ClkRootWin;
     /* focus monitor if necessary */
@@ -721,33 +727,10 @@ void buttonpress(XEvent *e)
         }
         else if (ev->x < x + blw)
             click = ClkLtSymbol;
-        else if (ev->x > (x = selmon->ww - TEXTW(stext) + lrpad))
-        {
-            click = ClkStatusText;
-
-            char *text = rawstext;
-            int i = -1;
-            char ch;
-            dwmblockssig = 0;
-            while (text[++i])
-            {
-                if ((unsigned char)text[i] < ' ')
-                {
-                    ch = text[i];
-                    text[i] = '\0';
-                    x += TEXTW(text) - lrpad;
-                    text[i] = ch;
-                    text += i + 1;
-                    i = -1;
-                    if (x >= ev->x)
-                        break;
-                    dwmblockssig = ch;
-                }
-            }
-        }
+        else if (ev->x > selmon->ww - TEXTW(stext))
+ 			click = ClkStatusText;
         else
-
-            click = ClkWinTitle;
+          click = ClkWinTitle;
     }
     else if ((c = wintoclient(ev->window)))
     {
@@ -773,20 +756,6 @@ void checkotherwm(void)
     XSync(dpy, False);
     XSetErrorHandler(xerror);
     XSync(dpy, False);
-}
-
-void copyvalidchars(char *text, char *rawtext)
-{
-    int i = -1, j = 0;
-
-    while (rawtext[++i])
-    {
-        if ((unsigned char)rawtext[i] >= ' ')
-        {
-            text[j++] = rawtext[i];
-        }
-    }
-    text[j] = '\0';
 }
 
 void cleanup(void)
@@ -1352,24 +1321,29 @@ void focusstack(const Arg *arg)
 {
     Client *c = NULL, *i;
 
+    if (issinglewin(arg)) {
+        focuswin(arg);
+        return;
+    }
+
     if (!selmon->sel)
         return;
     if (arg->i > 0)
     {
-        for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next)
+		for (c = selmon->sel->next; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next);
             ;
         if (!c)
-            for (c = selmon->clients; c && !ISVISIBLE(c); c = c->next)
+		for (c = selmon->clients; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next);
                 ;
     }
     else
     {
         for (i = selmon->clients; i != selmon->sel; i = i->next)
-            if (ISVISIBLE(i))
+		if (ISVISIBLE(i) && !HIDDEN(i))
                 c = i;
         if (!c)
             for (; i; i = i->next)
-                if (ISVISIBLE(i))
+    	if (ISVISIBLE(i) && !HIDDEN(i))
                     c = i;
     }
     if (c)
@@ -1405,16 +1379,6 @@ int getrootptr(int *x, int *y)
     return XQueryPointer(dpy, root, &dummy, &dummy, x, y, &di, &di, &dui);
 }
 
-/** int getdwmblockspid() {
-
-  char buf[16];
-  FILE *fp = popen("pidof -s dwmblocks", "r");
-  fgets(buf, sizeof(buf), fp);
-  pid_t pid = strtoul(buf, NULL, 10);
-  pclose(fp);
-  dwmblockspid = pid;
-  return pid != 0 ? 0 : -1;
-} */
 
 long getstate(Window w)
 {
@@ -2527,11 +2491,6 @@ void spawn(const Arg *arg)
 
     if (arg->v == dmenucmd)
         dmenumon[0] = '0' + selmon->num;
-    else if (arg->v == statuscmd)
-    {
-        statuscmd[2] = statuscmds[statuscmdn];
-        setenv("BUTTON", lastbutton, 1);
-    }
 
     if (fork() == 0)
     {
@@ -2751,6 +2710,143 @@ void toggletag(const Arg *arg)
     }
 }
 
+void
+hide(Client *c) {
+	if (!c || HIDDEN(c))
+		return;
+
+	Window w = c->win;
+	static XWindowAttributes ra, ca;
+
+	// more or less taken directly from blackbox's hide() function
+	XGrabServer(dpy);
+	XGetWindowAttributes(dpy, root, &ra);
+	XGetWindowAttributes(dpy, w, &ca);
+	// prevent UnmapNotify events
+	XSelectInput(dpy, root, ra.your_event_mask & ~SubstructureNotifyMask);
+	XSelectInput(dpy, w, ca.your_event_mask & ~StructureNotifyMask);
+	XUnmapWindow(dpy, w);
+	setclientstate(c, IconicState);
+	XSelectInput(dpy, root, ra.your_event_mask);
+	XSelectInput(dpy, w, ca.your_event_mask);
+	XUngrabServer(dpy);
+
+	focus(c->snext);
+	arrange(c->mon);
+}
+
+void hidewin(const Arg *arg) {
+    if (!selmon->sel)
+        return;
+    Client *c = (Client *)selmon->sel;
+    hide(c);
+    hiddenWinStack[++hiddenWinStackTop] = c;
+}
+
+void restorewin(const Arg *arg) {
+    int i = hiddenWinStackTop;
+    while (i > -1) {
+        if (HIDDEN(hiddenWinStack[i]) &&
+            hiddenWinStack[i]->tags == selmon->tagset[selmon->seltags]) {
+            show(hiddenWinStack[i]);
+            focus(hiddenWinStack[i]);
+            restack(selmon);
+            for (int j = i; j < hiddenWinStackTop; ++j) {
+                hiddenWinStack[j] = hiddenWinStack[j + 1];
+            }
+            --hiddenWinStackTop;
+            return;
+        }
+        --i;
+    }
+}
+
+void hideotherwins(const Arg *arg) {
+    Client *c = NULL, *i;
+    if (!selmon->sel)
+        return;
+    c = (Client *)selmon->sel;
+    for (i = selmon->clients; i; i = i->next) {
+        if (i != c && ISVISIBLE(i)) {
+            hide(i);
+            hiddenWinStack[++hiddenWinStackTop] = i;
+        }
+    }
+}
+
+void restoreotherwins(const Arg *arg) {
+    int i;
+    for (i = 0; i <= hiddenWinStackTop; ++i) {
+        if (HIDDEN(hiddenWinStack[i]) &&
+            hiddenWinStack[i]->tags == selmon->tagset[selmon->seltags]) {
+            show(hiddenWinStack[i]);
+            restack(selmon);
+            memcpy(hiddenWinStack + i, hiddenWinStack + i + 1,
+                   (hiddenWinStackTop - i) * sizeof(Client *));
+            --hiddenWinStackTop;
+            --i;
+        }
+    }
+}
+
+int issinglewin(const Arg *arg) {
+    Client *c = NULL;
+    int cot = 0;
+    int tag = selmon->tagset[selmon->seltags];
+    for (c = selmon->clients; c; c = c->next) {
+        if (ISVISIBLE(c) && !HIDDEN(c) && c->tags == tag) {
+            cot++;
+        }
+        if (cot > 1) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+void focuswin(const Arg *arg) {
+    Client *c = NULL, *i;
+    int j;
+
+    if (arg->i > 0) {
+        for (c = selmon->sel->next;
+             c && !(c->tags == selmon->tagset[selmon->seltags]); c = c->next)
+            ;
+        if (!c)
+            for (c = selmon->clients;
+                 c && !(c->tags == selmon->tagset[selmon->seltags]);
+                 c = c->next)
+                ;
+    } else {
+        for (i = selmon->clients; i != selmon->sel; i = i->next)
+            if (i->tags == selmon->tagset[selmon->seltags])
+                c = i;
+        if (!c)
+            for (; i; i = i->next)
+                if (i->tags == selmon->tagset[selmon->seltags])
+                    c = i;
+    }
+
+    i = selmon->sel;
+
+    if (c && c != i) {
+        hide(i);
+        for (j = 0; j <= hiddenWinStackTop; ++j) {
+            if (HIDDEN(hiddenWinStack[j]) &&
+                hiddenWinStack[j]->tags == selmon->tagset[selmon->seltags] &&
+                hiddenWinStack[j] == c) {
+                show(c);
+                focus(c);
+                restack(selmon);
+                memcpy(hiddenWinStack + j, hiddenWinStack + j + 1,
+                       (hiddenWinStackTop - j) * sizeof(Client *));
+                hiddenWinStack[hiddenWinStackTop] = i;
+                return;
+            }
+        }
+    }
+}
+
 void toggleview(const Arg *arg)
 {
     unsigned int newtagset =
@@ -2763,6 +2859,16 @@ void toggleview(const Arg *arg)
         arrange(selmon);
     }
     updatecurrentdesktop();
+}
+
+void show(Client *c)
+{
+	if (!c || !HIDDEN(c))
+		return;
+
+	XMapWindow(dpy, c->win);
+	setclientstate(c, NormalState);
+	arrange(c->mon);
 }
 
 void shiftview(const Arg *arg)
@@ -3214,12 +3320,8 @@ void updatesizehints(Client *c)
 void updatestatus(void)
 {
 
-    if (!gettextprop(root, XA_WM_NAME, rawstext, sizeof(rawstext)))
-
+	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
         strcpy(stext, "dwm-" VERSION);
-    else
-        copyvalidchars(stext, rawstext);
-
     drawbar(selmon);
 }
 
@@ -3804,19 +3906,6 @@ void load_xresources(void)
     XCloseDisplay(display);
 }
 
-/** void sigdwmblocks(const Arg *arg) {
-
-  union sigval sv;
-  sv.sival_int = (dwmblockssig << 8) | arg->i;
-  if (!dwmblockspid)
-    if (getdwmblockspid() == -1) return;
-
-  if (sigqueue(dwmblockspid, SIGUSR1, sv) == -1) {
-    if (errno == ESRCH) {
-      if (!getdwmblockspid()) sigqueue(dwmblockspid, SIGUSR1, sv);
-    }
-  }
-} */
 
 int main(int argc, char *argv[]) {
 
