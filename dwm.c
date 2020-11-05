@@ -174,7 +174,7 @@ struct Client
     int bw, oldbw;
     unsigned int tags;
     int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen,
-        isterminal, noswallow, isfakefullscreen, floatborderpx;
+        isterminal, noswallow, isfakefullscreen, floatborderpx, islastfloating;
     pid_t pid;
     Client *next;
     Client *snext;
@@ -510,6 +510,7 @@ void applyrules(Client *c)
     /* rule matching */
     c->noswallow = -1;
     c->isfloating = 0;
+    c->islastfloating = 0;
     c->tags = 0;
 
     XGetClassHint(dpy, c->win, &ch);
@@ -728,7 +729,7 @@ void buttonpress(XEvent *e)
         else if (ev->x < x + blw)
             click = ClkLtSymbol;
         else if (ev->x > selmon->ww - TEXTW(stext))
- 			click = ClkStatusText;
+            click = ClkStatusText;
         else
           click = ClkWinTitle;
     }
@@ -1330,20 +1331,20 @@ void focusstack(const Arg *arg)
         return;
     if (arg->i > 0)
     {
-		for (c = selmon->sel->next; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next);
+        for (c = selmon->sel->next; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next);
             ;
         if (!c)
-		for (c = selmon->clients; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next);
+        for (c = selmon->clients; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next);
                 ;
     }
     else
     {
         for (i = selmon->clients; i != selmon->sel; i = i->next)
-		if (ISVISIBLE(i) && !HIDDEN(i))
+        if (ISVISIBLE(i) && !HIDDEN(i))
                 c = i;
         if (!c)
             for (; i; i = i->next)
-    	if (ISVISIBLE(i) && !HIDDEN(i))
+        if (ISVISIBLE(i) && !HIDDEN(i))
                     c = i;
     }
     if (c)
@@ -2712,33 +2713,33 @@ void toggletag(const Arg *arg)
 
 void
 hide(Client *c) {
-	if (!c || HIDDEN(c))
-		return;
+    if (!c || HIDDEN(c))
+        return;
+    Window w = c->win;
+    static XWindowAttributes ra, ca;
+    // more or less taken directly from blackbox's hide() function
+    XGrabServer(dpy);
+    XGetWindowAttributes(dpy, root, &ra);
+    XGetWindowAttributes(dpy, w, &ca);
+    // prevent UnmapNotify events
+    XSelectInput(dpy, root, ra.your_event_mask & ~SubstructureNotifyMask);
+    XSelectInput(dpy, w, ca.your_event_mask & ~StructureNotifyMask);
+    XUnmapWindow(dpy, w);
+    setclientstate(c, IconicState);
+    XSelectInput(dpy, root, ra.your_event_mask);
+    XSelectInput(dpy, w, ca.your_event_mask);
+    XUngrabServer(dpy);
 
-	Window w = c->win;
-	static XWindowAttributes ra, ca;
-
-	// more or less taken directly from blackbox's hide() function
-	XGrabServer(dpy);
-	XGetWindowAttributes(dpy, root, &ra);
-	XGetWindowAttributes(dpy, w, &ca);
-	// prevent UnmapNotify events
-	XSelectInput(dpy, root, ra.your_event_mask & ~SubstructureNotifyMask);
-	XSelectInput(dpy, w, ca.your_event_mask & ~StructureNotifyMask);
-	XUnmapWindow(dpy, w);
-	setclientstate(c, IconicState);
-	XSelectInput(dpy, root, ra.your_event_mask);
-	XSelectInput(dpy, w, ca.your_event_mask);
-	XUngrabServer(dpy);
-
-	focus(c->snext);
-	arrange(c->mon);
+    focus(c->snext);
+    arrange(c->mon);
 }
 
 void hidewin(const Arg *arg) {
     if (!selmon->sel)
         return;
     Client *c = (Client *)selmon->sel;
+    c->islastfloating = c->isfloating;
+    c->isfloating = 1;
     hide(c);
     hiddenWinStack[++hiddenWinStackTop] = c;
 }
@@ -2748,11 +2749,12 @@ void restorewin(const Arg *arg) {
     while (i > -1) {
         if (HIDDEN(hiddenWinStack[i]) &&
             hiddenWinStack[i]->tags == selmon->tagset[selmon->seltags]) {
-            show(hiddenWinStack[i]);
-            focus(hiddenWinStack[i]);
-            restack(selmon);
-            for (int j = i; j < hiddenWinStackTop; ++j) {
-                hiddenWinStack[j] = hiddenWinStack[j + 1];
+          hiddenWinStack[i]->isfloating = hiddenWinStack[i]->islastfloating;
+          show(hiddenWinStack[i]);
+          focus(hiddenWinStack[i]);
+          restack(selmon);
+          for (int j = i; j < hiddenWinStackTop; ++j) {
+            hiddenWinStack[j] = hiddenWinStack[j + 1];
             }
             --hiddenWinStackTop;
             return;
@@ -2863,12 +2865,12 @@ void toggleview(const Arg *arg)
 
 void show(Client *c)
 {
-	if (!c || !HIDDEN(c))
-		return;
+    if (!c || !HIDDEN(c))
+        return;
 
-	XMapWindow(dpy, c->win);
-	setclientstate(c, NormalState);
-	arrange(c->mon);
+    XMapWindow(dpy, c->win);
+    setclientstate(c, NormalState);
+    arrange(c->mon);
 }
 
 void shiftview(const Arg *arg)
@@ -3320,7 +3322,7 @@ void updatesizehints(Client *c)
 void updatestatus(void)
 {
 
-	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
+    if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
         strcpy(stext, "dwm-" VERSION);
     drawbar(selmon);
 }
