@@ -3844,14 +3844,23 @@ void moveresizeedge(const Arg *arg)
 
 void goyo(const Arg *arg)
 {
+  if (isgoyo) {
     Client *c;
     for (c = selmon->clients; c; c = c->next)
-        c->bw = c->bw != 0 ? 0 : borderpx;
-    isgoyo = !isgoyo;
+      c->bw = borderpx;
     togglebar(arg);
-    togglegaps(arg);
-    arrange(selmon);
-    updatecurrentdesktop();
+    enablegaps = 1;
+  }
+  else {
+    Client *c;
+    for (c = selmon->clients; c; c = c->next)
+      c->bw = 0;
+    togglebar(arg);
+    enablegaps = 0;
+  }
+  isgoyo = !isgoyo;
+  arrange(selmon);
+  updatecurrentdesktop();
 }
 
 void resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst)

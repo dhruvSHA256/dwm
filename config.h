@@ -36,14 +36,14 @@ static const char col_gray4[] = "#eeeeee";
 static const unsigned int baralpha = 0xff;
 static const unsigned int borderalpha = OPAQUE;
 static int usealtbar = 1;                   /* 1 means use non-dwm status bar */
-static int altbar_bh = 30;                  /* altbar height */
+static int altbar_bh = 20;                  /* altbar height */
 static const char *altbarclass = "Polybar"; /* Alternate bar class name */
 static const char *alttrayname = "tray";    /* Polybar tray instance name */
 static const char *altbarcmd =
     "/home/dhruv/.config/polybar/launch.sh &"; /* Alternate bar launch command
                                                 */
 #define BROWSER "firefox"
-#define TERMINAL "st"
+#define TERMINAL "alacritty"
 #define EDITOR "nvim"
 
 static const char *colors[][3] = {
@@ -180,7 +180,7 @@ static const char *dmenucmd[] = {
     "/home/dhruv/.config/scripts/dmenu_run/dmenu_run", NULL};
 static const char *termcmd[] = {TERMINAL, NULL};
 static const char *browsercmd[] = {BROWSER, NULL};
-static const char *editorcmd[] = {TERMINAL, "-c", EDITOR, "-e", EDITOR, NULL};
+static const char *editorcmd[] = {TERMINAL, "--class", EDITOR, "-e", EDITOR, NULL};
 /* static const char *chromecommand[]= {"chromium", NULL};
 static const char *mailcommand[]  = {"thunderbird", NULL};
 static const char *filecommand[]  = {"thunar", NULL}; */
