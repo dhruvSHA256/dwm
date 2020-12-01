@@ -180,7 +180,7 @@ static const char *dmenucmd[] = {
     "/home/dhruv/.config/scripts/dmenu_run/dmenu_run", NULL};
 static const char *termcmd[] = {TERMINAL, NULL};
 static const char *browsercmd[] = {BROWSER, NULL};
-static const char *editorcmd[] = {TERMINAL, "--class", EDITOR, "-e", EDITOR, NULL};
+static const char *editorcmd[] = {"st", "-c", EDITOR, "-e", EDITOR, NULL};
 /* static const char *chromecommand[]= {"chromium", NULL};
 static const char *mailcommand[]  = {"thunderbird", NULL};
 static const char *filecommand[]  = {"thunar", NULL}; */

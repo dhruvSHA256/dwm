@@ -81,7 +81,9 @@ enum
     CurResize,
     CurMove,
     CurLast
-}; /* cursor */
+};
+
+/* cursor */
 enum
 {
     SchemeNorm,
@@ -93,7 +95,9 @@ enum
     SchemeInfoSel,
     SchemeInfoNorm,
     SchemeBarBorder
-}; /* color schemes */
+};
+
+/* color schemes */
 enum
 {
     NetSupported,
@@ -110,7 +114,9 @@ enum
     NetNumberOfDesktops,
     NetCurrentDesktop,
     NetLast
-}; /* EWMH atoms */
+};
+
+/* EWMH atoms */
 enum
 {
     WMProtocols,
@@ -118,7 +124,9 @@ enum
     WMState,
     WMTakeFocus,
     WMLast
-}; /* default atoms */
+};
+
+/* default atoms */
 enum
 {
     ClkTagBar,
@@ -128,7 +136,8 @@ enum
     ClkClientWin,
     ClkRootWin,
     ClkLast
-}; /* clicks */
+};
+/* clicks */
 
 typedef struct TagState TagState;
 struct TagState
@@ -1065,6 +1074,7 @@ void detachstack(Client *c)
         c->mon->sel = t;
     }
 }
+
 Monitor *dirtomon(int dir)
 {
     Monitor *m = NULL;
@@ -1379,7 +1389,6 @@ int getrootptr(int *x, int *y)
 
     return XQueryPointer(dpy, root, &dummy, &dummy, x, y, &di, &di, &dui);
 }
-
 
 long getstate(Window w)
 {
@@ -2485,7 +2494,6 @@ void sigchld(int unused)
         }
     }
 }
-
 
 void spawn(const Arg *arg)
 {
@@ -3643,12 +3651,14 @@ void setcurrentdesktop(void)
     XChangeProperty(dpy, root, netatom[NetCurrentDesktop], XA_CARDINAL, 32,
                     PropModeReplace, (unsigned char *)data, 1);
 }
+
 void setdesktopnames(void)
 {
     XTextProperty text;
     Xutf8TextListToTextProperty(dpy, tags, TAGSLENGTH, XUTF8StringStyle, &text);
     XSetTextProperty(dpy, root, &text, netatom[NetDesktopNames]);
 }
+
 void setnumdesktops(void)
 {
     long data[] = {TAGSLENGTH};
