@@ -109,6 +109,7 @@ static const Rule rules[] = {
      0 - 1},
     {"TelegramDesktop", NULL, NULL, 1 << 7, 0, 0, -1, 0, 0, 0, -1, -1, 0 - 1},
     {"St", NULL, NULL, 0, 0, 1, 0, 0, 0, 0, -1, -1, 0 - 1},
+    {"Alacritty", NULL, NULL, 0, 0, 1, 0, 0, 0, 0, -1, -1, 0 - 1},
     {NULL, NULL, "Event Tester", 0, 1, 0, 1, 0, 0, 0, -1, -1, 0 - 1}, /* xev */
     {"Thunar", NULL, NULL, 5, 0, 0, -1, 0, 0, 0, -1, -1, 0 - 1},
     {"lemonbar", NULL, NULL, 0, 1, 0, -1, 0, 0, 0, -1, -1, 0 - 1},
