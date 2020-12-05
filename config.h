@@ -20,7 +20,13 @@ static const char *colors[][3] = {
 };
 
 static const char *const autostart[] = {
-    "/usr/bin/pulseaudio", "--kill", NULL, "/usr/bin/pulseaudio", "--start", NULL ,NULL/* terminate */
+    /* "/usr/bin/pulseaudio", */
+    /* "--kill", */
+    /* NULL, */
+    "/usr/bin/pulseaudio",
+    "--start",
+    NULL,
+    NULL /* terminate */
 
 };
 
@@ -97,8 +103,9 @@ static Key keys[] = {
     {MODKEY | ShiftMask, 45, setcfact, {.f = -0.25}}, // k
     {MODKEY | ShiftMask, 32, setcfact, {.f = 0.00}},  // o
 
-    {MODKEY | ShiftMask, 57, movestack, {.i = +1}}, // n
-    {MODKEY | ShiftMask, 33, movestack, {.i = -1}}, // p
+    {MODKEY, 35, movestack, {.i = +1}}, // ]
+    {MODKEY, 34, movestack, {.i = -1}}, // [
+    {MODKEY, 39, togglestickey, {0}},   // s
 
     {MODKEY, 116, moveresize, {.v = "0x 25y 0w 0h"}},              // down
     {MODKEY, 111, moveresize, {.v = "0x -25y 0w 0h"}},             // up
@@ -128,33 +135,33 @@ static Key keys[] = {
     {MODKEY, 41, setlayout, {.v = &layouts[1]}},  // f
     /* {MODKEY, XK_m, setlayout, {.v = &layouts[2]}}, */
     /* {MODKEY, XK_space, setlayout, {0}}, */
-    {MODKEY | ShiftMask, 65, togglefloating, {0}},   // space
-    {MODKEY, 19, view, {.ui = ~0}},                  // 0
-    {MODKEY | ShiftMask, 19, tag, {.ui = ~0}},       // 0
-    {MODKEY, 59, focusmon, {.i = -1}},               // comma
-    {MODKEY, 60, focusmon, {.i = +1}},               // period
-    {MODKEY | ShiftMask, 59, tagmon, {.i = -1}},     // comma
-    {MODKEY | ShiftMask, 60, tagmon, {.i = +1}},     // period
-    {MODKEY, 24, killclient, {0}},                   // q
-    {MODKEY | ShiftMask, 24, quit, {0}},             // q
-    {MODKEY, 23, shiftview, {.i = +1}},              // tab
-    {MODKEY | ShiftMask, 23, shiftview, {.i = -1}},  // tab
-    {MODKEY, 60, viewtoright, {0}},                  // period
-    {MODKEY, 59, viewtoleft, {0}},                   // comma
-    {MODKEY, 42, goyo, {.v = &layouts[1]}},          // g
-    {MODKEY, 58, hidewin, {0}},                      // m
-    {MODKEY | ShiftMask, 58, restorewin, {0}},       // m
-    {MODKEY, 46, hideotherwins, {0}},                // l
-    {MODKEY | ShiftMask, 46, restoreotherwins, {0}}, // l
-    TAGKEYS(10, 0)                                   // 1
-    TAGKEYS(11, 1)                                   // 2
-    TAGKEYS(12, 2)                                   // 3
-    TAGKEYS(13, 3)                                   // 4
-    TAGKEYS(14, 4)                                   // 5
-    TAGKEYS(15, 5)                                   // 6
-    TAGKEYS(16, 6)                                   // 7
-    TAGKEYS(17, 7)                                   // 8
-    TAGKEYS(18, 8)                                   // 9
+    {MODKEY | ShiftMask, 65, togglefloating, {0}},  // space
+    {MODKEY, 19, view, {.ui = ~0}},                 // 0
+    {MODKEY | ShiftMask, 19, tag, {.ui = ~0}},      // 0
+    {MODKEY, 59, focusmon, {.i = -1}},              // comma
+    {MODKEY, 60, focusmon, {.i = +1}},              // period
+    {MODKEY | ShiftMask, 59, tagmon, {.i = -1}},    // comma
+    {MODKEY | ShiftMask, 60, tagmon, {.i = +1}},    // period
+    {MODKEY, 24, killclient, {0}},                  // q
+    {MODKEY | ShiftMask, 24, quit, {0}},            // q
+    {MODKEY, 23, shiftview, {.i = +1}},             // tab
+    {MODKEY | ShiftMask, 23, shiftview, {.i = -1}}, // tab
+    {MODKEY, 60, viewtoright, {0}},                 // period
+    {MODKEY, 59, viewtoleft, {0}},                  // comma
+    {MODKEY, 42, goyo, {.v = &layouts[1]}},         // g
+    {MODKEY, 58, hidewin, {0}},                     // m
+    {MODKEY | ShiftMask, 58, restorewin, {0}},      // m
+    /* {MODKEY, 46, hideotherwins, {0}},                // l */
+    /* {MODKEY | ShiftMask, 46, restoreotherwins, {0}}, // l */
+    TAGKEYS(10, 0) // 1
+    TAGKEYS(11, 1) // 2
+    TAGKEYS(12, 2) // 3
+    TAGKEYS(13, 3) // 4
+    TAGKEYS(14, 4) // 5
+    TAGKEYS(15, 5) // 6
+    TAGKEYS(16, 6) // 7
+    TAGKEYS(17, 7) // 8
+    TAGKEYS(18, 8) // 9
 };
 
 /* button definitions */

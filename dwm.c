@@ -210,11 +210,12 @@ static void goyo();
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void hide(Client *c);
-static void hideotherwins(const Arg *arg);
+/* static void hideotherwins(const Arg *arg); */
 static void hidewin(const Arg *arg);
 static void incnmaster(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
+static void togglestickey(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
@@ -231,7 +232,7 @@ static void resize(Client *c, int x, int y, int w, int h, int interact);
 static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
-static void restoreotherwins(const Arg *arg);
+/* static void restoreotherwins(const Arg *arg); */
 static void restorewin(const Arg *arg);
 static void run(void);
 static void scan(void);
@@ -1232,6 +1233,11 @@ killclient(const Arg *arg)
         XSetErrorHandler(xerror);
         XUngrabServer(dpy);
     }
+}
+
+void
+togglestickey(const Arg *arg){
+    selmon->sel->ispermanent = !selmon->sel->ispermanent;
 }
 
 void
@@ -2457,38 +2463,38 @@ restorewin(const Arg *arg) {
     }
 }
 
-void
-hideotherwins(const Arg *arg) {
-    Client *c = NULL, *i;
-    if (!selmon->sel)
-        return;
-    c = (Client *)selmon->sel;
-    for (i = selmon->clients; i; i = i->next) {
-        if (i != c && ISVISIBLE(i)) {
-            i->islastfloating = i->isfloating;
-            i->isfloating = 1;
-            hide(i);
-            hiddenWinStack[++hiddenWinStackTop] = i;
-        }
-    }
-}
+/* void */
+/* hideotherwins(const Arg *arg) { */
+/*     Client *c = NULL, *i; */
+/*     if (!selmon->sel) */
+/*         return; */
+/*     c = (Client *)selmon->sel; */
+/*     for (i = selmon->clients; i; i = i->next) { */
+/*         if (i != c && ISVISIBLE(i)) { */
+/*             i->islastfloating = i->isfloating; */
+/*             i->isfloating = 1; */
+/*             hide(i); */
+/*             hiddenWinStack[++hiddenWinStackTop] = i; */
+/*         } */
+/*     } */
+/* } */
 
-void
-restoreotherwins(const Arg *arg) {
-    int i;
-    for (i = 0; i <= hiddenWinStackTop; ++i) {
-        if (HIDDEN(hiddenWinStack[i]) &&
-            hiddenWinStack[i]->tags == selmon->tagset[selmon->seltags]) {
-            hiddenWinStack[i]->isfloating = hiddenWinStack[i]->islastfloating;
-            show(hiddenWinStack[i]);
-            restack(selmon);
-            memcpy(hiddenWinStack + i, hiddenWinStack + i + 1,
-                   (hiddenWinStackTop - i) * sizeof(Client *));
-            --hiddenWinStackTop;
-            --i;
-        }
-    }
-}
+/* void */
+/* restoreotherwins(const Arg *arg) { */
+/*     int i; */
+/*     for (i = 0; i <= hiddenWinStackTop; ++i) { */
+/*         if (HIDDEN(hiddenWinStack[i]) && */
+/*             hiddenWinStack[i]->tags == selmon->tagset[selmon->seltags]) { */
+/*             hiddenWinStack[i]->isfloating = hiddenWinStack[i]->islastfloating; */
+/*             show(hiddenWinStack[i]); */
+/*             restack(selmon); */
+/*             memcpy(hiddenWinStack + i, hiddenWinStack + i + 1, */
+/*                    (hiddenWinStackTop - i) * sizeof(Client *)); */
+/*             --hiddenWinStackTop; */
+/*             --i; */
+/*         } */
+/*     } */
+/* } */
 
 int
 issinglewin(const Arg *arg) {
