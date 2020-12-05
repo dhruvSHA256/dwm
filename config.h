@@ -20,7 +20,8 @@ static const char *colors[][3] = {
 };
 
 static const char *const autostart[] = {
-    "start-pulseaudio-x11", NULL /* terminate */
+    "/usr/bin/pulseaudio", "--kill", NULL, "/usr/bin/pulseaudio", "--start", NULL ,NULL/* terminate */
+
 };
 
 /* tagging */
