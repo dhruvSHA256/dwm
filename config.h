@@ -3,8 +3,16 @@
 /* appearance */
 static const unsigned int borderpx = 1; /* border pixel of windows */
 static const unsigned int snap = 32;    /* snap pixel */
-static const int showbar = 1;           /* 0 means no bar */
-static const int topbar = 1;            /* 0 means bottom bar */
+static const unsigned int systraypinning =
+    0; /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor
+          X */
+static const unsigned int systrayspacing = 2; /* systray spacing */
+static const int systraypinningfailfirst =
+    1; /* 1: if pinning fails, display systray on the first monitor, False:
+          display systray on the last monitor*/
+static const int showsystray = 1; /* 0 means no systray */
+static const int showbar = 1;     /* 0 means no bar */
+static const int topbar = 1;      /* 0 means bottom bar */
 static const char *fonts[] = {"monospace:size=11",
                               "Mukta:style=Regular:size=14"};
 static const char dmenufont[] = "monospace:size=10";
@@ -23,10 +31,7 @@ static const char *const autostart[] = {
     /* "/usr/bin/pulseaudio", */
     /* "--kill", */
     /* NULL, */
-    "/usr/bin/pulseaudio",
-    "--start",
-    NULL,
-    NULL /* terminate */
+    "/usr/bin/pulseaudio", "--start", NULL, NULL /* terminate */
 
 };
 
@@ -38,9 +43,9 @@ static const Rule rules[] = {
      *  WM_CLASS(STRING) = instance, class
      *  WM_NAME(STRING) = title
      */
-    /* class      instance    title       tags mask     isfloating  ispermanent
-       monitor */
+    /* class instance title  tagsmask  isfloating ispermanent monitor */
     {"Gimp", NULL, NULL, 0, 1, 0, -1},
+    {"Pavucontrol", NULL, NULL, 0, 1, 0, -1},
     {"firefox", NULL, NULL, 0, 0, 1, -1},
 };
 
