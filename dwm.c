@@ -60,7 +60,7 @@
 #define MWM_HINTS_DECORATIONS_FIELD 2
 #define MWM_HINTS_DECORATIONS (1 << 1)
 #define MWM_DECOR_ALL (1 << 0)
-#define MWM_DECOR_BORDER (1 << 1)
+#define MWM_DECOR_BORDER (1 << 0)
 #define MWM_DECOR_TITLE (1 << 3)
 #define SYSTEM_TRAY_REQUEST_DOCK 0
 
