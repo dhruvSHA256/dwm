@@ -65,7 +65,7 @@
      MAX(0, MIN((y) + (h), (m)->my + (m)->mh) - MAX((y), (m)->my)))
 #define ISVISIBLE(C) ((C->tags & C->mon->tagset[C->mon->seltags]))
 #define LENGTH(X) (sizeof X / sizeof X[0])
-#define HIDDEN(C)               ((getstate(C->win) == IconicState))
+#define HIDDEN(C) ((getstate(C->win) == IconicState))
 #define MOUSEMASK (BUTTONMASK | PointerMotionMask)
 #define WIDTH(X) ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X) ((X)->h + 2 * (X)->bw)
@@ -547,9 +547,11 @@ void applyrules(Client *c)
                     c->y = r->y;
                     c->w = r->width;
                     c->h = r->height;
-                } else {
-                  c->x = -1;
-                  c->y = -1;
+                }
+                else
+                {
+                    c->x = -1;
+                    c->y = -1;
                 }
             }
             for (m = mons; m && m->num != r->monitor; m = m->next)
@@ -740,7 +742,7 @@ void buttonpress(XEvent *e)
         else if (ev->x > selmon->ww - TEXTW(stext))
             click = ClkStatusText;
         else
-          click = ClkWinTitle;
+            click = ClkWinTitle;
     }
     else if ((c = wintoclient(ev->window)))
     {
@@ -1262,11 +1264,12 @@ void enternotify(XEvent *e)
 Client *
 findbefore(Client *c)
 {
-  Client *tmp;
-  if (c == selmon->clients)
-    return NULL;
-  for (tmp = selmon->clients; tmp && tmp->next != c; tmp = tmp->next);
-  return tmp;
+    Client *tmp;
+    if (c == selmon->clients)
+        return NULL;
+    for (tmp = selmon->clients; tmp && tmp->next != c; tmp = tmp->next)
+        ;
+    return tmp;
 }
 
 void expose(XEvent *e)
@@ -1332,7 +1335,8 @@ void focusstack(const Arg *arg)
 {
     Client *c = NULL, *i;
 
-    if (issinglewin(arg)) {
+    if (issinglewin(arg))
+    {
         focuswin(arg);
         return;
     }
@@ -1341,20 +1345,22 @@ void focusstack(const Arg *arg)
         return;
     if (arg->i > 0)
     {
-        for (c = selmon->sel->next; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next);
+        for (c = selmon->sel->next; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next)
             ;
+        ;
         if (!c)
-        for (c = selmon->clients; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next);
+            for (c = selmon->clients; c && (!ISVISIBLE(c) || HIDDEN(c)); c = c->next)
                 ;
+        ;
     }
     else
     {
         for (i = selmon->clients; i != selmon->sel; i = i->next)
-        if (ISVISIBLE(i) && !HIDDEN(i))
+            if (ISVISIBLE(i) && !HIDDEN(i))
                 c = i;
         if (!c)
             for (; i; i = i->next)
-        if (ISVISIBLE(i) && !HIDDEN(i))
+                if (ISVISIBLE(i) && !HIDDEN(i))
                     c = i;
     }
     if (c)
@@ -2719,8 +2725,8 @@ void toggletag(const Arg *arg)
     }
 }
 
-void
-hide(Client *c) {
+void hide(Client *c)
+{
     if (!c || HIDDEN(c))
         return;
     Window w = c->win;
@@ -2742,7 +2748,8 @@ hide(Client *c) {
     arrange(c->mon);
 }
 
-void hidewin(const Arg *arg) {
+void hidewin(const Arg *arg)
+{
     if (!selmon->sel)
         return;
     Client *c = (Client *)selmon->sel;
@@ -2752,17 +2759,21 @@ void hidewin(const Arg *arg) {
     hiddenWinStack[++hiddenWinStackTop] = c;
 }
 
-void restorewin(const Arg *arg) {
+void restorewin(const Arg *arg)
+{
     int i = hiddenWinStackTop;
-    while (i > -1) {
+    while (i > -1)
+    {
         if (HIDDEN(hiddenWinStack[i]) &&
-            hiddenWinStack[i]->tags == selmon->tagset[selmon->seltags]) {
-          hiddenWinStack[i]->isfloating = hiddenWinStack[i]->islastfloating;
-          show(hiddenWinStack[i]);
-          focus(hiddenWinStack[i]);
-          restack(selmon);
-          for (int j = i; j < hiddenWinStackTop; ++j) {
-            hiddenWinStack[j] = hiddenWinStack[j + 1];
+            hiddenWinStack[i]->tags == selmon->tagset[selmon->seltags])
+        {
+            hiddenWinStack[i]->isfloating = hiddenWinStack[i]->islastfloating;
+            show(hiddenWinStack[i]);
+            focus(hiddenWinStack[i]);
+            restack(selmon);
+            for (int j = i; j < hiddenWinStackTop; ++j)
+            {
+                hiddenWinStack[j] = hiddenWinStack[j + 1];
             }
             --hiddenWinStackTop;
             return;
@@ -2771,24 +2782,30 @@ void restorewin(const Arg *arg) {
     }
 }
 
-void hideotherwins(const Arg *arg) {
+void hideotherwins(const Arg *arg)
+{
     Client *c = NULL, *i;
     if (!selmon->sel)
         return;
     c = (Client *)selmon->sel;
-    for (i = selmon->clients; i; i = i->next) {
-        if (i != c && ISVISIBLE(i)) {
+    for (i = selmon->clients; i; i = i->next)
+    {
+        if (i != c && ISVISIBLE(i))
+        {
             hide(i);
             hiddenWinStack[++hiddenWinStackTop] = i;
         }
     }
 }
 
-void restoreotherwins(const Arg *arg) {
+void restoreotherwins(const Arg *arg)
+{
     int i;
-    for (i = 0; i <= hiddenWinStackTop; ++i) {
+    for (i = 0; i <= hiddenWinStackTop; ++i)
+    {
         if (HIDDEN(hiddenWinStack[i]) &&
-            hiddenWinStack[i]->tags == selmon->tagset[selmon->seltags]) {
+            hiddenWinStack[i]->tags == selmon->tagset[selmon->seltags])
+        {
             show(hiddenWinStack[i]);
             restack(selmon);
             memcpy(hiddenWinStack + i, hiddenWinStack + i + 1,
@@ -2799,26 +2816,32 @@ void restoreotherwins(const Arg *arg) {
     }
 }
 
-int issinglewin(const Arg *arg) {
+int issinglewin(const Arg *arg)
+{
     Client *c = NULL;
     int cot = 0;
     int tag = selmon->tagset[selmon->seltags];
-    for (c = selmon->clients; c; c = c->next) {
-        if (ISVISIBLE(c) && !HIDDEN(c) && c->tags == tag) {
+    for (c = selmon->clients; c; c = c->next)
+    {
+        if (ISVISIBLE(c) && !HIDDEN(c) && c->tags == tag)
+        {
             cot++;
         }
-        if (cot > 1) {
+        if (cot > 1)
+        {
             return 0;
         }
     }
     return 1;
 }
 
-void focuswin(const Arg *arg) {
+void focuswin(const Arg *arg)
+{
     Client *c = NULL, *i;
     int j;
 
-    if (arg->i > 0) {
+    if (arg->i > 0)
+    {
         for (c = selmon->sel->next;
              c && !(c->tags == selmon->tagset[selmon->seltags]); c = c->next)
             ;
@@ -2827,7 +2850,9 @@ void focuswin(const Arg *arg) {
                  c && !(c->tags == selmon->tagset[selmon->seltags]);
                  c = c->next)
                 ;
-    } else {
+    }
+    else
+    {
         for (i = selmon->clients; i != selmon->sel; i = i->next)
             if (i->tags == selmon->tagset[selmon->seltags])
                 c = i;
@@ -2839,12 +2864,15 @@ void focuswin(const Arg *arg) {
 
     i = selmon->sel;
 
-    if (c && c != i) {
+    if (c && c != i)
+    {
         hide(i);
-        for (j = 0; j <= hiddenWinStackTop; ++j) {
+        for (j = 0; j <= hiddenWinStackTop; ++j)
+        {
             if (HIDDEN(hiddenWinStack[j]) &&
                 hiddenWinStack[j]->tags == selmon->tagset[selmon->seltags] &&
-                hiddenWinStack[j] == c) {
+                hiddenWinStack[j] == c)
+            {
                 show(c);
                 focus(c);
                 restack(selmon);
@@ -3598,45 +3626,51 @@ void xinitvisual()
     }
 }
 
-void zoom(const Arg *arg) {
-  Client *c = selmon->sel;
-  Client *at = NULL, *cold, *cprevious = NULL;
+void zoom(const Arg *arg)
+{
+    Client *c = selmon->sel;
+    Client *at = NULL, *cold, *cprevious = NULL;
 
-  if (!selmon->lt[selmon->sellt]->arrange ||
-      (selmon->sel && selmon->sel->isfloating))
-    return;
-  /** if (c == nexttiled(selmon->clients))
+    if (!selmon->lt[selmon->sellt]->arrange ||
+        (selmon->sel && selmon->sel->isfloating))
+        return;
+    /** if (c == nexttiled(selmon->clients))
       if (!c || !(c = nexttiled(c->next)))
           return; */
-  if (c == nexttiled(selmon->clients)) {
-    at = findbefore(prevzoom);
-    if (at)
-      cprevious = nexttiled(at->next);
-    if (!cprevious || cprevious != prevzoom) {
-      prevzoom = NULL;
-      if (!c || !(c = nexttiled(c->next)))
-        return;
-    } else
-      c = cprevious;
-  }
-  cold = nexttiled(selmon->clients);
-  if (c != cold && !at)
-    at = findbefore(c);
-  detach(c);
-  attach(c);
-  /* swap windows instead of pushing the previous one down */
-  if (c != cold && at) {
-    prevzoom = cold;
-    if (cold && at != cold) {
-      detach(cold);
-      cold->next = at->next;
-      at->next = cold;
+    if (c == nexttiled(selmon->clients))
+    {
+        at = findbefore(prevzoom);
+        if (at)
+            cprevious = nexttiled(at->next);
+        if (!cprevious || cprevious != prevzoom)
+        {
+            prevzoom = NULL;
+            if (!c || !(c = nexttiled(c->next)))
+                return;
+        }
+        else
+            c = cprevious;
     }
-  }
-  focus(c);
-  arrange(c->mon);
+    cold = nexttiled(selmon->clients);
+    if (c != cold && !at)
+        at = findbefore(c);
+    detach(c);
+    attach(c);
+    /* swap windows instead of pushing the previous one down */
+    if (c != cold && at)
+    {
+        prevzoom = cold;
+        if (cold && at != cold)
+        {
+            detach(cold);
+            cold->next = at->next;
+            at->next = cold;
+        }
+    }
+    focus(c);
+    arrange(c->mon);
 
-  pop(c);
+    pop(c);
 }
 
 void togglealttag()
@@ -3854,23 +3888,25 @@ void moveresizeedge(const Arg *arg)
 
 void goyo(const Arg *arg)
 {
-  if (isgoyo) {
-    Client *c;
-    for (c = selmon->clients; c; c = c->next)
-      c->bw = borderpx;
-    togglebar(arg);
-    enablegaps = 1;
-  }
-  else {
-    Client *c;
-    for (c = selmon->clients; c; c = c->next)
-      c->bw = 0;
-    togglebar(arg);
-    enablegaps = 0;
-  }
-  isgoyo = !isgoyo;
-  arrange(selmon);
-  updatecurrentdesktop();
+    if (isgoyo)
+    {
+        Client *c;
+        for (c = selmon->clients; c; c = c->next)
+            c->bw = borderpx;
+        togglebar(arg);
+        enablegaps = 1;
+    }
+    else
+    {
+        Client *c;
+        for (c = selmon->clients; c; c = c->next)
+            c->bw = 0;
+        togglebar(arg);
+        enablegaps = 0;
+    }
+    isgoyo = !isgoyo;
+    arrange(selmon);
+    updatecurrentdesktop();
 }
 
 void resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst)
@@ -3927,31 +3963,34 @@ void load_xresources(void)
     XCloseDisplay(display);
 }
 
+int main(int argc, char *argv[])
+{
 
-int main(int argc, char *argv[]) {
+    if (argc == 2 && !strcmp("-v", argv[1]))
+        die("dwm-" VERSION);
+    else if (argc != 1)
+        die("usage: dwm [-v]");
+    if (!setlocale(LC_CTYPE, "") || !XSupportsLocale())
+        fputs("warning: no locale support\n", stderr);
+    if (!(dpy = XOpenDisplay(NULL)))
+        die("dwm: cannot open display");
+    if (!(xcon = XGetXCBConnection(dpy)))
+        die("dwm: cannot get xcb connection\n");
+    checkotherwm();
 
-  if (argc == 2 && !strcmp("-v", argv[1]))
-    die("dwm-" VERSION);
-  else if (argc != 1)
-    die("usage: dwm [-v]");
-  if (!setlocale(LC_CTYPE, "") || !XSupportsLocale())
-    fputs("warning: no locale support\n", stderr);
-  if (!(dpy = XOpenDisplay(NULL))) die("dwm: cannot open display");
-  if (!(xcon = XGetXCBConnection(dpy))) die("dwm: cannot get xcb connection\n");
-  checkotherwm();
+    XrmInitialize();
+    load_xresources();
 
-  XrmInitialize();
-  load_xresources();
-
-  autostart_exec();
-  setup();
+    autostart_exec();
+    setup();
 #ifdef __OpenBSD__
-  if (pledge("stdio rpath proc exec", NULL) == -1) die("pledge");
+    if (pledge("stdio rpath proc exec", NULL) == -1)
+        die("pledge");
 #endif /* __OpenBSD__ */
-  scan();
-  run();
-  cleanup();
-  XCloseDisplay(dpy);
-  fclose(dwmlog);
-  return EXIT_SUCCESS;
+    scan();
+    run();
+    cleanup();
+    XCloseDisplay(dpy);
+    fclose(dwmlog);
+    return EXIT_SUCCESS;
 }

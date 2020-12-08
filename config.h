@@ -88,7 +88,7 @@ static const unsigned int alphas[][3] = {
     [SchemeBarBorder] = {OPAQUE, baralpha, borderalpha},
 };
 static const char *const autostart[] = {
-    NULL /* terminate */
+    NULL, NULL /* terminate */
 };
 
 /* tagging */
@@ -111,7 +111,6 @@ static const Rule rules[] = {
     {"St", NULL, NULL, 0, 0, 1, 0, 0, 0, 0, -1, -1, 0 - 1},
     {"Alacritty", NULL, NULL, 0, 0, 1, 0, 0, 0, 0, -1, -1, 0 - 1},
     {NULL, NULL, "Event Tester", 0, 1, 0, 1, 0, 0, 0, -1, -1, 0 - 1}, /* xev */
-    {"Thunar", NULL, NULL, 5, 0, 0, -1, 0, 0, 0, -1, -1, 0 - 1},
     {"lemonbar", NULL, NULL, 0, 1, 0, -1, 0, 0, 0, -1, -1, 0 - 1},
     {"bar", NULL, NULL, 0, 1, 0, -1, 0, 0, 0, -1, -1, 0 - 1},
     {"code-oss", NULL, NULL, 1 << 2, 0, 0, -1, 0, 0, 0, -1, -1, 0 - 1},
@@ -160,16 +159,16 @@ static const Layout layouts[] = {
 /* key definitions */
 #define MODKEY Mod4Mask
 #define TAGKEYS(KEY, TAG)                                                      \
-  {MODKEY, KEY, view, {.ui = 1 << TAG}},                                       \
-      {Mod1Mask, KEY, toggleview, {.ui = 1 << TAG}},                           \
-      {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},                        \
-      {Mod1Mask | ShiftMask, KEY, toggletag, {.ui = 1 << TAG}},
+    {MODKEY, KEY, view, {.ui = 1 << TAG}},                                     \
+        {Mod1Mask, KEY, toggleview, {.ui = 1 << TAG}},                         \
+        {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},                      \
+        {Mod1Mask | ShiftMask, KEY, toggletag, {.ui = 1 << TAG}},
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)                                                             \
-  {                                                                            \
-    .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL }                       \
-  }
+    {                                                                          \
+        .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL }                   \
+    }
 
 /* commands spawned when clicking statusbar, the mouse button pressed is
  * exported as BUTTON */
