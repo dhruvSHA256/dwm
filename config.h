@@ -2,7 +2,7 @@
 
 /* appearance */
 static const unsigned int borderpx = 1; /* border pixel of windows */
-static const unsigned int snap = 32;    /* snap pixel */
+static const unsigned int snap = 22;    /* snap pixel */
 static const unsigned int systraypinning =
     0; /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor
           X */
@@ -29,11 +29,7 @@ static const char *colors[][3] = {
 };
 
 static const char *const autostart[] = {
-    /* "/usr/bin/pulseaudio", */
-    /* "--kill", */
-    /* NULL, */
-    "/usr/bin/pulseaudio", "--start", NULL, NULL /* terminate */
-
+    "dwmblocks", NULL,  NULL /* terminate */
 };
 
 /* tagging */
@@ -69,18 +65,18 @@ static const Layout layouts[] = {
 /* key definitions */
 #define MODKEY Mod4Mask
 #define TAGKEYS(KEY, TAG)                                                      \
-  {MODKEY, KEY, view, {.ui = 1 << TAG}},                                       \
-      {Mod1Mask, KEY, toggleview, {.ui = 1 << TAG}},                           \
-      {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},                        \
-      {Mod1Mask | ShiftMask, KEY, toggletag, {.ui = 1 << TAG}},
+    {MODKEY, KEY, view, {.ui = 1 << TAG}},                                     \
+        {Mod1Mask, KEY, toggleview, {.ui = 1 << TAG}},                         \
+        {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},                      \
+        {Mod1Mask | ShiftMask, KEY, toggletag, {.ui = 1 << TAG}},
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)                                                             \
-  {                                                                            \
-    .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL }                       \
-  }
+    {                                                                          \
+        .v = (const char *[]) { "/bin/sh", "-c", cmd, NULL }                   \
+    }
 #define BROWSER "firefox"
-#define TERMINAL "alacritty"
+#define TERMINAL "st"
 #define EDITOR "nvim"
 
 /* commands */
