@@ -22,8 +22,8 @@ static const char col_gray4[] = "#eeeeee";
 static const char col_cyan[] = "#005577";
 static const char* colors[][3] = {
     /*               fg         bg         border   */
-    [SchemeNorm] = { "#555555", "#202223", "#5E6470" },
-    [SchemeSel] = { "#dddddd", "#202223", "#dab997" },
+    [SchemeNorm] = { "#555555", "#202223", "#282C34" },
+    [SchemeSel] = { "#dddddd", "#202223", "#c0c5ce" },
 };
 
 static const char* const autostart[] = {
@@ -42,6 +42,7 @@ static const Rule rules[] = {
     { "Gimp", NULL, NULL, 0, 1, 0, -1 },
     { "Pavucontrol", NULL, NULL, 0, 1, 0, -1 },
     { "firefox", NULL, NULL, 0, 0, 1, -1 },
+    { "Toolkit", NULL, NULL, 0, 1, 0, -1 },
 };
 
 /* layout(s) */
@@ -72,7 +73,8 @@ static const Layout layouts[] = {
         .v = (const char*[]) { "/bin/sh", "-c", cmd, NULL } \
     }
 #define BROWSER "firefox"
-#define TERMINAL "st"
+/* #define TERMINAL "st" */
+#define TERMINAL "alacritty"
 #define EDITOR "nvim"
 
 /* commands */
@@ -140,7 +142,7 @@ static Key keys[] = {
     { MODKEY, 60, focusmon, { .i = +1 } }, // period
     { MODKEY | ShiftMask, 59, tagmon, { .i = -1 } }, // comma
     { MODKEY | ShiftMask, 60, tagmon, { .i = +1 } }, // period
-    { MODKEY, 24, killclient, { 0 } }, // q
+    { MODKEY | ControlMask, 26, killclient, { 0 } }, //  e
     { MODKEY | ShiftMask, 27, quit, { 0 } }, // r
     { MODKEY, 35, shiftview, { .i = +1 } }, // ]
     { MODKEY, 34, shiftview, { .i = -1 } }, // [

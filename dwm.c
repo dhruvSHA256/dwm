@@ -1262,7 +1262,8 @@ void goyo(const Arg *arg)
         Client *c;
         for (c = selmon->clients; c; c = c->next)
             c->bw = borderpx;
-        togglebar(arg);
+        if(!selmon->showbar)
+            togglebar(arg);
         /* enablegaps = 1; */
     }
     else
@@ -1270,7 +1271,8 @@ void goyo(const Arg *arg)
         Client *c;
         for (c = selmon->clients; c; c = c->next)
             c->bw = 0;
-        togglebar(arg);
+        if(selmon->showbar)
+            togglebar(arg);
         /* enablegaps = 0; */
     }
     isgoyo = !isgoyo;
