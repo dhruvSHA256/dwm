@@ -9,7 +9,7 @@ static const unsigned int systrayspacing = 2; /* systray spacing */
 static const int systraypinningfailfirst = 1; /* 1: if pinning fails, display systray on the first monitor, False:
           display systray on the last monitor*/
 static const int showsystray = 1; /* 0 means no systray */
-static const int showbar = 1; /* 0 means no bar */
+static const int showbar = 0; /* 0 means no bar */
 static const int topbar = 1; /* 0 means bottom bar */
 static const char* fonts[] = { "Symbols Nerd Font:style=2048-em:size=11",
     "Hurmit Nerd Font Mono:style=medium:size=10",
@@ -33,6 +33,23 @@ static const char* const autostart[] = {
 /* tagging */
 const static char* tags[] = { "१", "२", "३", "४", "५", "६", "७", "८", "९" };
 
+typedef struct {
+    const char *name;
+    const void *cmd;
+} Sp;
+
+const char *spcmd1[] = {"pavucontrol", NULL };
+const char *spcmd2[] =  {"st", "-n", "notes" ,"-e","nvim","-c source /home/dhruv/vault/repo/notes/vimwiki/text/Session.vim", NULL };
+const char *spcmd3[] = {"st", "-n", "mmusic", "-e", "/home/dhruv/.config/tmux/session_script/music",NULL};
+const char *spcmd4[] = {"alacritty", "--class",  "ipython", "-e", "ipython",NULL};
+
+static Sp scratchpads[] = {
+    /* name              cmd  */
+    {"pavucontrol",      spcmd1},
+    {"notes",            spcmd2},
+    {"mmusic",           spcmd3},
+    {"ipython",          spcmd4},
+};
 static const Rule rules[] = {
     /* xprop(1):
      *  WM_CLASS(STRING) = instance, class
@@ -41,8 +58,12 @@ static const Rule rules[] = {
     /* class instance title  tagsmask  isfloating ispermanent monitor */
     { "Gimp", NULL, NULL, 0, 1, 0, -1 },
     { "Pavucontrol", NULL, NULL, 0, 1, 0, -1 },
-    { "firefox", NULL, NULL, 0, 0, 1, -1 },
+    { "firefox", NULL, NULL, 0, 0, 0, -1 },
     { "Toolkit", NULL, NULL, 0, 1, 0, -1 },
+    { NULL,       "pavucontrol",     NULL,       SPTAG(0),       1,    0,       -1 },
+    { NULL,       "notes",           NULL,       SPTAG(1),       0,    0,       -1 },
+    { NULL,       "mmusic",          NULL,       SPTAG(2),       1,    0,       -1 },
+    { NULL,       "ipython",         NULL,       SPTAG(3),       1,    0,       -1 },
 };
 
 /* layout(s) */
@@ -72,7 +93,7 @@ static const Layout layouts[] = {
     {                                                       \
         .v = (const char*[]) { "/bin/sh", "-c", cmd, NULL } \
     }
-#define BROWSER "firefox"
+/* #define BROWSER "firefox" */
 /* #define TERMINAL "st" */
 #define TERMINAL "alacritty"
 #define EDITOR "nvim"
@@ -83,15 +104,17 @@ static const char* dmenucmd[] = {
     "/home/dhruv/.config/scripts/dmenu_run/dmenu_run", NULL
 };
 static const char* termcmd[] = { TERMINAL, NULL };
-static const char* browsercmd[] = { BROWSER, NULL };
-static const char* editorcmd[] = { "st", "-c", EDITOR, "-e", EDITOR, NULL };
+/* static const char* browsercmd[] = { BROWSER, NULL }; */
+/* static const char* editorcmd[] = { "st", "-c", EDITOR, "-e", EDITOR, NULL }; */
 
 static Key keys[] = {
     /* modifier                     key        function        argument */
-    { MODKEY, 26, spawn, { .v = editorcmd } }, // e
+    { Mod1Mask, 55, togglescratch,  {.ui = 0 } }, // v
+    { Mod1Mask, 57, togglescratch,  {.ui = 1 } }, // n
+    { Mod1Mask, 58, togglescratch,  {.ui = 2 } }, // m
+    { Mod1Mask, 33, togglescratch,  {.ui = 3 } }, // m
     { MODKEY, 65, spawn, { .v = dmenucmd } }, // space
     { MODKEY, 36, spawn, { .v = termcmd } }, // return
-    { MODKEY, 25, spawn, { .v = browsercmd } }, // w
     { MODKEY, 56, togglebar, { 0 } }, // b
     { MODKEY, 44, focusstack, { .i = +1 } }, // j
     { MODKEY, 45, focusstack, { .i = -1 } }, // k
@@ -130,10 +153,8 @@ static Key keys[] = {
     { MODKEY | ShiftMask, 41, togglefullscr, { 0 } }, // f
     { Mod1Mask, 36, zoom, { 0 } }, // return
     { MODKEY, 253, view, { 0 } }, // backslash
-    { MODKEY | ShiftMask, 54, killclient, { 0 } }, // c
     { MODKEY, 28, setlayout, { .v = &layouts[0] } }, // t
-    { MODKEY, 41, setlayout, { .v = &layouts[1] } }, // f
-    /* {MODKEY, XK_m, setlayout, {.v = &layouts[2]}}, */
+    { MODKEY, 41, setlayout, { .v = &layouts[2] } }, // f
     /* {MODKEY, XK_space, setlayout, {0}}, */
     { MODKEY | ShiftMask, 65, togglefloating, { 0 } }, // space
     { MODKEY, 19, view, { .ui = ~0 } }, // 0
@@ -142,7 +163,7 @@ static Key keys[] = {
     { MODKEY, 60, focusmon, { .i = +1 } }, // period
     { MODKEY | ShiftMask, 59, tagmon, { .i = -1 } }, // comma
     { MODKEY | ShiftMask, 60, tagmon, { .i = +1 } }, // period
-    { MODKEY | ControlMask, 26, killclient, { 0 } }, //  e
+    { MODKEY | ControlMask, 25, killclient, { 0 } }, //  w
     { MODKEY | ShiftMask, 27, quit, { 0 } }, // r
     { MODKEY, 35, shiftview, { .i = +1 } }, // ]
     { MODKEY, 34, shiftview, { .i = -1 } }, // [
@@ -176,7 +197,7 @@ static Button buttons[] = {
     { ClkStatusText, 0, Button2, spawn, { .v = termcmd } },
     { ClkClientWin, MODKEY, Button1, movemouse, { 0 } },
     { ClkClientWin, MODKEY, Button2, togglefloating, { 0 } },
-    { ClkClientWin, MODKEY, Button3, resizemouse, { 0 } },
+    { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
     { ClkTagBar, 0, Button1, view, { 0 } },
     { ClkTagBar, 0, Button3, toggleview, { 0 } },
     { ClkTagBar, MODKEY, Button1, tag, { 0 } },
