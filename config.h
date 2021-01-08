@@ -39,23 +39,26 @@ typedef struct {
 } Sp;
 
 const char *spcmd1[] = {"pavucontrol", NULL };
-const char *spcmd2[] =  {"st", "-n", "notes" ,"-e","nvim","-c source /home/dhruv/vault/repo/notes/vimwiki/text/Session.vim", NULL };
+const char *spcmd2[] = {"st", "-n", "notes" ,"-e","nvim","-c source /home/dhruv/vault/repo/notes/vimwiki/text/Session.vim", NULL };
 const char *spcmd3[] = {"st", "-n", "mmusic", "-e", "/home/dhruv/.config/tmux/session_script/music",NULL};
-const char *spcmd4[] = {"alacritty", "--class",  "ipython", "-e", "ipython",NULL};
+const char *spcmd4[] = {"st", "-n", "ippython", "-e", "ipython",NULL};
+const char *spcmd5[] = {"sxiv", "/home/dhruv/vault/wa_stickers","-N", "stickers", "-t", NULL };
 
 static Sp scratchpads[] = {
     /* name              cmd  */
     {"pavucontrol",      spcmd1},
     {"notes",            spcmd2},
     {"mmusic",           spcmd3},
-    {"ipython",          spcmd4},
+    {"ippython",         spcmd4},
+    {"stickers",         spcmd5},
 };
 static const Rule rules[] = {
     /* xprop(1):
      *  WM_CLASS(STRING) = instance, class
      *  WM_NAME(STRING) = title
      */
-    /* class instance title  tagsmask  isfloating ispermanent monitor */
+
+ /* class instance title  tagsmask          isfloating ispermanent monitor */
     { "Gimp"        , NULL          , NULL , 0        , 1 , 0 , -1 } ,
     { "Pavucontrol" , NULL          , NULL , 0        , 1 , 0 , -1 } ,
     { "firefox"     , NULL          , NULL , 0        , 0 , 0 , -1 } ,
@@ -63,7 +66,8 @@ static const Rule rules[] = {
     { NULL          , "pavucontrol" , NULL , SPTAG(0) , 1 , 0 , -1 } ,
     { NULL          , "notes"       , NULL , SPTAG(1) , 0 , 0 , -1 } ,
     { NULL          , "mmusic"      , NULL , SPTAG(2) , 1 , 0 , -1 } ,
-    { NULL          , "ipython"     , NULL , SPTAG(3) , 1 , 0 , -1 } ,
+    { NULL          , "ippython"     , NULL , SPTAG(3) , 1 , 0 , -1 } ,
+    { NULL          , "stickers"    , NULL , SPTAG(4) , 1 , 0 , -1 } ,
 };
 
 /* layout(s) */
@@ -94,8 +98,8 @@ static const Layout layouts[] = {
         .v = (const char*[]) { "/bin/sh", "-c", cmd, NULL } \
     }
 /* #define BROWSER "firefox" */
-/* #define TERMINAL "st" */
-#define TERMINAL "alacritty"
+#define TERMINAL "st"
+/* #define TERMINAL "alacritty" */
 #define EDITOR "nvim"
 
 /* commands */
@@ -103,6 +107,7 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char* dmenucmd[] = {
     "/home/dhruv/.config/scripts/dmenu_run/dmenu_run", NULL
 };
+
 static const char* termcmd[] = { TERMINAL, NULL };
 /* static const char* browsercmd[] = { BROWSER, NULL }; */
 /* static const char* editorcmd[] = { "st", "-c", EDITOR, "-e", EDITOR, NULL }; */
@@ -113,6 +118,7 @@ static Key keys[] = {
     { Mod1Mask                         , 57       , togglescratch  , {.ui = 1 } }               , // n
     { Mod1Mask                         , 58       , togglescratch  , {.ui = 2 } }               , // m
     { Mod1Mask                         , 33       , togglescratch  , {.ui = 3 } }               , // m
+    { Mod1Mask                         , 61       , togglescratch  , {.ui = 4 } }               , //
     { MODKEY                           , 65       , spawn          , { .v = dmenucmd } }        , // space
     { MODKEY                           , 36       , spawn          , { .v = termcmd } }         , // return
     { MODKEY                           , 56       , togglebar      , { 0 } }                    , // b
