@@ -14,6 +14,7 @@ static const int topbar                         = 1; /* 0 means bottom bar */
 static const char* fonts[]                      = { "Symbols Nerd Font:style=2048-em:size=12",
                                                     "Hurmit Nerd Font Mono:style=medium:size=11",
                                                     "Mukta:style=Regular:size=16" };
+static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static const char dmenufont[]                   = "monospace:size=10";
 static const char col_gray1[]                   = "#222222";
 static const char col_gray2[]                   = "#444444";
@@ -39,7 +40,7 @@ typedef struct {
 } Sp;
 
 const char *spcmd1[] = {"pavucontrol", NULL };
-const char *spcmd2[] = {"st", "-n", "notes" ,"-e","nvim","-c source /home/dhruv/vault/repo/notes/vimwiki/text/Session.vim", NULL };
+const char *spcmd2[] = {"st", "-n", "notes" ,"-e","nvim","/home/dhruv/vault/repo/notes/vimwiki/text/index.md", NULL };
 const char *spcmd3[] = {"st", "-n", "mmusic", "-e", "/home/dhruv/.config/tmux/session_script/music",NULL};
 const char *spcmd4[] = {"st", "-n", "ippython", "-e", "ipython",NULL};
 const char *spcmd5[] = {"sxiv", "/home/dhruv/vault/wa_stickers","-N", "stickers", "-t", NULL };
@@ -58,16 +59,17 @@ static const Rule rules[] = {
      *  WM_NAME(STRING) = title
      */
 
- /* class instance title  tagsmask          isfloating ispermanent monitor */
-    { "Gimp"        , NULL          , NULL , 0        , 1 , 0 , -1 } ,
-    { "Pavucontrol" , NULL          , NULL , 0        , 1 , 0 , -1 } ,
-    { "firefox"     , NULL          , NULL , 0        , 0 , 0 , -1 } ,
-    { "Toolkit"     , NULL          , NULL , 0        , 1 , 0 , -1 } ,
-    { NULL          , "pavucontrol" , NULL , SPTAG(0) , 1 , 0 , -1 } ,
-    { NULL          , "notes"       , NULL , SPTAG(1) , 0 , 0 , -1 } ,
-    { NULL          , "mmusic"      , NULL , SPTAG(2) , 1 , 0 , -1 } ,
-    { NULL          , "ippython"     , NULL , SPTAG(3) , 1 , 0 , -1 } ,
-    { NULL          , "stickers"    , NULL , SPTAG(4) , 1 , 0 , -1 } ,
+ /*   class          instance       title     tagsmask  isfloating ispermanent isterminal noswallow monitor */
+    { "Gimp"        , NULL          , NULL ,    0        ,  1 ,     0 ,         0,         -1,         -1 } ,
+    { "Pavucontrol" , NULL          , NULL ,    0        ,  1 ,     0 ,         0,         -1,         -1 } ,
+    { "firefox"     , NULL          , NULL ,    0        ,  0 ,     0 ,         0,         -1,         -1 } ,
+    { "St"          , NULL          , NULL ,    0        ,  0 ,     0 ,         1,          0,         -1 } ,
+    { "Toolkit"     , NULL          , NULL ,    0        ,  1 ,     0 ,         0,         -1,         -1 } ,
+    { NULL          , "pavucontrol" , NULL ,    SPTAG(0) ,  1 ,     0 ,         0,         -1,         -1 } ,
+    { NULL          , "notes"       , NULL ,    SPTAG(1) ,  0 ,     0 ,         0,         -1,         -1 } ,
+    { NULL          , "mmusic"      , NULL ,    SPTAG(2) ,  1 ,     0 ,         0,         -1,         -1 } ,
+    { NULL          , "ippython"    , NULL ,    SPTAG(3) ,  1 ,     0 ,         0,         -1,         -1 } ,
+    { NULL          , "stickers"    , NULL ,    SPTAG(4) ,  1 ,     0 ,         0,         -1,         -1 } ,
 };
 
 /* layout(s) */
