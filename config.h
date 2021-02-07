@@ -11,9 +11,10 @@ static const int systraypinningfailfirst        = 1; /* 1: if pinning fails, dis
 static const int showsystray                    = 1; /* 0 means no systray */
 static const int showbar                        = 0; /* 0 means no bar */
 static const int topbar                         = 1; /* 0 means bottom bar */
-static const char* fonts[]                      = { "Symbols Nerd Font:style=2048-em:size=12",
-                                                    "Hurmit Nerd Font Mono:style=medium:size=11",
-                                                    "Mukta:style=Regular:size=16" };
+static const char* fonts[]                      = { "Symbols Nerd Font:style=2048-em:size=10",
+                                                    "Operator Mono Lig:style=medium:size=12",
+                                                    /* "Hurmit Nerd Font Mono:style=medium:size=8", */
+                                                    "Mukta:style=Regular:size=14" };
 static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static const char dmenufont[]                   = "monospace:size=10";
 static const char col_gray1[]                   = "#222222";
@@ -23,11 +24,12 @@ static const char col_gray4[]                   = "#eeeeee";
 static const char col_cyan[]                    = "#005577";
 static const char* colors[][3]                  = {
     /*               fg         bg         border   */
-    [SchemeNorm] = { "#555555" , "#202223" , "#282C34" } ,
-    [SchemeSel]  = { "#dddddd"  , "#202223" , "#c0c5ce" } ,
+    [SchemeNorm] = { "#555555" , "#0B0116" , "#282C34" } ,
+    [SchemeSel]  = { "#dddddd"  , "#0B0116" , "#c0c5ce" } ,
 };
 
 static const char* const autostart[] = {
+    "killall dwmblocks",NULL,
     "dwmblocks", NULL, NULL /* terminate */
 };
 
@@ -40,7 +42,8 @@ typedef struct {
 } Sp;
 
 const char *spcmd1[] = {"pavucontrol", NULL };
-const char *spcmd2[] = {"st", "-n", "notes" ,"-e","nvim","/home/dhruv/vault/repo/notes/vimwiki/text/index.md", NULL };
+/* const char *spcmd2[] = {"st", "-n", "notes" ,"-e","nvim","-c source /home/dhruv/.local/nvim/sessions/wiki", NULL }; */
+const char *spcmd2[] = {"alacritty", "--class", "notes" ,"-e","nvim","-c source /home/dhruv/.local/share/nvim/sessions/wiki", NULL };
 const char *spcmd3[] = {"st", "-n", "mmusic", "-e", "/home/dhruv/.config/tmux/session_script/music",NULL};
 const char *spcmd4[] = {"st", "-n", "ippython", "-e", "ipython",NULL};
 const char *spcmd5[] = {"sxiv", "/home/dhruv/vault/wa_stickers","-N", "stickers", "-t", NULL };
@@ -59,17 +62,21 @@ static const Rule rules[] = {
      *  WM_NAME(STRING) = title
      */
 
- /*   class          instance       title     tagsmask  isfloating ispermanent isterminal noswallow monitor */
-    { "Gimp"        , NULL          , NULL ,    0        ,  1 ,     0 ,         0,         -1,         -1 } ,
-    { "Pavucontrol" , NULL          , NULL ,    0        ,  1 ,     0 ,         0,         -1,         -1 } ,
-    { "firefox"     , NULL          , NULL ,    0        ,  0 ,     0 ,         0,         -1,         -1 } ,
-    { "St"          , NULL          , NULL ,    0        ,  0 ,     0 ,         1,          0,         -1 } ,
-    { "Toolkit"     , NULL          , NULL ,    0        ,  1 ,     0 ,         0,         -1,         -1 } ,
-    { NULL          , "pavucontrol" , NULL ,    SPTAG(0) ,  1 ,     0 ,         0,         -1,         -1 } ,
-    { NULL          , "notes"       , NULL ,    SPTAG(1) ,  0 ,     0 ,         0,         -1,         -1 } ,
-    { NULL          , "mmusic"      , NULL ,    SPTAG(2) ,  1 ,     0 ,         0,         -1,         -1 } ,
-    { NULL          , "ippython"    , NULL ,    SPTAG(3) ,  1 ,     0 ,         0,         -1,         -1 } ,
-    { NULL          , "stickers"    , NULL ,    SPTAG(4) ,  1 ,     0 ,         0,         -1,         -1 } ,
+ /*   class         , instance      , title          , tagsmask , isfloating , ispermanent , isterminal , noswallow , monitor , */
+    { "Gimp"        , NULL          , NULL           , 0        , 1          , 0           , 0          , 1         , -1 }    ,
+    { "Pavucontrol" , NULL          , NULL           , 0        , 1          , 0           , 0          , 1         , -1 }    ,
+    { "firefox"     , NULL          , NULL           , 0        , 0          , 0           , 0          , 1         , -1 }    ,
+    { "librewolf"     , NULL          , NULL           , 0        , 0          , 0           , 0          , 1         , -1 }    ,
+    { "Thunar"      , NULL          , NULL           , 0        , 0          , 0           , 0          , 1         , -1 }    ,
+    { "St"          , NULL          , NULL           , 0        , 0          , 0           , 1          , 0         , -1 }    ,
+    { "Alacritty"   , NULL          , NULL           , 0        , 0          , 0           , 1          , 0         , -1 }    ,
+    { "Toolkit"     , NULL          , NULL           , 0        , 1          , 0           , 0          , 1         , -1 }    ,
+    { NULL          , NULL          , "Event Tester" , 0        , 1          , 0           , 0          , 1         , -1 }    ,
+    { NULL          , "pavucontrol" , NULL           , SPTAG(0) , 1          , 0           , 0          , 1         , -1 }    ,
+    { NULL          , "notes"       , NULL           , SPTAG(1) , 0          , 0           , 0          , 1         , -1 }    ,
+    { NULL          , "mmusic"      , NULL           , SPTAG(2) , 1          , 0           , 0          , 1         , -1 }    ,
+    { NULL          , "ippython"    , NULL           , SPTAG(3) , 1          , 0           , 0          , 1         , -1 }    ,
+    { NULL          , "stickers"    , NULL           , SPTAG(4) , 1          , 0           , 0          , 1         , -1 }    ,
 };
 
 /* layout(s) */
@@ -99,7 +106,7 @@ static const Layout layouts[] = {
     {                                                       \
         .v = (const char*[]) { "/bin/sh", "-c", cmd, NULL } \
     }
-/* #define BROWSER "firefox" */
+#define BROWSER "librewolf"
 #define TERMINAL "st"
 /* #define TERMINAL "alacritty" */
 #define EDITOR "nvim"
@@ -111,8 +118,8 @@ static const char* dmenucmd[] = {
 };
 
 static const char* termcmd[] = { TERMINAL, NULL };
-/* static const char* browsercmd[] = { BROWSER, NULL }; */
-/* static const char* editorcmd[] = { "st", "-c", EDITOR, "-e", EDITOR, NULL }; */
+static const char* browsercmd[] = { "/home/dhruv/.config/scripts/lof",BROWSER, NULL };
+static const char* editorcmd[] = { "alacritty", "-e", EDITOR, NULL };
 
 static Key keys[] = {
     /* modifier                     key        function        argument */
@@ -123,6 +130,8 @@ static Key keys[] = {
     { Mod1Mask                         , 61       , togglescratch  , {.ui = 4 } }               , //
     { MODKEY                           , 65       , spawn          , { .v = dmenucmd } }        , // space
     { MODKEY                           , 36       , spawn          , { .v = termcmd } }         , // return
+    { MODKEY                           , 26       , spawn          , { .v = editorcmd } }       , // e
+    { MODKEY                           , 25       , spawn          , { .v = browsercmd } }      , // w
     { MODKEY                           , 56       , togglebar      , { 0 } }                    , // b
     { MODKEY                           , 44       , focusstack     , { .i = +1 } }              , // j
     { MODKEY                           , 45       , focusstack     , { .i = -1 } }              , // k
@@ -171,8 +180,8 @@ static Key keys[] = {
     { MODKEY                           , 60       , focusmon       , { .i = +1 } }              , // period
     { MODKEY | ShiftMask               , 59       , tagmon         , { .i = -1 } }              , // comma
     { MODKEY | ShiftMask               , 60       , tagmon         , { .i = +1 } }              , // period
-    { MODKEY | ControlMask             , 25       , killclient     , { 0 } }                    , //  w
-    { MODKEY | ShiftMask               , 27       , quit           , { 0 } }                    , // r
+    { MODKEY | ControlMask             , 25       , killclient     , { 0 } }                    , // w
+    { MODKEY | ShiftMask               , 26       , quit           , { 0 } }                    , // e
     { MODKEY                           , 35       , shiftview      , { .i = +1 } }              , // ]
     { MODKEY                           , 34       , shiftview      , { .i = -1 } }              , // [
     { MODKEY                           , 60       , viewtoright    , { 0 } }                    , // period

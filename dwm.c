@@ -42,8 +42,8 @@
 #include <X11/Xlib-xcb.h>
 #include <xcb/res.h>
 #ifdef __OpenBSD__
-#include <sys/sysctl.h>
 #include <kvm.h>
+#include <sys/sysctl.h>
 #endif /* __OpenBSD */
 
 #include "drw.h"
@@ -168,7 +168,7 @@ struct Client {
 
     Client* next;
     Client* snext;
-    Client *swallowing;
+    Client* swallowing;
     Monitor* mon;
     Window win;
 };
@@ -361,11 +361,11 @@ static void zoom(const Arg* arg);
 static void autostart_exec(void);
 static pid_t getparentprocess(pid_t p);
 static int isdescprocess(pid_t p, pid_t c);
-static Client *swallowingclient(Window w);
-static Client *termforwin(const Client *c);
+static Client* swallowingclient(Window w);
+static Client* termforwin(const Client* c);
 static pid_t winpid(Window w);
-static void swallow(Client *p, Client *c);
-static void unswallow(Client *c);
+static void swallow(Client* p, Client* c);
+static void unswallow(Client* c);
 
 void show(Client* c);
 void updatecurrentdesktop(void);
@@ -407,7 +407,7 @@ static Drw* drw;
 static Monitor *mons, *selmon;
 static Window root, wmcheckwin;
 static int isgoyo = 0;
-static xcb_connection_t *xcon;
+static xcb_connection_t* xcon;
 
 #define hiddenWinStackMax 100
 static int hiddenWinStackTop = -1;
@@ -482,7 +482,7 @@ void applyrules(Client* c)
         r = &rules[i];
         if ((!r->title || strstr(c->name, r->title)) && (!r->class || strstr(class, r->class)) && (!r->instance || strstr(instance, r->instance))) {
             c->isterminal = r->isterminal;
-            c->noswallow  = r->noswallow;
+            c->noswallow = r->noswallow;
             c->isfloating = r->isfloating;
             c->ispermanent = r->ispermanent;
             c->tags |= r->tags;
@@ -1064,20 +1064,9 @@ void drawbar(Monitor* m)
         x += w;
     }
 
-    /* w = blw = TEXTW(m->ltsymbol); */
-    /* drw_setscheme(drw, scheme[SchemeNorm]); */
-    /* x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0); */
-
     if ((w = m->ww - tw - stw - x) > bh) {
-        /* if (m->sel) { */
-        /* drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]); */
-        /* drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0); */
-        /* if (m->sel->isfloating) */
-        /* drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0); */
-        /* } else { */
         drw_setscheme(drw, scheme[SchemeNorm]);
         drw_rect(drw, x, 0, w, bh, 1, 1);
-        /* } */
     }
     drw_map(drw, m->barwin, 0, 0, m->ww - stw, bh);
 }
@@ -2345,6 +2334,14 @@ void seturgent(Client* c, int urg)
 
 void shiftview(const Arg* arg)
 {
+    /* Client* c; */
+    /* unsigned visible = 0; */
+    /* int i = arg->i; */
+    /* int nextseltags, curseltags = selmon->tagset[selmon->seltags]; */
+
+    /* unsigned occ = 0; */
+    /* for (c = selmon->clients; c; c = c->next)  occ |= c->tags == 255 ? 0 : c->tags; */
+    /* printf("%u",occ); */
     Arg a;
     Client* c;
     unsigned visible = 0;
@@ -2444,7 +2441,7 @@ void sigchld(int unused)
     }
 }
 
-void swallow(Client *p, Client *c)
+void swallow(Client* p, Client* c)
 {
 
     if (c->noswallow || c->isterminal)
@@ -2471,7 +2468,7 @@ void swallow(Client *p, Client *c)
     updateclientlist();
 }
 
-void unswallow(Client *c)
+void unswallow(Client* c)
 {
     c->win = c->swallowing->win;
 
@@ -2674,7 +2671,7 @@ void toggleview(const Arg* arg)
     }
 }
 
-void tagtoocc(const Arg *arg)
+void tagtoocc(const Arg* arg)
 {
     unsigned int i, occ = 0;
     Client* c;
@@ -2877,7 +2874,7 @@ void unmanage(Client* c, int destroyed)
         return;
     }
 
-    Client *s = swallowingclient(c->win);
+    Client* s = swallowingclient(c->win);
     if (s) {
         free(s->swallowing);
         s->swallowing = NULL;
@@ -3370,13 +3367,13 @@ pid_t winpid(Window w)
     pid_t result = 0;
 
 #ifdef __linux__
-    xcb_res_client_id_spec_t spec = {0};
+    xcb_res_client_id_spec_t spec = { 0 };
     spec.client = w;
     spec.mask = XCB_RES_CLIENT_ID_MASK_LOCAL_CLIENT_PID;
 
-    xcb_generic_error_t *e = NULL;
+    xcb_generic_error_t* e = NULL;
     xcb_res_query_client_ids_cookie_t c = xcb_res_query_client_ids(xcon, 1, &spec);
-    xcb_res_query_client_ids_reply_t *r = xcb_res_query_client_ids_reply(xcon, c, &e);
+    xcb_res_query_client_ids_reply_t* r = xcb_res_query_client_ids_reply(xcon, c, &e);
 
     if (!r)
         return (pid_t)0;
@@ -3385,7 +3382,7 @@ pid_t winpid(Window w)
     for (; i.rem; xcb_res_client_id_value_next(&i)) {
         spec = i.data->spec;
         if (spec.mask & XCB_RES_CLIENT_ID_MASK_LOCAL_CLIENT_PID) {
-            uint32_t *t = xcb_res_client_id_value_value(i.data);
+            uint32_t* t = xcb_res_client_id_value_value(i.data);
             result = *t;
             break;
         }
@@ -3399,18 +3396,18 @@ pid_t winpid(Window w)
 #endif /* __linux__ */
 
 #ifdef __OpenBSD__
-        Atom type;
-        int format;
-        unsigned long len, bytes;
-        unsigned char *prop;
-        pid_t ret;
+    Atom type;
+    int format;
+    unsigned long len, bytes;
+    unsigned char* prop;
+    pid_t ret;
 
-        if (XGetWindowProperty(dpy, w, XInternAtom(dpy, "_NET_WM_PID", 0), 0, 1, False, AnyPropertyType, &type, &format, &len, &bytes, &prop) != Success || !prop)
-               return 0;
+    if (XGetWindowProperty(dpy, w, XInternAtom(dpy, "_NET_WM_PID", 0), 0, 1, False, AnyPropertyType, &type, &format, &len, &bytes, &prop) != Success || !prop)
+        return 0;
 
-        ret = *(pid_t*)prop;
-        XFree(prop);
-        result = ret;
+    ret = *(pid_t*)prop;
+    XFree(prop);
+    result = ret;
 
 #endif /* __OpenBSD__ */
     return result;
@@ -3421,7 +3418,7 @@ pid_t getparentprocess(pid_t p)
     unsigned int v = 0;
 
 #ifdef __linux__
-    FILE *f;
+    FILE* f;
     char buf[256];
     snprintf(buf, sizeof(buf) - 1, "/proc/%u/stat", (unsigned)p);
 
@@ -3434,8 +3431,8 @@ pid_t getparentprocess(pid_t p)
 
 #ifdef __OpenBSD__
     int n;
-    kvm_t *kd;
-    struct kinfo_proc *kp;
+    kvm_t* kd;
+    struct kinfo_proc* kp;
 
     kd = kvm_openfiles(NULL, NULL, NULL, KVM_NO_FILES, NULL);
     if (!kd)
@@ -3456,10 +3453,10 @@ int isdescprocess(pid_t p, pid_t c)
     return (int)c;
 }
 
-Client * termforwin(const Client *w)
+Client* termforwin(const Client* w)
 {
-    Client *c;
-    Monitor *m;
+    Client* c;
+    Monitor* m;
 
     if (!w->pid || w->isterminal)
         return NULL;
@@ -3474,10 +3471,10 @@ Client * termforwin(const Client *w)
     return NULL;
 }
 
-Client * swallowingclient(Window w)
+Client* swallowingclient(Window w)
 {
-    Client *c;
-    Monitor *m;
+    Client* c;
+    Monitor* m;
 
     for (m = mons; m; m = m->next) {
         for (c = m->clients; c; c = c->next) {
