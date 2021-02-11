@@ -30,8 +30,9 @@ static const char* colors[][3] = {
 };
 
 static const char* const autostart[] = {
-    "killall dwmblocks", NULL,
-    "dwmblocks", NULL, NULL /* terminate */
+    /* "killall","dwmblocks", NULL, */
+    "dwmblocks", NULL,
+    NULL /* terminate */
 };
 
 /* tagging */
@@ -47,15 +48,18 @@ const char* spcmd1[] = { "pavucontrol", NULL };
 const char* spcmd2[] = { "alacritty", "--class", "notes", "-e", "nvim", "-c source /home/dhruv/.local/share/nvim/sessions/wiki", NULL };
 const char* spcmd3[] = { "st", "-n", "mmusic", "-e", "/home/dhruv/.config/tmux/session_script/music", NULL };
 const char* spcmd4[] = { "st", "-n", "ippython", "-e", "ipython", NULL };
-const char* spcmd5[] = { "sxiv", "/home/dhruv/vault/wa_stickers", "-N", "stickers", "-t", NULL };
+/* const char* spcmd5[] = { "sxiv", "/home/dhruv/vault/wa_stickers", "-N", "stickers", "-t", NULL }; */
+const char* spcmd5[] = { "/usr/bin/chromium", "--profile-directory=Default", "--app-id=hnpfjngllnobngcgfapefoaidbinmjnm",NULL };
 
+// /usr/bin/chromium --profile-directory=Default --app-id=hnpfjngllnobngcgfapefoaidbinmjnm
+// crx_hnpfjngllnobngcgfapefoaidbinmjnm
 static Sp scratchpads[] = {
     /* name              cmd  */
     { "pavucontrol", spcmd1 },
     { "notes", spcmd2 },
     { "mmusic", spcmd3 },
     { "ippython", spcmd4 },
-    { "stickers", spcmd5 },
+    { "whatsapp", spcmd5 },
 };
 static const Rule rules[] = {
     /* xprop(1):
@@ -79,9 +83,9 @@ static const Rule rules[] = {
     { NULL              , "notes"       , NULL           , SPTAG(1) , 0          , 0           , 0          , 1         , -1 }    ,
     { NULL              , "mmusic"      , NULL           , SPTAG(2) , 1          , 0           , 0          , 1         , -1 }    ,
     { NULL              , "ippython"    , NULL           , SPTAG(3) , 1          , 0           , 0          , 1         , -1 }    ,
-    { NULL              , "stickers"    , NULL           , SPTAG(4) , 1          , 0           , 0          , 1         , -1 }    ,
+    { NULL              , "crx_hnpfjngllnobngcgfapefoaidbinmjnm"    , NULL           , SPTAG(4) , 1          , 0           , 0          , 1         , -1 }    ,
+    /* { NULL              , "stickers"    , NULL           , SPTAG(4) , 1          , 0           , 0          , 1         , -1 }    , */
 };
-
 /* layout(s) */
 static const float mfact = 0.55; /* factor of master area size [0.05..0.95] */
 static const int nmaster = 1; /* number of clients in master area */

@@ -2330,22 +2330,15 @@ void seturgent(Client* c, int urg)
     XFree(wmh);
 }
 
+
 void shiftview(const Arg* arg)
 {
-    /* Client* c; */
-    /* unsigned visible = 0; */
-    /* int i = arg->i; */
-    /* int nextseltags, curseltags = selmon->tagset[selmon->seltags]; */
-
-    /* unsigned occ = 0; */
-    /* for (c = selmon->clients; c; c = c->next)  occ |= c->tags == 255 ? 0 : c->tags; */
-    /* printf("%u",occ); */
     Arg a;
     Client* c;
     unsigned visible = 0;
     int i = arg->i;
     int count = 0;
-    int nextseltags, curseltags = selmon->tagset[selmon->seltags];
+    int nextseltags, curseltags = selmon->tagset[selmon->seltags] & ~SPTAGMASK;
 
     do {
         if (i > 0) // left circular shift
