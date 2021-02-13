@@ -67,24 +67,26 @@ static const Rule rules[] = {
      *  WM_NAME(STRING) = title
      */
 
-    /*   class          , instance      , title          , tagsmask , isfloating , ispermanent , isterminal , noswallow , monitor , */
-    { "Gimp"            , NULL          , NULL           , 0        , 1          , 0           , 0          , 1         , -1 }    ,
-    { "Pavucontrol"     , NULL          , NULL           , 0        , 1          , 0           , 0          , 1         , -1 }    ,
-    { "firefox"         , NULL          , NULL           , 0        , 0          , 0           , 0          , 1         , -1 }    ,
-    { "qt4-ssh-askpass" , NULL          , NULL           , 0        , 0          , 0           , 0          , 1         , -1 }    ,
-    { "openssh-askpass" , NULL          , NULL           , 0        , 0          , 0           , 0          , 1         , -1 }    ,
-    { "LibreWolf"       , NULL          , NULL           , 0        , 0          , 0           , 0          , 1         , -1 }    ,
-    { "Thunar"          , NULL          , NULL           , 0        , 0          , 0           , 0          , 1         , -1 }    ,
-    { "St"              , NULL          , NULL           , 0        , 0          , 0           , 1          , 0         , -1 }    ,
-    { "Alacritty"       , NULL          , NULL           , 0        , 0          , 0           , 1          , 0         , -1 }    ,
-    { "Toolkit"         , NULL          , NULL           , 0        , 1          , 0           , 0          , 1         , -1 }    ,
-    { NULL              , NULL          , "Event Tester" , 0        , 1          , 0           , 0          , 1         , -1 }    ,
-    { NULL              , "pavucontrol" , NULL           , SPTAG(0) , 1          , 0           , 0          , 1         , -1 }    ,
-    { NULL              , "notes"       , NULL           , SPTAG(1) , 0          , 0           , 0          , 1         , -1 }    ,
-    { NULL              , "mmusic"      , NULL           , SPTAG(2) , 1          , 0           , 0          , 1         , -1 }    ,
-    { NULL              , "ippython"    , NULL           , SPTAG(3) , 1          , 0           , 0          , 1         , -1 }    ,
-    { NULL              , "crx_hnpfjngllnobngcgfapefoaidbinmjnm"    , NULL           , SPTAG(4) , 1          , 0           , 0          , 1         , -1 }    ,
-    /* { NULL              , "stickers"    , NULL           , SPTAG(4) , 1          , 0           , 0          , 1         , -1 }    , */
+    /*   class          , instance                               , title          , tagsmask , isfloating , ispermanent , isterminal , noswallow , isfakefullscreen , monitor , */
+    { "Gimp"            , NULL                                   , NULL           , 0        , 1          , 0           , 0          , 1         , 0                , -1 }    ,
+    { "Pavucontrol"     , NULL                                   , NULL           , 0        , 1          , 0           , 0          , 1         , 0                , -1 }    ,
+    { "firefox"         , NULL                                   , NULL           , 0        , 0          , 0           , 0          , 1         , 0                , -1 }    ,
+    { "qt4-ssh-askpass" , NULL                                   , NULL           , 0        , 0          , 0           , 0          , 1         , 0                , -1 }    ,
+    { "openssh-askpass" , NULL                                   , NULL           , 0        , 0          , 0           , 0          , 1         , 0                , -1 }    ,
+    { "LibreWolf"       , NULL                                   , NULL           , 0        , 0          , 0           , 0          , 1         , 1                , -1 }    ,
+    { "Chromium"       , NULL                                   , NULL           , 0        , 0          , 0           , 0          , 1         , 1                , -1 }    ,
+
+    { "Thunar"          , NULL                                   , NULL           , 0        , 0          , 0           , 0          , 1         , 0                , -1 }    ,
+    { "St"              , NULL                                   , NULL           , 0        , 0          , 0           , 1          , 0         , 0                , -1 }    ,
+    { "Alacritty"       , NULL                                   , NULL           , 0        , 0          , 0           , 1          , 0         , 0                , -1 }    ,
+    { "Toolkit"         , NULL                                   , NULL           , 0        , 1          , 0           , 0          , 1         , 0                , -1 }    ,
+    { NULL              , NULL                                   , "Event Tester" , 0        , 1          , 0           , 0          , 1         , 0                , -1 }    ,
+    { NULL              , "pavucontrol"                          , NULL           , SPTAG(0) , 1          , 0           , 0          , 1         , 0                , -1 }    ,
+    { NULL              , "notes"                                , NULL           , SPTAG(1) , 0          , 0           , 0          , 1         , 0                , -1 }    ,
+    { NULL              , "mmusic"                               , NULL           , SPTAG(2) , 1          , 0           , 0          , 1         , 0                , -1 }    ,
+    { NULL              , "ippython"                             , NULL           , SPTAG(3) , 1          , 0           , 0          , 1         , 0                , -1 }    ,
+    { NULL              , "crx_hnpfjngllnobngcgfapefoaidbinmjnm" , NULL           , SPTAG(4) , 1          , 0           , 0          , 0         , 1                , -1 }    ,
+    /* { NULL           , "stickers"                             , NULL           , SPTAG(4) , 1          , 0           , 0          , 1         , -1 }             , */
 };
 /* layout(s) */
 static const float mfact = 0.55; /* factor of master area size [0.05..0.95] */
