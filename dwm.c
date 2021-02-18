@@ -163,7 +163,7 @@ struct Client {
     int basew, baseh, incw, inch, maxw, maxh, minw, minh;
     int bw, oldbw;
     unsigned int tags;
-    int isfixed, ispermanent, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow, islastfloating,isfakefullscreen;
+    int isfixed, ispermanent, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow, islastfloating, isfakefullscreen;
     pid_t pid;
 
     Client* next;
@@ -283,6 +283,7 @@ static void focusin(XEvent* e);
 static void focusmon(const Arg* arg);
 static void focusstack(const Arg* arg);
 static void focuswin(const Arg* arg);
+static void focusmaster(const Arg* arg);
 static void goyo();
 static void grabbuttons(Client* c, int focused);
 static void grabkeys(void);
@@ -299,7 +300,7 @@ static void mappingnotify(XEvent* e);
 static void maprequest(XEvent* e);
 static void monocle(Monitor* m);
 static void motionnotify(XEvent* e);
-void movestack(const Arg* arg);
+static void movestack(const Arg* arg);
 static void movemouse(const Arg* arg);
 static void moveresize(const Arg* arg);
 static void moveresizeedge(const Arg* arg);
@@ -831,7 +832,7 @@ void clientmessage(XEvent* e)
         return;
     if (cme->message_type == netatom[NetWMState]) {
         if (cme->data.l[1] == netatom[NetWMFullscreen] || cme->data.l[2] == netatom[NetWMFullscreen])
-            setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */ || (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && (!c->isfullscreen||c->isfakefullscreen))));
+            setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */ || (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && (!c->isfullscreen || c->isfakefullscreen))));
     } else if (cme->message_type == netatom[NetActiveWindow]) {
         for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++)
             ;
@@ -880,7 +881,7 @@ void configurenotify(XEvent* e)
             updatebars();
             for (m = mons; m; m = m->next) {
                 for (c = m->clients; c; c = c->next)
-                    if (c->isfullscreen &&  !c->isfakefullscreen)
+                    if (c->isfullscreen && !c->isfakefullscreen)
                         resizeclient(c, m->mx, m->my, m->mw, m->mh);
                 resizebarwin(m);
             }
@@ -1749,7 +1750,7 @@ void movemouse(const Arg* arg)
 
     if (!(c = selmon->sel))
         return;
-    if (c->isfullscreen  &&  !c->isfakefullscreen) /* no support moving fullscreen windows by mouse */
+    if (c->isfullscreen && !c->isfakefullscreen) /* no support moving fullscreen windows by mouse */
         return;
     restack(selmon);
     ocx = c->x;
@@ -1957,8 +1958,8 @@ void resizemouse(const Arg* arg)
 
     if (!(c = selmon->sel))
         return;
-   if (c->isfullscreen
-   &&  !c->isfakefullscreen) /* no support resizing fullscreen windows by mouse */
+    if (c->isfullscreen
+        && !c->isfakefullscreen) /* no support resizing fullscreen windows by mouse */
         return;
     restack(selmon);
     ocx = c->x;
@@ -2340,36 +2341,38 @@ void seturgent(Client* c, int urg)
     XFree(wmh);
 }
 
-
 void shiftview(const Arg* arg)
 {
-    Arg a;
     Client* c;
-    unsigned visible = 0;
-    int i = arg->i;
-    int count = 0;
-    int nextseltags, curseltags = selmon->tagset[selmon->seltags] & ~SPTAGMASK;
+    unsigned occ = 0,nextseltags = selmon->tagset[selmon->seltags] & ~SPTAGMASK;
 
-    do {
-        if (i > 0) // left circular shift
-            nextseltags = (curseltags << i) | (curseltags >> (LENGTH(tags) - i));
-
-        else // right circular shift
-            nextseltags = curseltags >> (-i) | (curseltags << (LENGTH(tags) + i));
-
-        // Check if tag is visible
-        for (c = selmon->clients; c && !visible; c = c->next)
-            if (nextseltags & c->tags) {
-                visible = 1;
-                break;
-            }
-        i += arg->i;
-    } while (!visible && ++count < 10);
-
-    if (count < 10) {
-        a.i = nextseltags;
-        view(&a);
+    for (c = selmon->clients; c; c = c->next) {
+        occ |= c->tags == 255 ? 0 : c->tags;
     }
+
+    while (True) {
+
+        // right circular shift
+        if (arg->i > 0)
+            nextseltags = (nextseltags << 1);
+        // left circular shift
+        else
+            nextseltags = (nextseltags >> 1);
+
+        // go to last occupied tag
+        if (nextseltags <= 0)
+            nextseltags = 1 << (LENGTH(tags)-1);
+        // go to first occupied tag
+        else if (nextseltags >= 1 << LENGTH(tags))
+            nextseltags = 1;
+
+        // Check if tag is occupied
+        if (occ & nextseltags || selmon->tagset[selmon->seltags] & nextseltags) {
+            break;
+        }
+    }
+
+    view(&(Arg) { .ui = nextseltags } );
 }
 
 void viewtoleft(const Arg* arg)
@@ -2412,7 +2415,7 @@ void showhide(Client* c)
         /* show clients top down */
         XMoveWindow(dpy, c->win, c->x, c->y);
         if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating)
-                &&  (!c->isfullscreen || c->isfakefullscreen))
+            && (!c->isfullscreen || c->isfakefullscreen))
             resize(c, c->x, c->y, c->w, c->h, 0);
         showhide(c->snext);
     } else {
@@ -2609,7 +2612,7 @@ void togglefloating(const Arg* arg)
 {
     if (!selmon->sel)
         return;
-    if (selmon->sel->isfullscreen &&  !selmon->sel->isfakefullscreen) /* no support for fullscreen windows */
+    if (selmon->sel->isfullscreen && !selmon->sel->isfakefullscreen) /* no support for fullscreen windows */
         return;
     selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
     if (selmon->sel->isfloating)
@@ -2799,6 +2802,19 @@ int issinglewin(const Arg* arg)
         }
     }
     return 1;
+}
+
+void focusmaster(const Arg* arg)
+{
+    Client* c;
+
+    if (selmon->nmaster < 1)
+        return;
+
+    c = nexttiled(selmon->clients);
+
+    if (c)
+        focus(c);
 }
 
 void focuswin(const Arg* arg)
