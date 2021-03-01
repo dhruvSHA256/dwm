@@ -1,5 +1,12 @@
 /* See LICENSE file for copyright and license details. */
 
+/* gaps */
+static const unsigned int gappih    = 7;       /* horiz inner gap between windows */
+static const unsigned int gappiv    = 7;       /* vert inner gap between windows */
+static const unsigned int gappoh    = 7;       /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov    = 7;       /* vert outer gap between windows and screen edge */
+static       int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
+
 /* appearance */
 static const unsigned int borderpx        = 1; /* border pixel of windows */
 static const unsigned int snap            = 22; /* snap pixel */
@@ -11,10 +18,12 @@ static const int showbar                  = 1; /* 0 means no bar */
 static const int topbar                   = 1; /* 0 means bottom bar */
 static const char* fonts[]                = { "Symbols Nerd Font:style=2048-em:size=10",
                                               "Operator Mono Lig:style=medium:size=11",
+                                              /* "VictorMono Nerd Font Mono:style=Regular:size=10", */
+                                              /* "FiraCode Nerd Font Mono:style=Regular:size=10", */
                                               "Mukta:style=Regular:size=13" };
 
 static const int swallowfloating          = 0; /* 1 means swallow floating windows by default */
-static const char dmenufont[]             = "monospace:size                                                              = 10";
+static const char dmenufont[]             = "monospace:size=10";
 static const char col_gray1[]             = "#222222";
 static const char col_gray2[]             = "#444444";
 static const char col_gray3[]             = "#bbbbbb";
@@ -31,6 +40,9 @@ static const char slopstyle[]        = "-t 0 -c 0.92,0.85,0.69,0.3"; /* do NOT d
 static const char* const autostart[] = {
     /* "killall","dwmblocks", NULL, */
     "sh","-c","pgrep dwmblocks || dwmblocks", NULL,
+    "st", "-n", "mmusic", "-e", "ncmpcpp", NULL,
+    "alacritty", "--class", "ippython", "-e", "ptpython", NULL,
+    "alacritty", "--class", "notes", "-e", "nvim", "--listen","127.0.0.1:7777","-c source /home/dhruv/.local/share/nvim/sessions/wiki", NULL,
     NULL /* terminate */
 };
 
@@ -43,18 +55,20 @@ typedef struct {
 } Sp;
 
 const char* spcmd1[] = { "pavucontrol", NULL };
-const char* spcmd2[] = { "alacritty", "--class", "notes", "-e", "nvim", "-c source /home/dhruv/.local/share/nvim/sessions/wiki", NULL };
+const char* spcmd2[] = { "alacritty", "--class", "notes", "-e", "nvim", "--listen","127.0.0.1:7777","-c source /home/dhruv/.local/share/nvim/sessions/wiki", NULL, };
 const char* spcmd3[] = { "st", "-n", "mmusic", "-e", "ncmpcpp", NULL };
 const char* spcmd4[] = { "alacritty", "--class", "ippython", "-e", "ptpython", NULL };
 const char* spcmd5[] = { "/usr/bin/chromium", "--profile-directory=Default", "--app-id=hnpfjngllnobngcgfapefoaidbinmjnm", NULL };
+const char* spcmd6[] = { "telegram-desktop"};
 
 static Sp scratchpads[] = {
     /* name              cmd  */
-    { "pavucontrol" , spcmd1 } ,
-    { "notes"       , spcmd2 } ,
-    { "mmusic"      , spcmd3 } ,
-    { "ippython"    , spcmd4 } ,
-    { "whatsapp"    , spcmd5 } ,
+    { "pavucontrol"      , spcmd1 } ,
+    { "notes"            , spcmd2 } ,
+    { "mmusic"           , spcmd3 } ,
+    { "ippython"         , spcmd4 } ,
+    { "whatsapp"         , spcmd5 } ,
+    { "telegram-desktop" , spcmd6 } ,
 };
 
 static const Rule rules[] = {
@@ -78,6 +92,7 @@ static const Rule rules[] = {
     { NULL              , "mmusic"                               , NULL           , SPTAG(2) , 1          , 0           , 0          , 1         , 0                , -1 }    ,
     { NULL              , "ippython"                             , NULL           , SPTAG(3) , 1          , 0           , 0          , 1         , 0                , -1 }    ,
     { NULL              , "crx_hnpfjngllnobngcgfapefoaidbinmjnm" , NULL           , SPTAG(4) , 1          , 0           , 0          , 0         , 1                , -1 }    ,
+    { NULL              , "telegram-desktop"                     , NULL           , SPTAG(5) , 1          , 0           , 0          , 0         , 1                , -1 }    ,
 };
 
 static const float mfact         = 0.55; /* factor of master area size [0.05..0.95] */
@@ -87,20 +102,35 @@ static const int attachdirection = 0; /* 0 default, 1 above, 2 aside, 3 below, 4
 static const int decorhints      = 1; /* 1 means respect size hints in tiled resizals */
 
 /* layout(s) */
+
+#define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
+#include "vanitygaps.c"
 static const Layout layouts[] = {
     /* symbol     arrange function */
-    { "[]=", tile }, /* first entry is default */
-    { "><>", NULL }, /* no layout function means floating behavior */
-    { "[M]", monocle },
+    { "[]="  , tile }                   , /* first entry is default */
+    { "[@]"  , spiral }                 ,
+    { "[M]"  , monocle }                ,
+    { "[\\]" , dwindle }                ,
+    { "H[]"  , deck }                   ,
+    { "TTT"  , bstack }                 ,
+    { "==="  , bstackhoriz }            ,
+    { "HHH"  , grid }                   ,
+    { "###"  , nrowgrid }               ,
+    { "---"  , horizgrid }              ,
+    { ":::"  , gaplessgrid }            ,
+    { "|M|"  , centeredmaster }         ,
+    { ">M>"  , centeredfloatingmaster } ,
+    { "><>"  , NULL }                   , /* no layout function means floating behavior */
+    { NULL   , NULL }                   ,
 };
 
 /* key definitions */
 #define MODKEY Mod4Mask
 #define TAGKEYS(KEY, TAG)                                     \
-    { MODKEY, KEY, view, { .ui = 1 << TAG } },                \
-        { Mod1Mask, KEY, toggleview, { .ui = 1 << TAG } },    \
-        { MODKEY | ShiftMask, KEY, tag, { .ui = 1 << TAG } }, \
-        { Mod1Mask | ShiftMask, KEY, toggletag, { .ui = 1 << TAG } },
+    { MODKEY               , KEY , view       , { .ui = 1 << TAG } } , \
+    { Mod1Mask             , KEY , toggleview , { .ui = 1 << TAG } } , \
+    { MODKEY | ShiftMask   , KEY , tag        , { .ui = 1 << TAG } } , \
+    { Mod1Mask | ShiftMask , KEY , toggletag  , { .ui = 1 << TAG } } ,
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)                                          \
@@ -124,13 +154,39 @@ static const char* termcmd[] = { TERMINAL, NULL };
 /* static const char* browsercmd[] = { "/home/dhruv/.config/scripts/lof",BROWSER, NULL }; */
 /* static const char* editorcmd[] = { "alacritty", "-e", EDITOR, NULL }; */
 
+void capturenote(const Arg* arg){
+    /* add todo in wiki*/
+    static const char* capturecmd[] = {"nvr","--servername","127.0.0.1:7777","-c","lua Capture()","--nostart",NULL};
+
+    Client* c;
+    unsigned int found = 0;
+    unsigned int scratchtag = SPTAG(1);
+    Arg sparg = { .v = scratchpads[1].cmd };
+    for (c = selmon->clients; c && !(found = c->tags & scratchtag); c = c->next) ;
+    if (found) {
+        unsigned int newtagset = selmon->tagset[selmon->seltags] ^ scratchtag;
+        if (ISVISIBLE(c)) {
+            focus(c);
+            restack(selmon);
+        }
+        else {
+            selmon->tagset[selmon->seltags] = newtagset;
+            focus(c);
+            arrange(selmon);
+        }
+      spawn(&(Arg){.v=capturecmd});
+    }
+}
+
 static Key keys[] = {
     /* modifier                     key        function        argument */
     { Mod1Mask                         , 55  , togglescratch  , { .ui = 0 } }              , // v
     { Mod1Mask                         , 57  , togglescratch  , { .ui = 1 } }              , // n
     { Mod1Mask                         , 58  , togglescratch  , { .ui = 2 } }              , // m
     { Mod1Mask                         , 33  , togglescratch  , { .ui = 3 } }              , // m
-    { Mod1Mask                         , 61  , togglescratch  , { .ui = 4 } }              , //
+    { Mod1Mask                         , 61  , togglescratch  , { .ui = 4 } }              , // /
+    { Mod1Mask                         , 48  , togglescratch  , { .ui = 5 } }              , // "
+    { Mod1Mask                         , 47  , capturenote    , { 0 } }                    , // ;
     { MODKEY                           , 65  , spawn          , { .v = dmenucmd } }        , // space
     { MODKEY                           , 48  , focusmaster    , { 0 } }                    , // "
     { MODKEY                           , 56  , togglebar      , { 0 } }                    , // b
@@ -164,31 +220,52 @@ static Key keys[] = {
     { MODKEY | ControlMask | ShiftMask , 111 , moveresizeedge , { .v = "T" } }             , // up
     { MODKEY | ControlMask | ShiftMask , 116 , moveresizeedge , { .v = "B" } }             , // down
     { MODKEY | ControlMask | ShiftMask , 113 , moveresizeedge , { .v = "L" } }             , // left
-    { MODKEY | ControlMask | ShiftMask , 114      , moveresizeedge , { .v = "R" } }         , // right
-    { MODKEY | ShiftMask               , 41       , togglefullscr  , { 0 } }                , // f
-    { Mod1Mask                         , 36       , zoom           , { 0 } }                , // return
-    { MODKEY                           , 253      , view           , { 0 } }                , // backslash
-    { MODKEY                           , 28       , setlayout      , { .v = &layouts[0] } } , // t
-    { MODKEY                           , 41       , setlayout      , { .v = &layouts[2] } } , // f
-    { MODKEY | ShiftMask               , 65       , togglefloating , { 0 } }                , // space
-    { MODKEY                           , 19       , view           , { .ui = ~0 } }         , // 0
-    { MODKEY | ShiftMask               , 19       , tag            , { .ui = ~0 } }         , // 0
-    { MODKEY | ShiftMask               , 59       , tagmon         , { .i = -1 } }          , // comma
-    { MODKEY | ShiftMask               , 60       , tagmon         , { .i = +1 } }          , // period
-    { MODKEY | ControlMask             , 25       , killclient     , { 0 } }                , // w
-    { MODKEY | ShiftMask               , 26       , quit           , { 0 } }                , // e
-    { MODKEY                           , 35       , shiftview      , { .i = +1 } }          , // ]
-    { MODKEY                           , 34       , shiftview      , { .i = -1 } }          , // [
-    { MODKEY                           , 60       , viewtoright    , { 0 } }                , // period
-    { MODKEY                           , 59       , viewtoleft     , { 0 } }                , // comma
-    { MODKEY                           , 42       , goyo           , { .v = &layouts[1] } } , // g
-    { MODKEY                           , 46       , hidewin        , { 0 } }                , // l
-    { MODKEY | ControlMask             , 46       , restorewin     , { 0 } }                , // l
-    { Mod1Mask | ControlMask           , 19       , tagtoocc       , { 0 } }                , // 0
-    /* { MODKEY                         , XK_space , setlayout      , {0}}                   , */
+    { MODKEY | ControlMask | ShiftMask , 114 , moveresizeedge , { .v = "R" } }             , // right
+    { MODKEY | ShiftMask               , 41  , togglefullscr  , { 0 } }                    , // f
+    { Mod1Mask                         , 36  , zoom           , { 0 } }                    , // return
+    { MODKEY                           , 253 , view           , { 0 } }                    , // backslash
+    { MODKEY                           , 28  , setlayout      , { .v = &layouts[0] } }     , // t
+    { MODKEY                           , 41  , setlayout      , { .v = &layouts[2] } }     , // f
+    { MODKEY | ShiftMask               , 65  , togglefloating , { 0 } }                    , // space
+    { MODKEY                           , 19  , view           , { .ui = ~0 } }             , // 0
+    { MODKEY | ShiftMask               , 19  , tag            , { .ui = ~0 } }             , // 0
+    { MODKEY | ShiftMask               , 59  , tagmon         , { .i = -1 } }              , // comma
+    { MODKEY | ShiftMask               , 60  , tagmon         , { .i = +1 } }              , // period
+    { MODKEY | ControlMask             , 25  , killclient     , { 0 } }                    , // w
+    { MODKEY | ShiftMask               , 26  , quit           , { 0 } }                    , // e
+    { MODKEY                           , 35  , shiftview      , { .i = +1 } }              , // ]
+    { MODKEY                           , 34  , shiftview      , { .i = -1 } }              , // [
+    { MODKEY                           , 60  , viewtoright    , { 0 } }                    , // period
+    { MODKEY                           , 59  , viewtoleft     , { 0 } }                    , // comma
+    { MODKEY                           , 42  , goyo           , { .v = &layouts[1] } }     , // g
+    { MODKEY                           , 46  , hidewin        , { 0 } }                    , // l
+    { MODKEY | ControlMask             , 46  , restorewin     , { 0 } }                    , // l
+    { Mod1Mask | ControlMask           , 19  , tagtoocc       , { 0 } }                    , // 0
+
+    { MODKEY|Mod1Mask                  , 30  , incrgaps       , {.i = +1 } }               , // u
+    { MODKEY|Mod1Mask|ShiftMask        , 30  , incrgaps       , {.i = -1 } }               , // u
+
+    /* { MODKEY|Mod1Mask                  , 31  , incrigaps      , {.i = +1 } }               , // i */
+    /* { MODKEY|Mod1Mask|ShiftMask        , 31  , incrigaps      , {.i = -1 } }               , // i */
+    /* { MODKEY|Mod1Mask                  , 32  , incrogaps      , {.i = +1 } }               , // o */
+    /* { MODKEY|Mod1Mask|ShiftMask        , 32  , incrogaps      , {.i = -1 } }               , // o */
+    /* { MODKEY|Mod1Mask                  , 15  , incrihgaps     , {.i = +1 } }               , // 6 */
+    /* { MODKEY|Mod1Mask|ShiftMask        , 15  , incrihgaps     , {.i = -1 } }               , // 6 */
+    /* { MODKEY|Mod1Mask                  , 16  , incrivgaps     , {.i = +1 } }               , // 7 */
+    /* { MODKEY|Mod1Mask|ShiftMask        , 16  , incrivgaps     , {.i = -1 } }               , // 7 */
+    /* { MODKEY|Mod1Mask                  , 17  , incrohgaps     , {.i = +1 } }               , // 8 */
+    /* { MODKEY|Mod1Mask|ShiftMask        , 17  , incrohgaps     , {.i = -1 } }               , // 8 */
+    /* { MODKEY|Mod1Mask                  , 18  , incrovgaps     , {.i = +1 } }               , // 9 */
+    /* { MODKEY|Mod1Mask|ShiftMask        , 18  , incrovgaps     , {.i = -1 } }               , // 9 */
+
+    { MODKEY|Mod1Mask                  , 19  , togglegaps     , {0} }                      , // 0
+    { MODKEY|Mod1Mask|ShiftMask        , 19  , defaultgaps    , {0} }                      , // 0
+
+    { MODKEY|ShiftMask                 , 59  , cyclelayout    , { .i = -1 } }              , // comma
+    { MODKEY|ShiftMask                 , 60  , cyclelayout    , { .i = +1 } }              , // period
+
     /* { MODKEY                        , 59       , focusmon       , { .i = -1 } }          , // comma */
     /* { MODKEY                        , 60       , focusmon       , { .i = +1 } }          , // period */
-    /* { MODKEY, 39,      riodraw,        {0} }, */
 
     TAGKEYS(10, 0) // 1
     TAGKEYS(11, 1) // 2

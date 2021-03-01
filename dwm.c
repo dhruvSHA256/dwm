@@ -197,6 +197,10 @@ struct Monitor {
     int by; /* bar geometry */
     int mx, my, mw, mh; /* screen size */
     int wx, wy, ww, wh; /* window area  */
+    int gappih;           /* horizontal gap between windows */
+    int gappiv;           /* vertical gap between windows */
+    int gappoh;           /* horizontal outer gaps */
+    int gappov;           /* vertical outer gaps */
     unsigned int seltags;
     unsigned int sellt;
     unsigned int tagset[2];
@@ -237,6 +241,7 @@ static void setcfact(const Arg* arg);
 static Client* nexttiled(Client* c);
 static Client* wintoclient(Window w);
 static Monitor* createmon(void);
+static void cyclelayout(const Arg *arg);
 static Monitor* dirtomon(int dir);
 static Monitor* recttomon(int x, int y, int w, int h);
 static Monitor* wintomon(Window w);
@@ -333,7 +338,6 @@ static Monitor* systraytomon(Monitor* m);
 static void spawn(const Arg* arg);
 static void tag(const Arg* arg);
 static void tagmon(const Arg* arg);
-static void tile(Monitor*);
 static void togglebar(const Arg* arg);
 static void togglefullscr(const Arg* arg);
 static void togglefloating(const Arg* arg);
@@ -954,6 +958,10 @@ createmon(void)
     m->nmaster = nmaster;
     m->showbar = showbar;
     m->topbar = topbar;
+    m->gappih = gappih;
+    m->gappiv = gappiv;
+    m->gappoh = gappoh;
+    m->gappov = gappov;
     m->lt[0] = &layouts[0];
     m->lt[1] = &layouts[1 % LENGTH(layouts)];
     strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
@@ -970,6 +978,23 @@ createmon(void)
     }
 
     return m;
+}
+
+void cyclelayout(const Arg *arg)
+{
+    Layout *l;
+    for(l = (Layout *)layouts; l != selmon->lt[selmon->sellt]; l++);
+    if(arg->i > 0) {
+        if(l->symbol && (l + 1)->symbol)
+            setlayout(&((Arg) { .v = (l + 1) }));
+        else
+            setlayout(&((Arg) { .v = layouts }));
+    } else {
+        if(l != layouts && (l - 1)->symbol)
+            setlayout(&((Arg) { .v = (l - 1) }));
+        else
+            setlayout(&((Arg) { .v = &layouts[LENGTH(layouts) - 2] }));
+    }
 }
 
 void destroynotify(XEvent* e)
@@ -1207,14 +1232,14 @@ void goyo(const Arg* arg)
             c->bw = borderpx;
         if (!selmon->showbar)
             togglebar(arg);
-        /* enablegaps = 1; */
+        enablegaps = 1;
     } else {
         Client* c;
         for (c = selmon->clients; c; c = c->next)
             c->bw = 0;
         if (selmon->showbar)
             togglebar(arg);
-        /* enablegaps = 0; */
+        enablegaps = 0;
     }
     isgoyo = !isgoyo;
     arrange(selmon);
@@ -2520,41 +2545,6 @@ void tagmon(const Arg* arg)
     if (!selmon->sel || !mons->next)
         return;
     sendmon(selmon->sel, dirtomon(arg->i));
-}
-
-void tile(Monitor* m)
-{
-    unsigned int i, n, h, mw, my, ty;
-    float mfacts = 0, sfacts = 0;
-    Client* c;
-
-    for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) {
-        if (n < m->nmaster)
-            mfacts += c->cfact;
-        else
-            sfacts += c->cfact;
-    }
-    if (n == 0)
-        return;
-
-    if (n > m->nmaster)
-        mw = m->nmaster ? m->ww * m->mfact : 0;
-    else
-        mw = m->ww;
-    for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
-        if (i < m->nmaster) {
-            h = (m->wh - my) * (c->cfact / mfacts);
-            resize(c, m->wx, m->wy + my, mw - (2 * c->bw), h - (2 * c->bw), 0);
-            if (my + HEIGHT(c) < m->wh)
-                my += HEIGHT(c);
-            mfacts -= c->cfact;
-        } else {
-            h = (m->wh - ty) * (c->cfact / sfacts);
-            resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2 * c->bw), h - (2 * c->bw), 0);
-            if (ty + HEIGHT(c) < m->wh)
-                ty += HEIGHT(c);
-            sfacts -= c->cfact;
-        }
 }
 
 void togglefullscr(const Arg* arg)
