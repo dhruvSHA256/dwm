@@ -165,7 +165,6 @@ struct Client {
     unsigned int tags;
     int isfixed, ispermanent, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow, islastfloating, isfakefullscreen;
     pid_t pid;
-
     Client* next;
     Client* snext;
     Client* swallowing;
@@ -197,10 +196,10 @@ struct Monitor {
     int by; /* bar geometry */
     int mx, my, mw, mh; /* screen size */
     int wx, wy, ww, wh; /* window area  */
-    int gappih;           /* horizontal gap between windows */
-    int gappiv;           /* vertical gap between windows */
-    int gappoh;           /* horizontal outer gaps */
-    int gappov;           /* vertical outer gaps */
+    int gappih; /* horizontal gap between windows */
+    int gappiv; /* vertical gap between windows */
+    int gappoh; /* horizontal outer gaps */
+    int gappov; /* vertical outer gaps */
     unsigned int seltags;
     unsigned int sellt;
     unsigned int tagset[2];
@@ -241,7 +240,7 @@ static void setcfact(const Arg* arg);
 static Client* nexttiled(Client* c);
 static Client* wintoclient(Window w);
 static Monitor* createmon(void);
-static void cyclelayout(const Arg *arg);
+static void cyclelayout(const Arg* arg);
 static Monitor* dirtomon(int dir);
 static Monitor* recttomon(int x, int y, int w, int h);
 static Monitor* wintomon(Window w);
@@ -980,17 +979,18 @@ createmon(void)
     return m;
 }
 
-void cyclelayout(const Arg *arg)
+void cyclelayout(const Arg* arg)
 {
-    Layout *l;
-    for(l = (Layout *)layouts; l != selmon->lt[selmon->sellt]; l++);
-    if(arg->i > 0) {
-        if(l->symbol && (l + 1)->symbol)
+    Layout* l;
+    for (l = (Layout*)layouts; l != selmon->lt[selmon->sellt]; l++)
+        ;
+    if (arg->i > 0) {
+        if (l->symbol && (l + 1)->symbol)
             setlayout(&((Arg) { .v = (l + 1) }));
         else
             setlayout(&((Arg) { .v = layouts }));
     } else {
-        if(l != layouts && (l - 1)->symbol)
+        if (l != layouts && (l - 1)->symbol)
             setlayout(&((Arg) { .v = (l - 1) }));
         else
             setlayout(&((Arg) { .v = &layouts[LENGTH(layouts) - 2] }));
@@ -1195,11 +1195,6 @@ void focusmon(const Arg* arg)
 void focusstack(const Arg* arg)
 {
     Client *c = NULL, *i;
-
-    if (issinglewin(arg)) {
-        focuswin(arg);
-        return;
-    }
 
     if (!selmon->sel)
         return;
@@ -2369,7 +2364,7 @@ void seturgent(Client* c, int urg)
 void shiftview(const Arg* arg)
 {
     Client* c;
-    unsigned occ = 0,nextseltags = selmon->tagset[selmon->seltags] & ~SPTAGMASK;
+    unsigned occ = 0, nextseltags = selmon->tagset[selmon->seltags] & ~SPTAGMASK;
 
     for (c = selmon->clients; c; c = c->next) {
         occ |= c->tags == 255 ? 0 : c->tags;
@@ -2386,7 +2381,7 @@ void shiftview(const Arg* arg)
 
         // go to last occupied tag
         if (nextseltags <= 0)
-            nextseltags = 1 << (LENGTH(tags)-1);
+            nextseltags = 1 << (LENGTH(tags) - 1);
         // go to first occupied tag
         else if (nextseltags >= 1 << LENGTH(tags))
             nextseltags = 1;
@@ -2397,7 +2392,7 @@ void shiftview(const Arg* arg)
         }
     }
 
-    view(&(Arg) { .ui = nextseltags } );
+    view(&(Arg) { .ui = nextseltags });
 }
 
 void viewtoleft(const Arg* arg)
@@ -2556,12 +2551,12 @@ void togglefullscr(const Arg* arg)
 void togglescratch(const Arg* arg)
 {
     Client* c;
-    unsigned int found = 0;
-    unsigned int scratchtag = SPTAG(arg->ui);
+    unsigned int found = 0, scratchtag = SPTAG(arg->ui);
     Arg sparg = { .v = scratchpads[arg->ui].cmd };
 
     for (c = selmon->clients; c && !(found = c->tags & scratchtag); c = c->next)
         ;
+
     if (found) {
         unsigned int newtagset = selmon->tagset[selmon->seltags] ^ scratchtag;
         if (newtagset) {
