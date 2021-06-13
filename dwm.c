@@ -247,7 +247,7 @@ static Monitor* wintomon(Window w);
 static int applysizehints(Client* c, int* x, int* y, int* w, int* h, int interact);
 static int getrootptr(int* x, int* y);
 static int gettextprop(Window w, Atom atom, char* text, unsigned int size);
-static int issinglewin(const Arg* arg);
+/* static int issinglewin(const Arg* arg); */
 static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);
 static void updatemotifhints(Client* c);
 static int updategeom(void);
@@ -284,10 +284,11 @@ static void expose(XEvent* e);
 static Client* findbefore(Client* c);
 static void focus(Client* c);
 static void focusin(XEvent* e);
-static void focusmon(const Arg* arg);
+/* static void focusmon(const Arg* arg); */
 static void focusstack(const Arg* arg);
-static void focuswin(const Arg* arg);
+/* static void focuswin(const Arg* arg); */
 static void focusmaster(const Arg* arg);
+static void focusurgent(const Arg *arg);
 static void goyo();
 static void grabbuttons(Client* c, int focused);
 static void grabkeys(void);
@@ -1066,9 +1067,9 @@ void drawbar(Monitor* m)
 
     /* draw status first so it can be overdrawn by tags later */
     if (m == selmon) { /* status is only drawn on selected monitor */
-        drw_setscheme(drw, scheme[SchemeSel]);
-        tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px right padding */
-        drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0);
+      drw_setscheme(drw, scheme[SchemeSel]);
+      tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px right padding */
+      drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0);
     }
 
     resizebarwin(m);
@@ -1179,18 +1180,18 @@ void focusin(XEvent* e)
         setfocus(selmon->sel);
 }
 
-void focusmon(const Arg* arg)
-{
-    Monitor* m;
-
-    if (!mons->next)
-        return;
-    if ((m = dirtomon(arg->i)) == selmon)
-        return;
-    unfocus(selmon->sel, 0);
-    selmon = m;
-    focus(NULL);
-}
+/* void focusmon(const Arg* arg) */
+/* { */
+/*     Monitor* m; */
+/*  */
+/*     if (!mons->next) */
+/*         return; */
+/*     if ((m = dirtomon(arg->i)) == selmon) */
+/*         return; */
+/*     unfocus(selmon->sel, 0); */
+/*     selmon = m; */
+/*     focus(NULL); */
+/* } */
 
 void focusstack(const Arg* arg)
 {
@@ -2773,21 +2774,21 @@ void restorewin(const Arg* arg)
 /*     } */
 /* } */
 
-int issinglewin(const Arg* arg)
-{
-    Client* c = NULL;
-    int cot = 0;
-    int tag = selmon->tagset[selmon->seltags];
-    for (c = selmon->clients; c; c = c->next) {
-        if (ISVISIBLE(c) && !HIDDEN(c) && c->tags == tag) {
-            cot++;
-        }
-        if (cot > 1) {
-            return 0;
-        }
-    }
-    return 1;
-}
+/* int issinglewin(const Arg* arg) */
+/* { */
+/*     Client* c = NULL; */
+/*     int cot = 0; */
+/*     int tag = selmon->tagset[selmon->seltags]; */
+/*     for (c = selmon->clients; c; c = c->next) { */
+/*         if (ISVISIBLE(c) && !HIDDEN(c) && c->tags == tag) { */
+/*             cot++; */
+/*         } */
+/*         if (cot > 1) { */
+/*             return 0; */
+/*         } */
+/*     } */
+/*     return 1; */
+/* } */
 
 void focusmaster(const Arg* arg)
 {
@@ -2802,46 +2803,60 @@ void focusmaster(const Arg* arg)
         focus(c);
 }
 
-void focuswin(const Arg* arg)
-{
-    Client *c = NULL, *i;
-    int j;
-    if (arg->i > 0) {
-        for (c = selmon->sel->next;
-             c && !(c->tags == selmon->tagset[selmon->seltags]); c = c->next)
-            ;
-        if (!c)
-            for (c = selmon->clients;
-                 c && !(c->tags == selmon->tagset[selmon->seltags]);
-                 c = c->next)
-                ;
-    } else {
-        for (i = selmon->clients; i != selmon->sel; i = i->next)
-            if (i->tags == selmon->tagset[selmon->seltags])
-                c = i;
-        if (!c)
-            for (; i; i = i->next)
-                if (i->tags == selmon->tagset[selmon->seltags])
-                    c = i;
-    }
-
-    i = selmon->sel;
-
-    if (c && c != i) {
-        hide(i);
-        for (j = 0; j <= hiddenWinStackTop; ++j) {
-            if (HIDDEN(hiddenWinStack[j]) && hiddenWinStack[j]->tags == selmon->tagset[selmon->seltags] && hiddenWinStack[j] == c) {
-                show(c);
-                focus(c);
-                restack(selmon);
-                memcpy(hiddenWinStack + j, hiddenWinStack + j + 1,
-                    (hiddenWinStackTop - j) * sizeof(Client*));
-                hiddenWinStack[hiddenWinStackTop] = i;
-                return;
-            }
+void focusurgent(const Arg *arg) {
+    Client *c;
+    int i;
+    for(c=selmon->clients; c && !c->isurgent; c=c->next);
+    if(c) {
+        for(i=0; i < LENGTH(tags) && !((1 << i) & c->tags); i++);
+        if(i < LENGTH(tags)) {
+            const Arg a = {.ui = 1 << i};
+            view(&a);
+            focus(c);
         }
     }
 }
+
+/* void focuswin(const Arg* arg) */
+/* { */
+/*     Client *c = NULL, *i; */
+/*     int j; */
+/*     if (arg->i > 0) { */
+/*         for (c = selmon->sel->next; */
+/*              c && !(c->tags == selmon->tagset[selmon->seltags]); c = c->next) */
+/*             ; */
+/*         if (!c) */
+/*             for (c = selmon->clients; */
+/*                  c && !(c->tags == selmon->tagset[selmon->seltags]); */
+/*                  c = c->next) */
+/*                 ; */
+/*     } else { */
+/*         for (i = selmon->clients; i != selmon->sel; i = i->next) */
+/*             if (i->tags == selmon->tagset[selmon->seltags]) */
+/*                 c = i; */
+/*         if (!c) */
+/*             for (; i; i = i->next) */
+/*                 if (i->tags == selmon->tagset[selmon->seltags]) */
+/*                     c = i; */
+/*     } */
+/*  */
+/*     i = selmon->sel; */
+/*  */
+/*     if (c && c != i) { */
+/*         hide(i); */
+/*         for (j = 0; j <= hiddenWinStackTop; ++j) { */
+/*             if (HIDDEN(hiddenWinStack[j]) && hiddenWinStack[j]->tags == selmon->tagset[selmon->seltags] && hiddenWinStack[j] == c) { */
+/*                 show(c); */
+/*                 focus(c); */
+/*                 restack(selmon); */
+/*                 memcpy(hiddenWinStack + j, hiddenWinStack + j + 1, */
+/*                     (hiddenWinStackTop - j) * sizeof(Client*)); */
+/*                 hiddenWinStack[hiddenWinStackTop] = i; */
+/*                 return; */
+/*             } */
+/*         } */
+/*     } */
+/* } */
 
 void updatecurrentdesktop(void)
 {
