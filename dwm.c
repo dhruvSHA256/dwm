@@ -288,7 +288,7 @@ static void focusin(XEvent* e);
 static void focusstack(const Arg* arg);
 /* static void focuswin(const Arg* arg); */
 static void focusmaster(const Arg* arg);
-static void focusurgent(const Arg *arg);
+static void focusurgent(const Arg* arg);
 static void goyo();
 static void grabbuttons(Client* c, int focused);
 static void grabkeys(void);
@@ -1067,9 +1067,9 @@ void drawbar(Monitor* m)
 
     /* draw status first so it can be overdrawn by tags later */
     if (m == selmon) { /* status is only drawn on selected monitor */
-      drw_setscheme(drw, scheme[SchemeSel]);
-      tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px right padding */
-      drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0);
+        drw_setscheme(drw, scheme[SchemeSel]);
+        tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px right padding */
+        drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0);
     }
 
     resizebarwin(m);
@@ -2429,10 +2429,11 @@ void showhide(Client* c)
     if (!c)
         return;
     if (ISVISIBLE(c)) {
-        if ((c->tags & SPTAGMASK) && c->isfloating) {
-            c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
-            c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
-        }
+        // preserve scratchpad position
+        /* if ((c->tags & SPTAGMASK) && c->isfloating) { */
+            /* c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2); */
+            /* c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2); */
+        /* } */
         /* show clients top down */
         XMoveWindow(dpy, c->win, c->x, c->y);
         if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating)
@@ -2803,14 +2804,17 @@ void focusmaster(const Arg* arg)
         focus(c);
 }
 
-void focusurgent(const Arg *arg) {
-    Client *c;
+void focusurgent(const Arg* arg)
+{
+    Client* c;
     int i;
-    for(c=selmon->clients; c && !c->isurgent; c=c->next);
-    if(c) {
-        for(i=0; i < LENGTH(tags) && !((1 << i) & c->tags); i++);
-        if(i < LENGTH(tags)) {
-            const Arg a = {.ui = 1 << i};
+    for (c = selmon->clients; c && !c->isurgent; c = c->next)
+        ;
+    if (c) {
+        for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++)
+            ;
+        if (i < LENGTH(tags)) {
+            const Arg a = { .ui = 1 << i };
             view(&a);
             focus(c);
         }
