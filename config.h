@@ -24,16 +24,18 @@ static const char* fonts[] = { "Symbols Nerd Font:style= 2048-em:size = 10",
 
 static const int swallowfloating = 0; /* 1 means swallow floating windows by default */
 static const char dmenufont[] = "monospace:size                                      = 10";
-static const char col_gray1[] = "#222222";
-static const char col_gray2[] = "#444444";
-static const char col_gray3[] = "#bbbbbb";
-static const char col_gray4[] = "#eeeeee";
-static const char col_cyan[] = "#005577";
 
 static const char* colors[][3] = {
     /*               fg         bg         border   */
     [SchemeNorm] = { "#686868", "#2c2826", "#686868" },
     [SchemeSel] = { "#d9c9a0", "#2c2826", "#d9c9a0" },
+    [SchemeStatus3] = { "#FAD264", "#2c2826", "#d9c9a0" },
+    [SchemeStatus4] = { "#C3E695", "#2c2826", "#d9c9a0" },
+    [SchemeStatus5] = { "#D292B3", "#2c2826", "#d9c9a0" },
+    [SchemeStatus6] = { "#7daea3", "#2c2826", "#d9c9a0" },
+    [SchemeStatus7] = { "#89b482", "#2c2826", "#d9c9a0" },
+    [SchemeStatus8] = { "#E8725D", "#2c2826", "#d9c9a0" },
+    [SchemeStatus9] = { "#ea6962", "#2c2826", "#d9c9a0" },
 };
 
 static const char slopstyle[] = "-t 0 -c 0.92,0.85,0.69,0.3"; /* do NOT define -f (format) here */

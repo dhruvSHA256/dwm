@@ -94,7 +94,14 @@ enum {
 }; /* cursor */
 enum {
     SchemeNorm,
-    SchemeSel
+    SchemeSel,
+    SchemeStatus3,
+    SchemeStatus4,
+    SchemeStatus5,
+    SchemeStatus6,
+    SchemeStatus7,
+    SchemeStatus8,
+    SchemeStatus9,
 }; /* color schemes */
 enum {
     NetSupported,
@@ -279,6 +286,7 @@ static void detach(Client* c);
 static void detachstack(Client* c);
 static void drawbar(Monitor* m);
 static void drawbars(void);
+static void copyvalidchars(char* text, char* rawtext);
 static void enternotify(XEvent* e);
 static void expose(XEvent* e);
 static Client* findbefore(Client* c);
@@ -381,6 +389,7 @@ static Systray* systray = NULL;
 static Client* prevzoom = NULL;
 static const char broken[] = "broken";
 static char stext[256];
+static char filtered[256];
 static int screen;
 static int sw, sh; /* X display screen geometry width, height */
 static int bh, blw = 0; /* bar geometry */
@@ -1056,20 +1065,56 @@ dirtomon(int dir)
     return m;
 }
 
+void copyvalidchars(char* text, char* rawtext)
+{
+    int i = -1, j = 0;
+
+    while (rawtext[++i]) {
+        if ((unsigned int)rawtext[i] > LENGTH(colors)) {
+            text[j++] = rawtext[i];
+        }
+    }
+    text[j] = '\0';
+}
+
 void drawbar(Monitor* m)
 {
     int x, w, tw = 0, stw = 0;
     unsigned int i, occ = 0, urg = 0;
     Client* c;
 
+    char* ts = stext;
+    char* tp = stext;
+    int tx = 0;
+    char ctmp;
+
     if (showsystray && m == systraytomon(m))
         stw = getsystraywidth();
+
+    copyvalidchars(filtered, stext);
 
     /* draw status first so it can be overdrawn by tags later */
     if (m == selmon) { /* status is only drawn on selected monitor */
         drw_setscheme(drw, scheme[SchemeSel]);
-        tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px right padding */
+        tw = TEXTW(filtered) - lrpad + 2;
         drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0);
+
+        while (1) {
+            if ((unsigned int)*ts > LENGTH(colors)) {
+                ts++;
+                continue;
+            }
+            ctmp = *ts;
+            *ts = '\0';
+            drw_text(drw, m->ww - tw - stw + tx, 0, tw - tx, bh, 0, tp, 0);
+            tx += TEXTW(tp) - lrpad;
+            if (ctmp == '\0') {
+                break;
+            }
+            drw_setscheme(drw, scheme[(unsigned int)(ctmp - 1)]);
+            *ts = ctmp;
+            tp = ++ts;
+        }
     }
 
     resizebarwin(m);
@@ -2431,8 +2476,8 @@ void showhide(Client* c)
     if (ISVISIBLE(c)) {
         // preserve scratchpad position
         /* if ((c->tags & SPTAGMASK) && c->isfloating) { */
-            /* c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2); */
-            /* c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2); */
+        /* c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2); */
+        /* c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2); */
         /* } */
         /* show clients top down */
         XMoveWindow(dpy, c->win, c->x, c->y);
