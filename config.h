@@ -17,10 +17,10 @@ static const int showsystray = 1; /* 0 means no systray */
 static const int showbar = 1; /* 0 means no bar */
 static const int topbar = 1; /* 0 means bottom bar */
 static const char* fonts[] = { "Symbols Nerd Font:style= 2048-em:size = 10",
-    "Operator Mono Lig:style=medium:size=11",
+    "Operator Mono Lig:style=medium:size=12",
     /* "VictorMono Nerd Font Mono:style=Regular:size=10", */
     /* "FiraCode Nerd Font Mono:style=Regular:size=10", */
-    "Mukta:style=Regular:size=13" };
+    "Mukta:style=Regular:size=14" };
 
 static const int swallowfloating = 0; /* 1 means swallow floating windows by default */
 static const char dmenufont[] = "monospace:size                                      = 10";
@@ -60,8 +60,8 @@ const char* spcmd2[] = {
     "notes",
     "-e",
     "nvim",
-    "--listen",
-    "127.0.0.1:7777",
+    /* "--listen", */
+    /* "127.0.0.1:7777", */
     "-c source /home/dhruv/.local/share/nvim/sessions/wiki",
     NULL,
 };
