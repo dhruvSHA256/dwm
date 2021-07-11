@@ -24,7 +24,7 @@ static void getfacts(Monitor* m, int msize, int ssize, float* mf, float* sf, int
 static void setgaps(int oh, int ov, int ih, int iv);
 
 /* Settings */
-static int enablegaps = 1;
+static int enablegaps = 0;
 
 void setgaps(int oh, int ov, int ih, int iv)
 {
@@ -43,7 +43,6 @@ void setgaps(int oh, int ov, int ih, int iv)
     selmon->gappiv = iv;
     arrange(selmon);
 }
-
 
 void defaultgaps(const Arg* arg)
 {
@@ -112,7 +111,6 @@ void incrgaps(const Arg* arg)
 /*         selmon->gappih, */
 /*         selmon->gappiv + arg->i); */
 /* } */
-
 
 void getfacts(Monitor* m, int msize, int ssize, float* mf, float* sf, int* mr, int* sr)
 {

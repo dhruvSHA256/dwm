@@ -988,7 +988,7 @@ createmon(void)
         m->pertag->ltidxs[i][0] = m->lt[0];
         m->pertag->ltidxs[i][1] = m->lt[1];
         m->pertag->sellts[i] = m->sellt;
-        
+
         m->pertag->showbars[i] = m->showbar;
         m->pertag->isgoyo[i] = 0;
         m->pertag->enablegaps[i] = enablegaps;
@@ -1265,17 +1265,17 @@ void goyo(const Arg* arg)
     if (selmon->pertag->isgoyo[selmon->pertag->curtag]) {
         Client* c;
         for (c = selmon->clients; c; c = c->next)
-            if(c->tags & selmon->pertag->curtag)
+            if (c->tags & selmon->pertag->curtag)
                 c->bw = borderpx;
 
         if (!selmon->pertag->showbars[selmon->pertag->curtag])
             togglebar(arg);
 
-        selmon->pertag->enablegaps[selmon->pertag->curtag] = 1;
+        selmon->pertag->enablegaps[selmon->pertag->curtag] = !selmon->pertag->isgoyo[selmon->pertag->curtag];
     } else {
         Client* c;
         for (c = selmon->clients; c; c = c->next)
-            if(c->tags & selmon->pertag->curtag)
+            if (c->tags & selmon->pertag->curtag)
                 c->bw = 0;
 
         if (selmon->pertag->showbars[selmon->pertag->curtag])
@@ -2560,8 +2560,6 @@ void unswallow(Client* c)
 
 void spawn(const Arg* arg)
 {
-    if (arg->v == dmenucmd)
-        dmenumon[0] = '0' + selmon->num;
     if (fork() == 0) {
         if (dpy)
             close(ConnectionNumber(dpy));
@@ -2814,7 +2812,6 @@ void restorewin(const Arg* arg)
     }
 }
 
-
 void focusmaster(const Arg* arg)
 {
     Client* c;
@@ -2844,7 +2841,6 @@ void focusurgent(const Arg* arg)
         }
     }
 }
-
 
 void updatecurrentdesktop(void)
 {
@@ -3098,7 +3094,7 @@ void updatemotifhints(Client* c)
             height = HEIGHT(c);
 
             if (motif[MWM_HINTS_DECORATIONS_FIELD] & MWM_DECOR_ALL || motif[MWM_HINTS_DECORATIONS_FIELD] & MWM_DECOR_BORDER || motif[MWM_HINTS_DECORATIONS_FIELD] & MWM_DECOR_TITLE)
-                c->bw = c->oldbw = ( selmon->pertag->isgoyo[selmon->pertag->curtag] ? 0 : borderpx);
+                c->bw = c->oldbw = (selmon->pertag->isgoyo[selmon->pertag->curtag] ? 0 : borderpx);
             else
                 c->bw = c->oldbw = 0;
 
