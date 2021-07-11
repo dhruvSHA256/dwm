@@ -3328,8 +3328,8 @@ void view(const Arg* arg)
     if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags])
         return;
     selmon->seltags ^= 1; /* toggle sel tagset */
-    if (arg->ui & TAGMASK) {
-        selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
+    if (arg->ui & TAGMASK & ~SPTAGMASK) {
+        selmon->tagset[selmon->seltags] = arg->ui & TAGMASK & ~SPTAGMASK;
         selmon->pertag->prevtag = selmon->pertag->curtag;
 
         if (arg->ui == ~0)
