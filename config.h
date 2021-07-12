@@ -14,11 +14,11 @@ static const unsigned int systraypinning = 0; /* 0: sloppy systray follows selec
 static const unsigned int systrayspacing = 2; /* systray spacing */
 static const int systraypinningfailfirst = 1; /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
 static const int showsystray             = 1; /* 0 means no systray */
-static const int showbar                 = 1; /* 0 means no bar */
+static const int showbar                 = 0; /* 0 means no bar */
 static const int topbar                  = 1; /* 0 means bottom bar */
 
 static const char* fonts[] = { "Symbols Nerd Font:style= 2048-em:size = 10",
-                               "Operator Mono Lig:style=medium:size=12",
+                               "Operator Mono Lig:style=normal:size=12",
                                "Mukta:style=Regular:size=14"
                                /* "VictorMono Nerd Font Mono:style=Regular:size=10", */
                                /* "FiraCode Nerd Font Mono:style=Regular:size=10", */
@@ -28,9 +28,9 @@ static const int swallowfloating = 0; /* 1 means swallow floating windows by def
 static const char dmenufont[]    = "monospace:size                                      = 10";
 
 static const char* colors[][3] = {
-    /*               fg         bg         border   */
-    [SchemeNorm]    = { "#686868"    , "#2c2826" , "#686868" } ,
-    [SchemeSel]     = { "#d9c9a0"     , "#2c2826" , "#d9c9a0" } ,
+    /*                   fg         bg          border   */
+    [SchemeNorm]    = { "#686868" , "#2c2826" , "#686868" } ,
+    [SchemeSel]     = { "#d9c9a0" , "#2c2826" , "#d9c9a0" } ,
     [SchemeStatus3] = { "#FAD264" , "#2c2826" , "#d9c9a0" } ,
     [SchemeStatus4] = { "#C3E695" , "#2c2826" , "#d9c9a0" } ,
     [SchemeStatus5] = { "#D292B3" , "#2c2826" , "#d9c9a0" } ,
@@ -62,16 +62,16 @@ const char* spcmd2[] = {
     "notes",
     "-e",
     "nvim",
+    "-c source /home/dhruv/.local/share/nvim/sessions/wiki",
     /* "--listen", */
     /* "127.0.0.1:7777", */
-    "-c source /home/dhruv/.local/share/nvim/sessions/wiki",
     NULL,
 };
 const char* spcmd3[] = { "st", "-g", "100x30", "-n", "mmusic", "-e", "ncmpcpp", NULL };
 /* const char* spcmd3[] = {"alacritty", "--class", "mmusic", "-e", "ncmpcpp", NULL}; */
 
 const char* spcmd4[] = { "st", "-g", "100x30", "-n", "ippython", "-e", "ptpython", NULL };
-const char* spcmd5[] = { "/usr/bin/chromium", "--profile-directory=Default", "--app-id=hnpfjngllnobngcgfapefoaidbinmjnm", NULL };
+const char* spcmd5[] = { "/usr/bin/chromium","--class","whatsapp", "--profile-directory=Default", "--app-id=hnpfjngllnobngcgfapefoaidbinmjnm", NULL };
 const char* spcmd6[] = { "telegram-desktop" };
 const char* spcmd7[] = { "tabbed", "-r", "2", "-n", "spterm", "st", "-w", "", NULL };
 const char* spcmd8[] = { "librewolf", "--new-instance", "-P", "blablabla", "--class=blablabla", "--private-window", NULL };
@@ -91,33 +91,35 @@ static Sp scratchpads[] = {
 static const Rule rules[] = {
     /* xprop(1): WM_CLASS(STRING) = instance, class WM_NAME(STRING) = title */
 
-    /*   class               , instance , title , tagsmask , isfloating , ispermanent , isterminal , noswallow , isfakefullscreen , monitor , */
-    { "Dragon-drag-and-drop" , NULL     , NULL  , 0        , 1          , 0           , 0          , 1         , 0                , -1 }    ,
-    { "Gimp"                 , NULL     , NULL  , 0        , 1          , 0           , 0          , 1         , 0                , -1 }    ,
-    { "Sxiv"                 , NULL     , NULL  , 0        , 1          , 0           , 0          , 0         , 0                , -1 }    ,
-    { "Pavucontrol"          , NULL     , NULL  , 0        , 1          , 0           , 0          , 1         , 0                , -1 }    ,
-    { "firefox"              , NULL     , NULL  , 1        , 0          , 0           , 0          , 1         , 0                , -1 }    ,
-    { "Brave-browser"        , NULL     , NULL  , 0        , 0          , 0           , 0          , 1         , 0                , -1 }    ,
-    { "qt4-ssh-askpass"      , NULL     , NULL  , 0        , 0          , 0           , 0          , 1         , 0                , -1 }    ,
-    { "openssh-askpass"      , NULL     , NULL  , 0        , 0          , 0           , 0          , 1         , 0                , -1 }    ,
-    { "LibreWolf"            , NULL     , NULL  , 1        , 0          , 0           , 0          , 1         , 1                , -1 }    ,
-    { "Chromium"             , NULL     , NULL  , 0        , 0          , 0           , 0          , 1         , 1                , -1 }    ,
-    { "Thunar"               , NULL     , NULL  , 0        , 0          , 0           , 0          , 1         , 0                , -1 }    ,
-    { "St"                   , NULL     , NULL  , 0        , 0          , 0           , 1          , 0         , 0                , -1 }    ,
-    { "Alacritty"            , NULL     , NULL  , 0        , 0          , 0           , 1          , 0         , 0                , -1 }    ,
-    { "Transmission-gtk"     , NULL     , NULL  , 1 << 8   , 0          , 0           , 0          , 0         , 0                , -1 }    ,
-    { "Toolkit"              , NULL     , NULL  , 0        , 1          , 0           , 0          , 1         , 0                , -1 }    ,
-    { NULL                        , "pavucontrol"      , NULL           , SPTAG(0) , 1          , 0           , 0          , 1         , 0                , -1 }    ,
-    { NULL                        , "notes"            , NULL           , SPTAG(1) , 0          , 0           , 0          , 1         , 0                , -1 }    ,
-    { NULL                        , "mmusic"           , NULL           , SPTAG(2) , 1          , 0           , 0          , 1         , 0                , -1 }    ,
-    { NULL                        , "ippython"         , NULL           , SPTAG(3) , 1          , 0           , 0          , 1         , 0                , -1 }    ,
-    { NULL                        , "telegram-desktop" , NULL           , SPTAG(5) , 1          , 0           , 0          , 0         , 1                , -1 }    ,
-    { NULL                        , "spterm"           , NULL           , SPTAG(6) , 1          , 0           , 0          , 0         , 1                , -1 }    ,
-    { "blablabla"                 , NULL               , NULL           , SPTAG(7) , 1          , 0           , 0          , 0         , 1                , -1 }    ,
-    { "microsoft teams - preview" , NULL               , NULL           , 0        , 1          , 0           , 0          , 1         , 0                , -1 }    ,
-    { "Microsoft Teams - Preview" , NULL               , NULL           , 0        , 1          , 0           , 0          , 1         , 0                , -1 }    ,
-    { NULL                        , NULL               , "Event Tester" , 0        , 1          , 0           , 0          , 1         , 0                , -1 }    ,
-    { NULL                        , "crx_hnpfjngllnobngcgfapefoaidbinmjnm" , NULL           , SPTAG(4) , 1          , 0           , 0          , 0         , 1                , -1 }    ,
+    /*   class                    , instance                               , title          , tagsmask , isfloating , ispermanent , isterminal , noswallow , isfakefullscreen , monitor , */
+    { NULL                  , "crx_hnpfjngllnobngcgfapefoaidbinmjnm" , "WhatsApp"     , SPTAG(4) , 1 , 0 , 0 , 0 , 1 , -1 } ,
+    { "Dragon-drag-and-drop"      , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
+    { "Gimp"                      , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
+    { "Sxiv"                      , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 0 , 0 , -1 } ,
+    { "Pavucontrol"               , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
+    { "firefox"                   , NULL                                   , NULL           , 1        , 0 , 0 , 0 , 1 , 0 , -1 } ,
+    { "Brave-browser"             , NULL                                   , NULL           , 0        , 0 , 0 , 0 , 1 , 0 , -1 } ,
+    { "qt4-ssh-askpass"           , NULL                                   , NULL           , 0        , 0 , 0 , 0 , 1 , 0 , -1 } ,
+    { "openssh-askpass"           , NULL                                   , NULL           , 0        , 0 , 0 , 0 , 1 , 0 , -1 } ,
+    { "LibreWolf"                 , NULL                                   , NULL           , 1        , 0 , 0 , 0 , 1 , 1 , -1 } ,
+    {  NULL                       , "chromium"                             , NULL           , 1 << 3   , 0 , 0 , 0 , 1 , 1 , -1 } ,
+    { "Thunar"                    , NULL                                   , NULL           , 0        , 0 , 0 , 0 , 1 , 0 , -1 } ,
+    { "St"                        , NULL                                   , NULL           , 0        , 0 , 0 , 1 , 0 , 0 , -1 } ,
+    { "Alacritty"                 , NULL                                   , NULL           , 0        , 0 , 0 , 1 , 0 , 0 , -1 } ,
+    { "Transmission-gtk"          , NULL                                   , NULL           , 1 << 8   , 0 , 0 , 0 , 0 , 0 , -1 } ,
+    { "Toolkit"                   , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
+    { "microsoft teams - preview" , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
+    { "Microsoft Teams - Preview" , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
+    { NULL                        , NULL                                   , "newsboat"     , 1 << 4   , 0 , 0 , 0 , 1 , 0 , -1 } ,
+    { NULL                        , NULL                                   , "neomutt"      , 1 << 4   , 0 , 0 , 0 , 1 , 0 , -1 } ,
+    { NULL                        , NULL                                   , "Event Tester" , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
+    { NULL                        , "pavucontrol"                          , NULL           , SPTAG(0) , 1 , 0 , 0 , 1 , 0 , -1 } ,
+    { NULL                        , "notes"                                , NULL           , SPTAG(1) , 0 , 0 , 0 , 1 , 0 , -1 } ,
+    { NULL                        , "mmusic"                               , NULL           , SPTAG(2) , 1 , 0 , 0 , 1 , 0 , -1 } ,
+    { NULL                        , "ippython"                             , NULL           , SPTAG(3) , 1 , 0 , 0 , 1 , 0 , -1 } ,
+    { NULL                        , "telegram-desktop"                     , NULL           , SPTAG(5) , 1 , 0 , 0 , 0 , 1 , -1 } ,
+    { NULL                        , "spterm"                               , NULL           , SPTAG(6) , 1 , 0 , 0 , 0 , 1 , -1 } ,
+    { "blablabla"                 , "Navigator"                            , NULL           , SPTAG(7) , 1 , 0 , 0 , 0 , 1 , -1 } ,
 };
 
 static const float mfact = 0.55; /* factor of master area size [0.05..0.95] */
@@ -154,7 +156,7 @@ static const Layout layouts[] = {
 #define TAGKEYS(KEY, TAG)                                     \
     { MODKEY, KEY, view, { .ui = 1 << TAG } },                \
         { Mod1Mask, KEY, toggleview, { .ui = 1 << TAG } },    \
-        { MODKEY | ShiftMask, KEY, tag, { .ui = 1 << TAG } }, \
+        { MODKEY | ControlMask, KEY, tag, { .ui = 1 << TAG } }, \
         { Mod1Mask | ShiftMask, KEY, toggletag, { .ui = 1 << TAG } },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
@@ -169,11 +171,11 @@ static const Layout layouts[] = {
 
 /* commands */
 static const char* dmenucmd[] = {
-    "rofi", "-matching", "fuzzy", "-show", "drun", "-theme", "gruvv", NULL
+    "rofi", "-matching", "fuzzy", "-show", "drun", "-theme", "gruvv", "-icon-theme", "Papirus", "-show-icons","-drun-use-desktop-cache", NULL
 };
 
 static const char* termcmd[] = { TERMINAL, NULL };
-static const char* browsercmd[] = { "/home/dhruv/.local/ubin/lof", BROWSER, NULL };
+static const char* browsercmd[] = { "/home/dhruv/.local/bin/lof", BROWSER, NULL };
 
 /* static const char* editorcmd[] = { "alacritty", "-e", EDITOR, NULL }; */
 
@@ -183,12 +185,13 @@ static Key keys[] = {
 
     { Mod1Mask               , 55 , togglescratch , { .ui = 0 } }         , // v
     { Mod1Mask               , 57 , togglescratch , { .ui = 1 } }         , // n
-    { Mod1Mask               , 58 , togglescratch , { .ui = 2 } }         , // m
-    { Mod1Mask               , 33 , togglescratch , { .ui = 3 } }         , // p
-    { Mod1Mask               , 47 , togglescratch , { .ui = 6 } }         , // ;
+    { Mod1Mask               , 44 , togglescratch , { .ui = 7 } }         , // j
+    { Mod1Mask | ControlMask , 58 , togglescratch , { .ui = 2 } }         , // m
+    { Mod1Mask | ControlMask , 33 , togglescratch , { .ui = 3 } }         , // p
+    { Mod1Mask | ControlMask , 47 , togglescratch , { .ui = 6 } }         , // ;
     { Mod1Mask | ControlMask , 61 , togglescratch , { .ui = 4 } }         , // /
     { Mod1Mask | ControlMask , 48 , togglescratch , { .ui = 5 } }         , // "
-    { Mod1Mask               , 44 , togglescratch , { .ui = 7 } }         , // j
+
     { MODKEY                 , 65 , spawn         , { .v = dmenucmd } }   , // space
     { MODKEY                 , 25 , spawn         , { .v = browsercmd } } , // w
 
@@ -233,8 +236,10 @@ static Key keys[] = {
     { MODKEY                 , 28 , setlayout      , { .v = &layouts[0] } } , // t
     { MODKEY                 , 41 , setlayout      , { .v = &layouts[2] } } , // f
     { MODKEY | ShiftMask     , 65 , togglefloating , { 0 } }                , // space
+
     { MODKEY                 , 19 , view           , { .ui = ~0 } }         , // 0
-    { MODKEY | ShiftMask     , 19 , tag            , { .ui = ~0 } }         , // 0
+    { MODKEY | ControlMask   , 19 , tag            , { .ui = ~0 } }         , // 0
+
     { MODKEY | ShiftMask     , 59 , tagmon         , { .i = -1 } }          , // comma
     { MODKEY | ShiftMask     , 60 , tagmon         , { .i = +1 } }          , // period
     { MODKEY | ControlMask   , 25 , killclient     , { 0 } }                , // w

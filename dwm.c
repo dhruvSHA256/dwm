@@ -297,7 +297,7 @@ static void focusstack(const Arg* arg);
 /* static void focuswin(const Arg* arg); */
 static void focusmaster(const Arg* arg);
 static void focusurgent(const Arg* arg);
-static void goyo();
+static void goyo(const Arg* arg);
 static void grabbuttons(Client* c, int focused);
 static void grabkeys(void);
 static void hide(Client* c);
@@ -990,7 +990,7 @@ createmon(void)
         m->pertag->sellts[i] = m->sellt;
 
         m->pertag->showbars[i] = m->showbar;
-        m->pertag->isgoyo[i] = 0;
+        m->pertag->isgoyo[i] = m->pertag->showbars[i];
         m->pertag->enablegaps[i] = enablegaps;
     }
 
@@ -1087,6 +1087,8 @@ void copyvalidchars(char* text, char* rawtext)
 
 void drawbar(Monitor* m)
 {
+    if (!selmon->pertag->showbars[selmon->pertag->curtag])
+        return;
     int x, w, tw = 0, stw = 0;
     unsigned int i, occ = 0, urg = 0;
     Client* c;
@@ -1100,7 +1102,6 @@ void drawbar(Monitor* m)
         stw = getsystraywidth();
 
     copyvalidchars(filtered, stext);
-
     /* draw status first so it can be overdrawn by tags later */
     if (m == selmon) { /* status is only drawn on selected monitor */
         drw_setscheme(drw, scheme[SchemeSel]);
@@ -1125,7 +1126,9 @@ void drawbar(Monitor* m)
         }
     }
 
-    resizebarwin(m);
+    if (showsystray)
+        resizebarwin(m);
+
     for (c = m->clients; c; c = c->next) {
         occ |= c->tags == 255 ? 0 : c->tags;
         if (c->isurgent)
@@ -1265,7 +1268,7 @@ void goyo(const Arg* arg)
     if (selmon->pertag->isgoyo[selmon->pertag->curtag]) {
         Client* c;
         for (c = selmon->clients; c; c = c->next)
-            if (c->tags & selmon->pertag->curtag)
+            if (c->tags & selmon->tagset[selmon->seltags])
                 c->bw = borderpx;
 
         if (!selmon->pertag->showbars[selmon->pertag->curtag])
@@ -1275,7 +1278,7 @@ void goyo(const Arg* arg)
     } else {
         Client* c;
         for (c = selmon->clients; c; c = c->next)
-            if (c->tags & selmon->pertag->curtag)
+            if (c->tags & selmon->tagset[selmon->seltags])
                 c->bw = 0;
 
         if (selmon->pertag->showbars[selmon->pertag->curtag])
