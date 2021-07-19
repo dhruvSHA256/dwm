@@ -18,14 +18,15 @@ static const int showbar                 = 0; /* 0 means no bar */
 static const int topbar                  = 1; /* 0 means bottom bar */
 
 static const char* fonts[] = { "Symbols Nerd Font:style= 2048-em:size = 10",
-                               "Operator Mono Lig:style=normal:size=12",
-                               "Mukta:style=Regular:size=14"
+                               /* "Operator Mono Lig:style=normal:size=12", */
+                               "Liga SFMono Nerd Font:style=Regular:size=11",
+                               "Mukta:style=Regular:size=15",
+                               /* "Shobhika Regular:style=Regular", */
                                /* "VictorMono Nerd Font Mono:style=Regular:size=10", */
                                /* "FiraCode Nerd Font Mono:style=Regular:size=10", */
 };
 
 static const int swallowfloating = 0; /* 1 means swallow floating windows by default */
-static const char dmenufont[]    = "monospace:size                                      = 10";
 
 static const char* colors[][3] = {
     /*                   fg         bg          border   */
@@ -73,7 +74,8 @@ const char* spcmd3[] = { "st", "-g", "100x30", "-n", "mmusic", "-e", "ncmpcpp", 
 const char* spcmd4[] = { "st", "-g", "100x30", "-n", "ippython", "-e", "ptpython", NULL };
 const char* spcmd5[] = { "/usr/bin/chromium","--class","whatsapp", "--profile-directory=Default", "--app-id=hnpfjngllnobngcgfapefoaidbinmjnm", NULL };
 const char* spcmd6[] = { "telegram-desktop" };
-const char* spcmd7[] = { "tabbed", "-r", "2", "-n", "spterm", "st", "-w", "", NULL };
+const char* spcmd7[] = { "st", "-g", "100x30", "-n", "spterm", "-e", "/home/dhruv/.config/tmux/session_script/scratch", NULL };
+/* const char* spcmd7[] = { "tabbed", "-r", "2", "-n", "spterm", "st", "-w", "", NULL }; */
 const char* spcmd8[] = { "librewolf", "--new-instance", "-P", "blablabla", "--class=blablabla", "--private-window", NULL };
 
 static Sp scratchpads[] = {
@@ -92,9 +94,10 @@ static const Rule rules[] = {
     /* xprop(1): WM_CLASS(STRING) = instance, class WM_NAME(STRING) = title */
 
     /*   class                    , instance                               , title          , tagsmask , isfloating , ispermanent , isterminal , noswallow , isfakefullscreen , monitor , */
-    { NULL                  , "crx_hnpfjngllnobngcgfapefoaidbinmjnm" , "WhatsApp"     , SPTAG(4) , 1 , 0 , 0 , 0 , 1 , -1 } ,
+    { NULL                  , "crx_hnpfjngllnobngcgfapefoaidbinmjnm" , "WhatsApp"     , SPTAG(4)       , 1 , 0 , 0 , 0 , 1 , -1 } ,
     { "Dragon-drag-and-drop"      , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
     { "Gimp"                      , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
+    { "Yad"                       , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
     { "Sxiv"                      , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 0 , 0 , -1 } ,
     { "Pavucontrol"               , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
     { "firefox"                   , NULL                                   , NULL           , 1        , 0 , 0 , 0 , 1 , 0 , -1 } ,
@@ -110,7 +113,7 @@ static const Rule rules[] = {
     { "Toolkit"                   , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
     { "microsoft teams - preview" , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
     { "Microsoft Teams - Preview" , NULL                                   , NULL           , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
-    { NULL                        , NULL                                   , "newsboat"     , 1 << 4   , 0 , 0 , 0 , 1 , 0 , -1 } ,
+    { NULL                        , "newsboat"                             , NULL           , 1 << 3   , 0 , 0 , 0 , 1 , 0 , -1 } ,
     { NULL                        , NULL                                   , "neomutt"      , 1 << 4   , 0 , 0 , 0 , 1 , 0 , -1 } ,
     { NULL                        , NULL                                   , "Event Tester" , 0        , 1 , 0 , 0 , 1 , 0 , -1 } ,
     { NULL                        , "pavucontrol"                          , NULL           , SPTAG(0) , 1 , 0 , 0 , 1 , 0 , -1 } ,
@@ -157,7 +160,7 @@ static const Layout layouts[] = {
     { MODKEY, KEY, view, { .ui = 1 << TAG } },                \
         { Mod1Mask, KEY, toggleview, { .ui = 1 << TAG } },    \
         { MODKEY | ControlMask, KEY, tag, { .ui = 1 << TAG } }, \
-        { Mod1Mask | ShiftMask, KEY, toggletag, { .ui = 1 << TAG } },
+        { Mod1Mask | ControlMask, KEY, toggletag, { .ui = 1 << TAG } },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)                                          \
@@ -171,11 +174,13 @@ static const Layout layouts[] = {
 
 /* commands */
 static const char* dmenucmd[] = {
-    "rofi", "-matching", "fuzzy", "-show", "drun", "-theme", "gruvv", "-icon-theme", "Papirus", "-show-icons","-drun-use-desktop-cache", NULL
+    "rofi", "-matching", "fuzzy", "-modi", "drun", "-show", "drun", NULL
 };
 
 static const char* termcmd[] = { TERMINAL, NULL };
-static const char* browsercmd[] = { "/home/dhruv/.local/bin/lof", BROWSER, NULL };
+static const char* browsercmd[] = { "lof", BROWSER, NULL };
+static const char* lofnewsboat[] = { "loft", "newsboat", NULL };
+static const char* lofneomutt[] = { "loft", "neomutt", NULL };
 
 /* static const char* editorcmd[] = { "alacritty", "-e", EDITOR, NULL }; */
 
@@ -183,9 +188,9 @@ static Key keys[] = {
     /* modifier                          key   function         argument */
     /* { Mod1Mask                         , 47  , capturenote    , { 0 } }                    , // ; */
 
-    { Mod1Mask               , 55 , togglescratch , { .ui = 0 } }         , // v
-    { Mod1Mask               , 57 , togglescratch , { .ui = 1 } }         , // n
-    { Mod1Mask               , 44 , togglescratch , { .ui = 7 } }         , // j
+    { Mod1Mask | ControlMask , 55 , togglescratch , { .ui = 0 } }         , // v
+    { Mod1Mask | ControlMask , 57 , togglescratch , { .ui = 1 } }         , // n
+    { Mod1Mask | ControlMask , 44 , togglescratch , { .ui = 7 } }         , // j
     { Mod1Mask | ControlMask , 58 , togglescratch , { .ui = 2 } }         , // m
     { Mod1Mask | ControlMask , 33 , togglescratch , { .ui = 3 } }         , // p
     { Mod1Mask | ControlMask , 47 , togglescratch , { .ui = 6 } }         , // ;
@@ -195,12 +200,15 @@ static Key keys[] = {
     { MODKEY                 , 65 , spawn         , { .v = dmenucmd } }   , // space
     { MODKEY                 , 25 , spawn         , { .v = browsercmd } } , // w
 
+    { MODKEY                 , 57 , spawn         , { .v = lofnewsboat  } } , // n
+    { MODKEY                 , 58 , spawn         , { .v = lofneomutt  } } , // m
+
     { MODKEY               , 48 , focusmaster , { 0 } }            , // "
     { MODKEY               , 56 , togglebar   , { 0 } }            , // b
     { MODKEY               , 44 , focusstack  , { .i = +1 } }      , // j
     { MODKEY               , 45 , focusstack  , { .i = -1 } }      , // k
-    { MODKEY               , 31 , incnmaster  , { .i = +1 } }      , // i
-    { MODKEY               , 40 , incnmaster  , { .i = -1 } }      , // d
+    /* { MODKEY               , 31 , incnmaster  , { .i = +1 } }      , // i */
+    /* { MODKEY               , 40 , incnmaster  , { .i = -1 } }      , // d */
     { MODKEY | ControlMask , 36 , spawn       , { .v = termcmd } } , // return
 
     { MODKEY | ShiftMask , 43 , setmfact , { .f = -0.05 } } , // h

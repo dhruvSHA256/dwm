@@ -287,7 +287,7 @@ static void detachstack(Client* c);
 static void drawbar(Monitor* m);
 static void drawbars(void);
 static void copyvalidchars(char* text, char* rawtext);
-static void enternotify(XEvent* e);
+/* static void enternotify(XEvent* e); */
 static void expose(XEvent* e);
 static Client* findbefore(Client* c);
 static void focus(Client* c);
@@ -404,7 +404,7 @@ static void (*handler[LASTEvent])(XEvent*) = {
     [ConfigureRequest] = configurerequest,
     [ConfigureNotify] = configurenotify,
     [DestroyNotify] = destroynotify,
-    [EnterNotify] = enternotify,
+    /* [EnterNotify] = enternotify, */
     [Expose] = expose,
     [FocusIn] = focusin,
     [KeyPress] = keypress,
@@ -1161,23 +1161,23 @@ void drawbars(void)
         drawbar(m);
 }
 
-void enternotify(XEvent* e)
-{
-    Client* c;
-    Monitor* m;
-    XCrossingEvent* ev = &e->xcrossing;
+/* void enternotify(XEvent* e) */
+/* { */
+/*     Client* c; */
+/*     Monitor* m; */
+/*     XCrossingEvent* ev = &e->xcrossing; */
 
-    if ((ev->mode != NotifyNormal || ev->detail == NotifyInferior) && ev->window != root)
-        return;
-    c = wintoclient(ev->window);
-    m = c ? c->mon : wintomon(ev->window);
-    if (m != selmon) {
-        unfocus(selmon->sel, 1);
-        selmon = m;
-    } else if (!c || c == selmon->sel)
-        return;
-    focus(c);
-}
+/*     if ((ev->mode != NotifyNormal || ev->detail == NotifyInferior) && ev->window != root) */
+/*         return; */
+/*     c = wintoclient(ev->window); */
+/*     m = c ? c->mon : wintomon(ev->window); */
+/*     if (m != selmon) { */
+/*         unfocus(selmon->sel, 1); */
+/*         selmon = m; */
+/*     } else if (!c || c == selmon->sel) */
+/*         return; */
+/*     focus(c); */
+/* } */
 
 Client*
 findbefore(Client* c)
@@ -1503,7 +1503,7 @@ void manage(Window w, XWindowAttributes* wa)
     /* only fix client y-offset, if the client center might cover the bar */
     c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx) && (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
 
-    c->bw = selmon->pertag->isgoyo[selmon->pertag->curtag] ? 0 : borderpx;
+    c->bw = (selmon->pertag->isgoyo[selmon->pertag->curtag] && !c->isfloating) ? 0 : borderpx;
     wc.border_width = c->bw;
     XConfigureWindow(dpy, w, CWBorderWidth, &wc);
     XSetWindowBorder(dpy, w, scheme[SchemeNorm][ColBorder].pixel);
